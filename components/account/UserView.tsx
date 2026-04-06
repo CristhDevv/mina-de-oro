@@ -1,6 +1,6 @@
 'use client'
 import { User } from '@/types'
-import { ShoppingBag, Heart, MapPin, HelpCircle, LogOut, ChevronRight } from 'lucide-react'
+import { ShoppingBag, Heart, MapPin, HelpCircle, LogOut, ChevronRight, LayoutDashboard } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
 
@@ -36,6 +36,21 @@ export default function UserView({ user }: Props) {
       </div>
 
       <div className="mx-4 -mt-5 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        {user.role === 'admin' && (
+          <Link
+            href="/admin"
+            className="w-full flex items-center gap-3 px-4 py-4 text-left border-b border-gray-100 bg-[#FFF9EC] active:bg-yellow-50"
+          >
+            <div className="w-9 h-9 rounded-xl bg-[#C9A84C]/20 flex items-center justify-center shrink-0">
+              <LayoutDashboard size={16} className="text-[#C9A84C]" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold text-[#C9A84C]">Panel de administración</p>
+              <p className="text-xs text-gray-400">Gestiona productos, pedidos y usuarios</p>
+            </div>
+            <ChevronRight size={16} className="text-[#C9A84C] shrink-0" />
+          </Link>
+        )}
         {menuItems.map(({ icon: Icon, label, description, href }, index) => {
           const inner = (
             <>
