@@ -2,16 +2,17 @@
 import { User } from '@/types'
 import { ShoppingBag, Heart, MapPin, HelpCircle, LogOut, ChevronRight } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
+import Link from 'next/link'
 
 interface Props {
   user: User
 }
 
 const menuItems = [
-  { icon: ShoppingBag, label: 'Mis pedidos', description: 'Revisa el estado de tus compras' },
-  { icon: Heart, label: 'Favoritos', description: 'Productos que guardaste' },
-  { icon: MapPin, label: 'Mis direcciones', description: 'Gestiona tus direcciones de envío' },
-  { icon: HelpCircle, label: 'Ayuda', description: 'Centro de soporte' },
+  { icon: ShoppingBag, label: 'Mis pedidos', description: 'Revisa el estado de tus compras', href: '/cuenta/pedidos' },
+  { icon: Heart, label: 'Favoritos', description: 'Productos que guardaste', href: null },
+  { icon: MapPin, label: 'Mis direcciones', description: 'Gestiona tus direcciones de envío', href: null },
+  { icon: HelpCircle, label: 'Ayuda', description: 'Centro de soporte', href: null },
 ]
 
 export default function UserView({ user }: Props) {
@@ -35,23 +36,26 @@ export default function UserView({ user }: Props) {
       </div>
 
       <div className="mx-4 -mt-5 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-        {menuItems.map(({ icon: Icon, label, description }, index) => (
-          <button
-            key={label}
-            className={`w-full flex items-center gap-3 px-4 py-4 text-left active:bg-gray-50 ${
-              index < menuItems.length - 1 ? 'border-b border-gray-100' : ''
-            }`}
-          >
-            <div className="w-9 h-9 rounded-xl bg-[#EFF6FF] flex items-center justify-center shrink-0">
-              <Icon size={16} className="text-[#1B2B5E]" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-gray-800">{label}</p>
-              <p className="text-xs text-gray-400">{description}</p>
-            </div>
-            <ChevronRight size={16} className="text-gray-300 shrink-0" />
-          </button>
-        ))}
+        {menuItems.map(({ icon: Icon, label, description, href }, index) => {
+          const inner = (
+            <>
+              <div className="w-9 h-9 rounded-xl bg-[#EFF6FF] flex items-center justify-center shrink-0">
+                <Icon size={16} className="text-[#1B2B5E]" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-gray-800">{label}</p>
+                <p className="text-xs text-gray-400">{description}</p>
+              </div>
+              <ChevronRight size={16} className="text-gray-300 shrink-0" />
+            </>
+          )
+          const cls = `w-full flex items-center gap-3 px-4 py-4 text-left active:bg-gray-50 ${
+            index < menuItems.length - 1 ? 'border-b border-gray-100' : ''
+          }`
+          return href
+            ? <Link key={label} href={href} className={cls}>{inner}</Link>
+            : <button key={label} className={cls}>{inner}</button>
+        })}
       </div>
 
       <div className="px-4 mt-4">

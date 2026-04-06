@@ -61,3 +61,20 @@ export async function getUserOrders() {
   if (error) throw error
   return data
 }
+
+export async function getOrderById(orderId: string) {
+  const { data, error } = await supabase
+    .from('orders')
+    .select(`
+      *,
+      order_items (
+        *,
+        products (name, images)
+      )
+    `)
+    .eq('id', orderId)
+    .single()
+
+  if (error) throw error
+  return data
+}
