@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { supabase } from '@/lib/supabase'
 import { User } from '@/types'
 
@@ -12,7 +12,7 @@ export function useAuth(): AuthState {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
 
-  async function fetchUser(authUser: { id: string; email?: string; user_metadata?: { name?: string } }) {
+  const fetchUser = useCallback(async (authUser: { id: string; email?: string; user_metadata?: { name?: string } }) => {
     const { data: profile } = await supabase
       .from('profiles')
       .select('name, role')
@@ -25,27 +25,37 @@ export function useAuth(): AuthState {
       email: authUser.email ?? '',
       role: (profile?.role as User['role']) ?? 'customer',
     })
-  }
+  }, [])
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session?.user) {
-        fetchUser(session.user).finally(() => setLoading(false))
-      } else {
-        setLoading(false)
-      }
-    })
+    let mounted = true
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    async function init() {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!mounted) return
       if (session?.user) {
-        fetchUser(session.user)
+        await fetchUser(session.user)
+      }
+      setLoading(false)
+    }
+
+    init()
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      if (!mounted) return
+      if (session?.user) {
+        await fetchUser(session.user)
       } else {
         setUser(null)
       }
+      setLoading(false)
     })
 
-    return () => subscription.unsubscribe()
-  }, [])
+    return () => {
+      mounted = false
+      subscription.unsubscribe()
+    }
+  }, [fetchUser])
 
   return { user, loading }
 }

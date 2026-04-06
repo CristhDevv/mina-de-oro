@@ -26,3 +26,18 @@ export async function getCategoryBySlug(slug: string): Promise<Category | null> 
   if (error) return null
   return { id: data.id, name: data.name, slug: data.slug, icon: data.icon }
 }
+
+export async function createCategory(data: { name: string; slug: string; icon: string }) {
+  const { error } = await supabase.from('categories').insert(data)
+  if (error) throw new Error(error.message)
+}
+
+export async function updateCategory(id: string, data: { name: string; slug: string; icon: string }) {
+  const { error } = await supabase.from('categories').update(data).eq('id', id)
+  if (error) throw new Error(error.message)
+}
+
+export async function deleteCategory(id: string) {
+  const { error } = await supabase.from('categories').delete().eq('id', id)
+  if (error) throw new Error(error.message)
+}

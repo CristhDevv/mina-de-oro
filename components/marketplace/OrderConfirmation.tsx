@@ -4,16 +4,19 @@ import { useEffect, useState } from 'react'
 import { CheckCircle } from 'lucide-react'
 import Link from 'next/link'
 import { sendOrderEmail } from '@/lib/api/orders'
+import { useCartStore } from '@/store/cart'
 
 interface Props {
   orderId: string
 }
 
 export default function OrderConfirmation({ orderId }: Props) {
+  const clearCart = useCartStore(state => state.clearCart)
   const [emailSent, setEmailSent] = useState(false)
   const [emailError, setEmailError] = useState(false)
 
   useEffect(() => {
+    clearCart()
     sendOrderEmail(orderId)
       .then(() => setEmailSent(true))
       .catch(() => setEmailError(true))
