@@ -1,10 +1,10 @@
 'use client'
 import { User } from '@/types'
 import { ShoppingBag, Heart, MapPin, HelpCircle, LogOut, ChevronRight } from 'lucide-react'
+import { supabase } from '@/lib/supabase'
 
 interface Props {
   user: User
-  onLogout: () => void
 }
 
 const menuItems = [
@@ -14,11 +14,14 @@ const menuItems = [
   { icon: HelpCircle, label: 'Ayuda', description: 'Centro de soporte' },
 ]
 
-export default function UserView({ user, onLogout }: Props) {
+export default function UserView({ user }: Props) {
+  async function handleLogout() {
+    await supabase.auth.signOut()
+  }
+
   return (
     <div className="pb-6">
 
-      {/* Profile header */}
       <div className="bg-[#1B2B5E] px-4 pt-8 pb-10 flex flex-col items-center gap-3">
         <div className="w-16 h-16 rounded-full bg-[#C9A84C] flex items-center justify-center">
           <span className="text-2xl font-bold text-white uppercase">
@@ -31,7 +34,6 @@ export default function UserView({ user, onLogout }: Props) {
         </div>
       </div>
 
-      {/* Menu */}
       <div className="mx-4 -mt-5 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         {menuItems.map(({ icon: Icon, label, description }, index) => (
           <button
@@ -52,10 +54,9 @@ export default function UserView({ user, onLogout }: Props) {
         ))}
       </div>
 
-      {/* Logout */}
       <div className="px-4 mt-4">
         <button
-          onClick={onLogout}
+          onClick={handleLogout}
           className="w-full h-12 rounded-2xl border border-red-200 text-red-500 text-sm font-semibold flex items-center justify-center gap-2 active:bg-red-50"
         >
           <LogOut size={16} />

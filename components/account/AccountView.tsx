@@ -1,15 +1,22 @@
 'use client'
-import { useState } from 'react'
+import { useAuth } from '@/hooks/useAuth'
 import GuestView from './GuestView'
 import UserView from './UserView'
-import { User } from '@/types'
 
 export default function AccountView() {
-  const [user, setUser] = useState<User | null>(null)
+  const { user, loading } = useAuth()
 
-  if (!user) {
-    return <GuestView onLogin={(u) => setUser(u)} />
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-[60vh]">
+        <div className="w-8 h-8 rounded-full border-2 border-[#1B2B5E] border-t-transparent animate-spin" />
+      </div>
+    )
   }
 
-  return <UserView user={user} onLogout={() => setUser(null)} />
+  if (!user) {
+    return <GuestView />
+  }
+
+  return <UserView user={user} />
 }
