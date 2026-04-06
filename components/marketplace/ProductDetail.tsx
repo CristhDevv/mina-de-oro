@@ -1,5 +1,6 @@
 'use client'
 import { Product } from '@/types'
+import Image from 'next/image'
 import { useState } from 'react'
 import { ArrowLeft, Star, ShoppingCart, Plus, Minus } from 'lucide-react'
 import { useRouter } from 'next/navigation'
@@ -50,8 +51,18 @@ export default function ProductDetail({ product }: Props) {
       </button>
 
       {/* Image */}
-      <div className="mx-4 rounded-2xl bg-gray-50 aspect-square flex items-center justify-center">
-        <span className="text-8xl">🛍️</span>
+      <div className="mx-4 rounded-2xl bg-gray-50 aspect-square flex items-center justify-center relative overflow-hidden">
+        {product.images && product.images.length > 0 ? (
+          <Image
+            src={product.images[0]}
+            alt={product.name}
+            fill
+            className="object-cover rounded-2xl"
+            sizes="(max-width: 768px) 100vw, 500px"
+          />
+        ) : (
+          <span className="text-8xl">🛍️</span>
+        )}
       </div>
 
       {/* Info */}

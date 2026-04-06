@@ -1,5 +1,6 @@
 import { Product } from '@/types'
 import Link from 'next/link'
+import Image from 'next/image'
 
 interface Props {
   product: Product
@@ -25,9 +26,19 @@ export default function ProductCard({ product }: Props) {
     <Link href={`/producto/${product.slug}`} className="block">
       <div className="rounded-2xl border border-gray-100 bg-white shadow-sm overflow-hidden hover:shadow-md transition-shadow">
         
-        {/* Image placeholder */}
-        <div className="w-full aspect-square bg-gray-50 flex items-center justify-center relative">
-          <span className="text-4xl">🛍️</span>
+        {/* Image */}
+        <div className="w-full aspect-square bg-gray-50 flex items-center justify-center relative overflow-hidden">
+          {product.images && product.images.length > 0 ? (
+            <Image
+              src={product.images[0]}
+              alt={product.name}
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 50vw, 200px"
+            />
+          ) : (
+            <span className="text-4xl">🛍️</span>
+          )}
           {discount && (
             <span className="absolute top-2 left-2 bg-[#C9A84C] text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
               -{discount}%
