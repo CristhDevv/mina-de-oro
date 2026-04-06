@@ -12,29 +12,33 @@ export function useAuth(): AuthState {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
 
+  async function fetchUser(authUser: { id: string; email?: string; user_metadata?: { name?: string } }) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('name, role')
+      .eq('id', authUser.id)
+      .single()
+
+    setUser({
+      id: authUser.id,
+      name: profile?.name ?? authUser.user_metadata?.name ?? authUser.email?.split('@')[0] ?? '',
+      email: authUser.email ?? '',
+      role: (profile?.role as User['role']) ?? 'customer',
+    })
+  }
+
   useEffect(() => {
-    // Sesión actual
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) {
-        setUser({
-          id: session.user.id,
-          name: session.user.user_metadata?.name ?? session.user.email?.split('@')[0] ?? '',
-          email: session.user.email ?? '',
-          role: 'customer', // Nota: Luego podremos buscar el rol de la tabla profiles si hace falta
-        })
+        fetchUser(session.user).finally(() => setLoading(false))
+      } else {
+        setLoading(false)
       }
-      setLoading(false)
     })
 
-    // Escuchar cambios de sesión
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session?.user) {
-        setUser({
-          id: session.user.id,
-          name: session.user.user_metadata?.name ?? session.user.email?.split('@')[0] ?? '',
-          email: session.user.email ?? '',
-          role: 'customer',
-        })
+        fetchUser(session.user)
       } else {
         setUser(null)
       }
