@@ -78,3 +78,23 @@ export async function getOrderById(orderId: string) {
   if (error) throw error
   return data
 }
+
+export async function sendOrderEmail(orderId: string) {
+  const order = await getOrderById(orderId)
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Usuario no autenticado')
+
+  const res = await supabase.functions.invoke('send-order-email', {
+    body: {
+      orderId: order.id,
+      userEmail: user.email,
+      userName: order.shipping_address.name,
+      total: order.total,
+      items: order.order_items,
+      shippingAddress: order.shipping_address,
+    }
+  })
+
+  if (res.error) throw res.error
+  return res.data
+}
