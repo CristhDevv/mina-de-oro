@@ -97,9 +97,12 @@ export default function CartView() {
           <span className="text-sm text-gray-500">Total</span>
           <span className="text-xl font-bold text-[#1B2B5E]">{formatCOP(totalPrice())}</span>
         </div>
-        <button className="w-full h-12 bg-[#C9A84C] text-white font-semibold text-sm rounded-2xl">
-          Proceder al pago
-        </button>
+        <Link
+          href="/checkout"
+          className="w-full block text-center bg-blue-600 text-white py-3 rounded-xl font-semibold text-sm mt-3"
+        >
+          Ir a pagar
+        </Link>
       </div>
 
     </div>
