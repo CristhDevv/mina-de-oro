@@ -53,14 +53,36 @@ export async function getProductsByCategory(categorySlug: string): Promise<Produ
   return (data ?? []).map(mapProduct)
 }
 
-export async function searchProducts(query: string): Promise<Product[]> {
-  const { data, error } = await supabase
+export async function searchProducts(
+  query: string,
+  filters?: {
+    categorySlug?: string
+    minPrice?: number
+    maxPrice?: number
+    minRating?: number
+    sortBy?: 'relevance' | 'price_asc' | 'price_desc' | 'rating'
+  }
+): Promise<Product[]> {
+  let q = supabase
     .from('products')
     .select('*')
     .eq('active', true)
-    .or(`name.ilike.%${query}%,description.ilike.%${query}%,category_slug.ilike.%${query}%`)
-    .order('created_at', { ascending: false })
 
+  if (query.trim()) {
+    q = q.or(`name.ilike.%${query}%,description.ilike.%${query}%,category_slug.ilike.%${query}%`)
+  }
+
+  if (filters?.categorySlug) q = q.eq('category_slug', filters.categorySlug)
+  if (filters?.minPrice !== undefined) q = q.gte('price', filters.minPrice)
+  if (filters?.maxPrice !== undefined) q = q.lte('price', filters.maxPrice)
+  if (filters?.minRating !== undefined) q = q.gte('rating', filters.minRating)
+
+  if (filters?.sortBy === 'price_asc') q = q.order('price', { ascending: true })
+  else if (filters?.sortBy === 'price_desc') q = q.order('price', { ascending: false })
+  else if (filters?.sortBy === 'rating') q = q.order('rating', { ascending: false })
+  else q = q.order('created_at', { ascending: false })
+
+  const { data, error } = await q
   if (error) throw new Error(error.message)
   return (data ?? []).map(mapProduct)
 }
