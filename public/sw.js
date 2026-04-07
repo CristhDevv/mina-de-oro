@@ -1,3 +1,13 @@
+// Fuerza activación inmediata sin esperar a que se cierren las pestañas abiertas
+self.addEventListener('install', (event) => {
+  self.skipWaiting()
+})
+
+// Toma control de todos los clientes inmediatamente
+self.addEventListener('activate', (event) => {
+  event.waitUntil(clients.claim())
+})
+
 self.addEventListener('push', (event) => {
   const data = event.data?.json() ?? {}
   event.waitUntil(
