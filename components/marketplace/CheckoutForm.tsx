@@ -44,7 +44,10 @@ export default function CheckoutForm({ items }: Props) {
       // Guardar datos del form antes de salir
       sessionStorage.setItem(FORM_KEY, JSON.stringify(form))
 
-      const order = await createOrder(items, form)
+      const digits = form.phone.replace(/\D/g, '')
+      const normalizedPhone = digits.startsWith('57') ? `+${digits}` : `+57${digits}`
+      const order = await createOrder(items, { ...form, phone: normalizedPhone })
+
       const reference = generateReference(order.id)
       const signature = await getWompiSignature(reference, amountInCents)
 

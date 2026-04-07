@@ -8,7 +8,10 @@ const client = twilio(
 
 export async function POST(req: NextRequest) {
   try {
-    const { to, orderNumber, items, total, name } = await req.json()
+    const { to: rawTo, orderNumber, items, total, name } = await req.json()
+    const digits = rawTo.replace(/\D/g, '')
+    const to = digits.startsWith('57') ? `+${digits}` : `+57${digits}`
+
 
     const itemsList = items
       .map((i: { name: string; quantity: number; unit_price: number }) =>
