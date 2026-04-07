@@ -1,24 +1,30 @@
 'use client'
 import { useCartStore } from '@/store/cart'
 import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 import CheckoutForm from './CheckoutForm'
+
 export default function CheckoutView() {
   const items = useCartStore(state => state.items)
   const router = useRouter()
   const { user, loading } = useAuth()
+  const [ready, setReady] = useState(false)
 
   useEffect(() => {
-    if (items.length === 0) router.replace('/carrito')
-  }, [items, router])
+    if (loading) return
+    if (!user) {
+      router.replace('/cuenta')
+      return
+    }
+    if (items.length === 0) {
+      router.replace('/carrito')
+      return
+    }
+    setReady(true)
+  }, [user, loading, items, router])
 
-  useEffect(() => {
-    if (!loading && !user) router.replace('/cuenta')
-  }, [user, loading, router])
-
-  if (items.length === 0) return null
-  if (loading || !user) return null
+  if (!ready) return null
 
   return (
     <div className="max-w-md mx-auto px-4 py-6">

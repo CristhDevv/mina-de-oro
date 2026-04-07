@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { Eye, EyeOff } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
 type Mode = 'login' | 'register'
 
@@ -14,6 +15,7 @@ export default function GuestView() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
+  const router = useRouter()
 
   async function handleSubmit() {
     if (!email || !password) { setError('Completa todos los campos'); return }
@@ -26,7 +28,11 @@ export default function GuestView() {
 
     if (mode === 'login') {
       const { error: e } = await supabase.auth.signInWithPassword({ email, password })
-      if (e) setError(e.message === 'Invalid login credentials' ? 'Correo o contraseña incorrectos' : e.message)
+      if (e) {
+        setError(e.message === 'Invalid login credentials' ? 'Correo o contraseña incorrectos' : e.message)
+      } else {
+        router.replace('/')
+      }
     } else {
       const { error: e } = await supabase.auth.signUp({
         email,
