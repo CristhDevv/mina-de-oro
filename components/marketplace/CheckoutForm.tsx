@@ -46,7 +46,7 @@ export default function CheckoutForm({ items }: Props) {
         amountInCents,
         currency: 'COP',
         signature,
-        redirectUrl: `${baseUrl}/pedido/${order.id}`,
+        redirectUrl: `${baseUrl}/pedido/${order.id}?confirmed=true`,
         customerEmail: form.name,
       })
     } catch (err: unknown) {

@@ -11,8 +11,10 @@ import { getCategories, deleteCategory } from '@/lib/api/categories'
 import { Product, Category } from '@/types'
 import ProductFormModal from './ProductFormModal'
 import CategoryFormModal from './CategoryFormModal'
+import InventoryView from './InventoryView'
+import { BarChart2 } from 'lucide-react'
 
-type Tab = 'dashboard' | 'orders' | 'products' | 'users' | 'categories'
+type Tab = 'dashboard' | 'orders' | 'products' | 'inventory' | 'users' | 'categories'
 
 const STATUS_LABELS: Record<string, string> = {
   pending: 'Pendiente',
@@ -81,6 +83,7 @@ export default function AdminDashboard() {
     { id: 'dashboard' as Tab, label: 'Resumen', icon: DollarSign },
     { id: 'orders' as Tab, label: 'Pedidos', icon: ShoppingBag },
     { id: 'products' as Tab, label: 'Productos', icon: Package },
+    { id: 'inventory' as Tab, label: 'Inventario', icon: BarChart2 },
     { id: 'users' as Tab, label: 'Usuarios', icon: Users },
     { id: 'categories' as Tab, label: 'Categorías', icon: Tag },
   ]
@@ -249,6 +252,9 @@ export default function AdminDashboard() {
             ))}
           </div>
         )}
+
+        {/* INVENTARIO */}
+        {tab === 'inventory' && <InventoryView />}
 
         {/* USERS */}
         {tab === 'users' && (

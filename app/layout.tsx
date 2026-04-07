@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import './globals.css'
 import Header from '@/components/layout/Header'
 import BottomNav from '@/components/layout/BottomNav'
+import ServiceWorkerRegistrar from '@/components/layout/ServiceWorkerRegistrar'
 
 export const metadata: Metadata = {
   title: 'La Mina de Oro',
@@ -16,6 +17,7 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body>
+        <ServiceWorkerRegistrar />
         <Header />
         <main className="pb-16 min-h-screen bg-white">
           {children}

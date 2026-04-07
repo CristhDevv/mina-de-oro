@@ -1,9 +1,8 @@
 'use client'
-
 import { useEffect, useState } from 'react'
 import { CheckCircle } from 'lucide-react'
 import Link from 'next/link'
-import { sendOrderEmail } from '@/lib/api/orders'
+import { sendOrderEmail, sendWhatsAppConfirmation } from '@/lib/api/orders'
 import { useCartStore } from '@/store/cart'
 
 interface Props {
@@ -14,12 +13,18 @@ export default function OrderConfirmation({ orderId }: Props) {
   const clearCart = useCartStore(state => state.clearCart)
   const [emailSent, setEmailSent] = useState(false)
   const [emailError, setEmailError] = useState(false)
+  const [whatsappSent, setWhatsappSent] = useState(false)
 
   useEffect(() => {
     clearCart()
+
     sendOrderEmail(orderId)
       .then(() => setEmailSent(true))
       .catch(() => setEmailError(true))
+
+    sendWhatsAppConfirmation(orderId)
+      .then(() => setWhatsappSent(true))
+      .catch(() => console.error('WhatsApp no enviado'))
   }, [orderId])
 
   return (
@@ -36,13 +41,18 @@ export default function OrderConfirmation({ orderId }: Props) {
       </p>
 
       {emailSent && (
-        <p className="text-xs text-green-600 mb-8">
+        <p className="text-xs text-green-600 mb-2">
           Te enviamos un correo de confirmación.
         </p>
       )}
       {emailError && (
-        <p className="text-xs text-gray-400 mb-8">
+        <p className="text-xs text-gray-400 mb-2">
           No pudimos enviar el correo de confirmación.
+        </p>
+      )}
+      {whatsappSent && (
+        <p className="text-xs text-green-600 mb-8">
+          Te enviamos un resumen por WhatsApp.
         </p>
       )}
 

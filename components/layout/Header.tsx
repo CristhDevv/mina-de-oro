@@ -2,13 +2,16 @@
 import Link from 'next/link'
 import { ShoppingCart, Search } from 'lucide-react'
 import { useCartStore } from '@/store/cart'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 
 export default function Header() {
   const totalItems = useCartStore((state) => state.totalItems())
+  const [mounted, setMounted] = useState(false)
   const [query, setQuery] = useState('')
   const router = useRouter()
+
+  useEffect(() => { setMounted(true) }, [])
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
@@ -35,7 +38,7 @@ export default function Header() {
         </form>
         <Link href="/carrito" className="relative shrink-0">
           <ShoppingCart size={22} className="text-[#1B2B5E]" />
-          {totalItems > 0 && (
+          {mounted && totalItems > 0 && (
             <span className="absolute -top-1 -right-1 bg-[#C9A84C] text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
               {totalItems > 9 ? '9+' : totalItems}
             </span>

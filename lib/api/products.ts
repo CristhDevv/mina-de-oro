@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase'
-import { Product } from '@/types'
+import { Product, ProductFAQ, ProductOption } from '@/types'
 
 function mapProduct(row: Record<string, unknown>): Product {
   return {
@@ -15,6 +15,8 @@ function mapProduct(row: Record<string, unknown>): Product {
     rating: Number(row.rating),
     reviewCount: row.review_count as number,
     createdAt: new Date(row.created_at as string),
+    faq: (row.faq as ProductFAQ[]) ?? [],
+    options: (row.options as ProductOption[]) ?? [],
   }
 }
 
@@ -83,6 +85,20 @@ export async function searchProducts(
   else q = q.order('created_at', { ascending: false })
 
   const { data, error } = await q
+  if (error) throw new Error(error.message)
+  return (data ?? []).map(mapProduct)
+}
+
+export async function getRelatedProducts(categorySlug: string, excludeId: string, limit = 6): Promise<Product[]> {
+  const { data, error } = await supabase
+    .from('products')
+    .select('*')
+    .eq('active', true)
+    .eq('category_slug', categorySlug)
+    .neq('id', excludeId)
+    .order('rating', { ascending: false })
+    .limit(limit)
+
   if (error) throw new Error(error.message)
   return (data ?? []).map(mapProduct)
 }

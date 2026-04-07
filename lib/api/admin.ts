@@ -62,3 +62,20 @@ export async function updateUserRole(userId: string, role: string) {
 
   if (error) throw error
 }
+
+export async function getInventory() {
+  const { data, error } = await supabase
+    .from('products')
+    .select('id, name, slug, images, stock, active, category_slug')
+    .order('stock', { ascending: true })
+  if (error) throw error
+  return data
+}
+
+export async function updateProductStock(productId: string, stock: number) {
+  const { error } = await supabase
+    .from('products')
+    .update({ stock })
+    .eq('id', productId)
+  if (error) throw error
+}

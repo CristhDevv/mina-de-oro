@@ -98,3 +98,23 @@ export async function sendOrderEmail(orderId: string) {
   if (res.error) throw res.error
   return res.data
 }
+
+export async function sendWhatsAppConfirmation(orderId: string) {
+  const order = await getOrderById(orderId)
+
+  await fetch('/api/whatsapp/send', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      to: order.shipping_address.phone,
+      orderNumber: order.id.slice(0, 8).toUpperCase(),
+      name: order.shipping_address.name,
+      total: order.total,
+      items: order.order_items.map((i: { products: { name: string }; quantity: number; unit_price: number }) => ({
+        name: i.products.name,
+        quantity: i.quantity,
+        unit_price: i.unit_price,
+      })),
+    }),
+  })
+}

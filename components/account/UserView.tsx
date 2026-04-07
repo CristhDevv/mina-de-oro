@@ -3,6 +3,7 @@ import { User } from '@/types'
 import { ShoppingBag, Heart, MapPin, HelpCircle, LogOut, ChevronRight, LayoutDashboard } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
+import PushNotificationToggle from '@/components/ui/PushNotificationToggle'
 
 interface Props {
   user: User
@@ -22,7 +23,6 @@ export default function UserView({ user }: Props) {
 
   return (
     <div className="pb-6">
-
       <div className="bg-[#1B2B5E] px-4 pt-8 pb-10 flex flex-col items-center gap-3">
         <div className="w-16 h-16 rounded-full bg-[#C9A84C] flex items-center justify-center">
           <span className="text-2xl font-bold text-white uppercase">
@@ -73,7 +73,8 @@ export default function UserView({ user }: Props) {
         })}
       </div>
 
-      <div className="px-4 mt-4">
+      <div className="px-4 mt-4 flex flex-col gap-3">
+        <PushNotificationToggle userId={user.id} />
         <button
           onClick={handleLogout}
           className="w-full h-12 rounded-2xl border border-red-200 text-red-500 text-sm font-semibold flex items-center justify-center gap-2 active:bg-red-50"
@@ -82,7 +83,6 @@ export default function UserView({ user }: Props) {
           Cerrar sesión
         </button>
       </div>
-
     </div>
   )
 }

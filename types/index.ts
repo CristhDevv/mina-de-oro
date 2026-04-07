@@ -1,3 +1,13 @@
+export interface ProductFAQ {
+  question: string
+  answer: string
+}
+
+export interface ProductOption {
+  name: string        // Ej: "Color", "Talla"
+  values: string[]    // Ej: ["Rojo", "Azul", "Verde"]
+}
+
 export interface Product {
   id: string
   slug: string
@@ -11,6 +21,8 @@ export interface Product {
   rating: number
   reviewCount: number
   createdAt: Date
+  faq: ProductFAQ[]
+  options: ProductOption[]
 }
 
 export interface Category {
