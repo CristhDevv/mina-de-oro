@@ -13,42 +13,63 @@ export function useAuth(): AuthState {
   const [loading, setLoading] = useState(true)
 
   const fetchUser = useCallback(async (authUser: { id: string; email?: string; user_metadata?: { name?: string } }) => {
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('name, role')
-      .eq('id', authUser.id)
-      .single()
+    try {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('name, role')
+        .eq('id', authUser.id)
+        .single()
 
-    setUser({
-      id: authUser.id,
-      name: profile?.name ?? authUser.user_metadata?.name ?? authUser.email?.split('@')[0] ?? '',
-      email: authUser.email ?? '',
-      role: (profile?.role as User['role']) ?? 'customer',
-    })
+      setUser({
+        id: authUser.id,
+        name: profile?.name ?? authUser.user_metadata?.name ?? authUser.email?.split('@')[0] ?? '',
+        email: authUser.email ?? '',
+        role: (profile?.role as User['role']) ?? 'customer',
+      })
+    } catch (error) {
+      console.error('Error fetching user profile:', error)
+      // Fallback a metadatos básicos si el perfil falla
+      setUser({
+        id: authUser.id,
+        name: authUser.user_metadata?.name ?? authUser.email?.split('@')[0] ?? '',
+        email: authUser.email ?? '',
+        role: 'customer',
+      })
+    }
   }, [])
 
   useEffect(() => {
     let mounted = true
 
     async function init() {
-      const { data: { session } } = await supabase.auth.getSession()
-      if (!mounted) return
-      if (session?.user) {
-        await fetchUser(session.user)
+      try {
+        const { data: { session } } = await supabase.auth.getSession()
+        if (!mounted) return
+        if (session?.user) {
+          await fetchUser(session.user)
+        }
+      } catch (error) {
+        console.error('Auth init error:', error)
+      } finally {
+        if (mounted) setLoading(false)
       }
-      setLoading(false)
     }
 
     init()
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       if (!mounted) return
-      if (session?.user) {
-        await fetchUser(session.user)
-      } else {
-        setUser(null)
+      try {
+        if (session?.user) {
+          await fetchUser(session.user)
+        } else {
+          setUser(null)
+        }
+      } catch (error) {
+        console.error('Auth state change error:', error)
+      } finally {
+        if (mounted) setLoading(false)
       }
-      setLoading(false)
     })
 
     return () => {

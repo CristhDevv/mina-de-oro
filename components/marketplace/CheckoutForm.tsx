@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { ShoppingBag, Loader2 } from 'lucide-react'
 import { createOrder } from '@/lib/api/orders'
 import { useCartStore } from '@/store/cart'
@@ -10,11 +10,21 @@ interface Props {
   items: CartItem[]
 }
 
+const FORM_KEY = 'checkout_form_data'
+
 export default function CheckoutForm({ items }: Props) {
   const clearCart = useCartStore(state => state.clearCart)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [form, setForm] = useState({ name: '', phone: '', address: '', city: '' })
+
+  // Restaurar datos del form si el usuario retrocedió desde Wompi
+  useEffect(() => {
+    const saved = sessionStorage.getItem(FORM_KEY)
+    if (saved) {
+      try { setForm(JSON.parse(saved)) } catch { /* ignore */ }
+    }
+  }, [])
 
   const total = items.reduce((sum, i) => sum + i.product.price * i.quantity, 0)
   const amountInCents = total * 100
@@ -30,16 +40,14 @@ export default function CheckoutForm({ items }: Props) {
     }
     setLoading(true)
     setError(null)
-
     try {
-      // 1. Crear orden en Supabase con status pending
-      const order = await createOrder(items, form)
+      // Guardar datos del form antes de salir
+      sessionStorage.setItem(FORM_KEY, JSON.stringify(form))
 
-      // 2. Generar referencia y firma
+      const order = await createOrder(items, form)
       const reference = generateReference(order.id)
       const signature = await getWompiSignature(reference, amountInCents)
 
-      // 3. Redirigir a Wompi
       openWompiCheckout({
         publicKey: process.env.NEXT_PUBLIC_WOMPI_PUBLIC_KEY!,
         reference,
@@ -47,10 +55,11 @@ export default function CheckoutForm({ items }: Props) {
         currency: 'COP',
         signature,
         redirectUrl: `${baseUrl}/pedido/${order.id}?confirmed=true`,
-        customerEmail: form.name,
+        customerEmail: form.phone,
       })
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Error al procesar el pedido')
+      sessionStorage.removeItem(FORM_KEY)
       setLoading(false)
     }
   }
@@ -58,43 +67,23 @@ export default function CheckoutForm({ items }: Props) {
   return (
     <div className="space-y-4">
       <h2 className="text-lg font-semibold text-gray-900">Datos de envío</h2>
-
-      {[
-        { name: 'name', placeholder: 'Nombre completo' },
-        { name: 'phone', placeholder: 'Teléfono' },
-        { name: 'address', placeholder: 'Dirección' },
-        { name: 'city', placeholder: 'Ciudad' },
-      ].map(({ name, placeholder }) => (
-        <input
-          key={name}
-          name={name}
-          value={form[name as keyof typeof form]}
-          onChange={handleChange}
-          placeholder={placeholder}
-          className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#1B2B5E]"
-        />
-      ))}
-
-      {error && <p className="text-sm text-red-500">{error}</p>}
-
-      <div className="border-t pt-4">
-        <div className="flex justify-between text-sm mb-2">
-          <span className="text-gray-600">Total a pagar</span>
-          <span className="font-bold text-gray-900">${total.toLocaleString('es-CO')}</span>
-        </div>
-        <p className="text-xs text-gray-400 mb-4">Serás redirigido a Wompi para completar el pago de forma segura.</p>
-
-        <button
-          onClick={handleSubmit}
-          disabled={loading}
-          className="w-full bg-[#1B2B5E] text-white py-3 rounded-xl font-semibold flex items-center justify-center gap-2 disabled:opacity-50"
-        >
-          {loading
-            ? <><Loader2 size={18} className="animate-spin" /> Procesando...</>
-            : <><ShoppingBag size={18} /> Pagar con Wompi</>
-          }
-        </button>
-      </div>
+      <input name="name" placeholder="Nombre completo" value={form.name} onChange={handleChange}
+        className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm outline-none focus:border-[#1B2B5E]" />
+      <input name="phone" placeholder="Teléfono / WhatsApp" value={form.phone} onChange={handleChange}
+        className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm outline-none focus:border-[#1B2B5E]" />
+      <input name="address" placeholder="Dirección" value={form.address} onChange={handleChange}
+        className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm outline-none focus:border-[#1B2B5E]" />
+      <input name="city" placeholder="Ciudad" value={form.city} onChange={handleChange}
+        className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm outline-none focus:border-[#1B2B5E]" />
+      {error && <p className="text-red-500 text-sm">{error}</p>}
+      <p className="text-sm text-gray-500 text-center">
+        Serás redirigido a Wompi para completar el pago de forma segura.
+      </p>
+      <button onClick={handleSubmit} disabled={loading}
+        className="w-full bg-[#1B2B5E] text-white py-4 rounded-xl font-semibold flex items-center justify-center gap-2 disabled:opacity-60">
+        {loading ? <Loader2 size={20} className="animate-spin" /> : <ShoppingBag size={20} />}
+        {loading ? 'Procesando...' : `Pagar $${total.toLocaleString('es-CO')} con Wompi`}
+      </button>
     </div>
   )
 }

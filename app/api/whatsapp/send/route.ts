@@ -16,17 +16,26 @@ export async function POST(req: NextRequest) {
       )
       .join('\n')
 
-    const body = `¡Hola ${name}! 🛍️ Tu pedido *#${orderNumber}* ha sido recibido.\n\n${itemsList}\n\n*Total: $${total.toLocaleString('es-CO')}*\n\nTe avisamos cuando esté en camino. ¡Gracias por tu compra!`
+    const clientMsg = `¡Hola ${name}! 🛍️ Tu pedido *#${orderNumber}* ha sido recibido.\n\n${itemsList}\n\n*Total: $${total.toLocaleString('es-CO')}*\n\nTe avisamos cuando esté en camino. ¡Gracias por tu compra!`
 
-    await client.messages.create({
-      from: process.env.TWILIO_WHATSAPP_FROM!,
-      to: `whatsapp:${to}`,
-      body,
-    })
+    const ownerMsg = `🛒 *Nuevo pedido #${orderNumber}*\n\nCliente: ${name}\nTeléfono: ${to}\n\n${itemsList}\n\n*Total: $${total.toLocaleString('es-CO')}*`
+
+    const from = process.env.TWILIO_WHATSAPP_FROM!
+    const ownerNumber = process.env.WHATSAPP_BUSINESS_NUMBER!
+
+    // Envío al dueño (siempre)
+    await client.messages.create({ from, to: ownerNumber, body: ownerMsg })
+
+    // Envío al cliente (puede fallar en sandbox — no bloquea)
+    try {
+      await client.messages.create({ from, to: `whatsapp:${to}`, body: clientMsg })
+    } catch {
+      console.warn('WhatsApp al cliente no enviado (sandbox)')
+    }
 
     return NextResponse.json({ ok: true })
-  } catch (error: any) {
+  } catch (error) {
     console.error('WhatsApp error:', error)
-    return NextResponse.json({ error: 'Error enviando WhatsApp', details: error.message }, { status: 500 })
+    return NextResponse.json({ error: 'Error enviando WhatsApp' }, { status: 500 })
   }
 }
