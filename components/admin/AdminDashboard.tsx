@@ -12,8 +12,10 @@ import { Product, Category } from '@/types'
 import ProductFormModal from './ProductFormModal'
 import CategoryFormModal from './CategoryFormModal'
 import InventoryView from './InventoryView'
-import { BarChart2, Settings } from 'lucide-react'
 import SettingsView from './SettingsView'
+import { createClient } from '@/lib/supabase/client'
+import { LogOut } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
 type Tab = 'dashboard' | 'orders' | 'products' | 'inventory' | 'users' | 'categories' | 'settings'
 
@@ -55,6 +57,9 @@ export default function AdminDashboard() {
   const [showCategoryForm, setShowCategoryForm] = useState(false)
   const [editCategory, setEditCategory] = useState<Category | null>(null)
 
+  const router = useRouter()
+  const supabase = createClient()
+
   async function load() {
     setLoading(true)
     try {
@@ -80,6 +85,12 @@ export default function AdminDashboard() {
     setUsers(prev => prev.map(u => u.id === userId ? { ...u, role } : u))
   }
 
+  async function handleLogout() {
+    await supabase.auth.signOut()
+    router.push('/admin/login')
+    router.refresh()
+  }
+
   const tabs = [
     { id: 'dashboard' as Tab, label: 'Resumen', icon: DollarSign },
     { id: 'orders' as Tab, label: 'Pedidos', icon: ShoppingBag },
@@ -92,10 +103,18 @@ export default function AdminDashboard() {
 
   return (
     <div className="pb-24 min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-[#1B2B5E] px-4 pt-8 pb-6">
-        <h1 className="text-white font-bold text-lg">Panel Admin</h1>
-        <p className="text-white/60 text-xs">La Mina de Oro</p>
+      <div className="bg-[#1B2B5E] px-4 pt-8 pb-6 flex items-center justify-between">
+        <div>
+          <h1 className="text-white font-bold text-lg">Panel Admin</h1>
+          <p className="text-white/60 text-xs">La Mina de Oro</p>
+        </div>
+        <button 
+          onClick={handleLogout}
+          className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-white/80 hover:bg-white/20 transition-all active:scale-90"
+          title="Cerrar Sesión"
+        >
+          <LogOut size={20} />
+        </button>
       </div>
 
       {/* Tabs */}
