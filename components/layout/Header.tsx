@@ -36,7 +36,7 @@ export default function Header() {
             className="bg-transparent text-sm w-full outline-none text-gray-700 placeholder:text-gray-400"
           />
         </form>
-        <Link href="/carrito" className="relative shrink-0">
+        <Link href="/carrito" className="relative shrink-0" data-cart-icon>
           <ShoppingCart size={22} className="text-[#1B2B5E]" />
           {mounted && totalItems > 0 && (
             <span className="absolute -top-1 -right-1 bg-[#C9A84C] text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">

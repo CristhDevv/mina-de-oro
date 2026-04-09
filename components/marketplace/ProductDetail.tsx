@@ -1,7 +1,7 @@
 'use client'
 import { Product } from '@/types'
 import Image from 'next/image'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { ArrowLeft, Star, ShoppingCart, Plus, Minus, ChevronDown } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useCartStore } from '@/store/cart'
@@ -26,6 +26,10 @@ export default function ProductDetail({ product }: Props) {
   const [related, setRelated] = useState<Product[]>([])
   const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>({})
   const [openFaq, setOpenFaq] = useState<number | null>(null)
+  const [showSheet, setShowSheet] = useState(false)
+  const cartIconRef = useRef<DOMRect | null>(null)
+  const [flyPos, setFlyPos] = useState<{ x: number; y: number } | null>(null)
+  const [flying, setFlying] = useState(false)
 
   const discount = product.originalPrice ? getDiscount(product.originalPrice, product.price) : null
   const addItem = useCartStore((state) => state.addItem)
@@ -34,10 +38,18 @@ export default function ProductDetail({ product }: Props) {
     getRelatedProducts(product.category, product.id).then(setRelated).catch(() => {})
   }, [product.id, product.category])
 
-  function handleAdd() {
+  function handleAdd(e: React.MouseEvent<HTMLButtonElement>) {
     addItem(product, quantity)
-    setAdded(true)
-    setTimeout(() => setAdded(false), 2000)
+    const rect = e.currentTarget.getBoundingClientRect()
+    const cartEl = document.querySelector('[data-cart-icon]')
+    const cartRect = cartEl?.getBoundingClientRect()
+    if (cartRect) {
+      setFlyPos({ x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 })
+      setFlying(true)
+      setTimeout(() => { setFlying(false); setFlyPos(null); setShowSheet(true) }, 700)
+    } else {
+      setShowSheet(true)
+    }
   }
 
   return (
@@ -170,16 +182,59 @@ export default function ProductDetail({ product }: Props) {
         )}
       </div>
 
+      {/* Fly particle */}
+      {flying && flyPos && (
+        <div
+          className="fixed z-50 w-10 h-10 rounded-full bg-[#1B2B5E] flex items-center justify-center pointer-events-none"
+          style={{
+            left: flyPos.x - 20,
+            top: flyPos.y - 20,
+            animation: 'flyToCart 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards',
+          } as any}
+        >
+          <ShoppingCart size={18} className="text-white" />
+        </div>
+      )}
+
+      {/* Bottom sheet */}
+      {showSheet && (
+        <div className="fixed inset-0 z-40 flex flex-col justify-end bg-black/20" onClick={() => setShowSheet(false)}>
+          <div className="bg-white rounded-t-3xl px-4 pt-5 pb-8 shadow-2xl flex flex-col gap-3"
+            onClick={e => e.stopPropagation()}>
+            <div className="w-10 h-1 bg-gray-200 rounded-full mx-auto mb-1" />
+            <div className="flex items-center gap-3 pb-2 border-b border-gray-100">
+              <div className="w-12 h-12 rounded-xl bg-gray-50 overflow-hidden relative shrink-0">
+                {product.images?.[0]
+                  ? <Image src={product.images[0]} alt={product.name} fill className="object-cover" sizes="48px" />
+                  : <span className="text-2xl flex items-center justify-center h-full">🛍️</span>}
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-gray-900 leading-tight">{product.name}</p>
+                <p className="text-xs text-green-600 font-medium mt-0.5">✓ Agregado al carrito</p>
+              </div>
+            </div>
+            <button onClick={() => { setShowSheet(false); router.push('/carrito') }}
+              className="w-full h-12 bg-[#1B2B5E] text-white rounded-2xl font-semibold text-sm flex items-center justify-center gap-2">
+              <ShoppingCart size={17} /> Comprar ahora
+            </button>
+            <button onClick={() => setShowSheet(false)}
+              className="w-full h-12 border border-gray-200 text-gray-700 rounded-2xl font-semibold text-sm">
+              Seguir comprando
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* CTA fijo */}
-      <div className="fixed bottom-16 left-0 right-0 px-4 py-3 bg-white border-t border-gray-100 max-w-lg mx-auto">
-        <button onClick={handleAdd}
-          className={`w-full h-12 rounded-2xl flex items-center justify-center gap-2 font-semibold text-sm transition-colors ${
-            added ? 'bg-green-500 text-white' : 'bg-[#1B2B5E] text-white active:opacity-80'
-          }`}>
-          <ShoppingCart size={18} />
-          {added ? '¡Agregado al carrito!' : `Agregar al carrito · ${formatCOP(product.price * quantity)}`}
-        </button>
-      </div>
+      {!showSheet && (
+        <div className="fixed bottom-16 left-0 right-0 px-4 py-3 bg-white border-t border-gray-100 max-w-lg mx-auto">
+          <button onClick={handleAdd}
+            className="w-full h-12 rounded-2xl flex items-center justify-center gap-2 font-semibold text-sm bg-[#1B2B5E] text-white active:opacity-80">
+            <ShoppingCart size={18} />
+            {`Agregar al carrito · ${formatCOP(product.price * quantity)}`}
+          </button>
+        </div>
+      )}
     </div>
   )
 }
