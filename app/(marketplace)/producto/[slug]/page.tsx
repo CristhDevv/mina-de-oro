@@ -17,7 +17,7 @@ export default async function ProductPage({ params }: Props) {
     <div className="bg-[#F8FAFC] min-h-screen">
       <ProductDetail product={product} />
       <RelatedProducts 
-        categorySlug={product.category_slug || product.category} 
+        categorySlug={product.category} 
         currentProductId={product.id} 
       />
     </div>
