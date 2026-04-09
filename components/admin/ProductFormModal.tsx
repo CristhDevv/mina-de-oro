@@ -1,6 +1,6 @@
 'use client'
 import { useState, useRef } from 'react'
-import { X, ImagePlus, Trash2, Loader2, Plus } from 'lucide-react'
+import { X, ImagePlus, Trash2, Loader2, Plus, CheckCircle2 } from 'lucide-react'
 import { Product, Category, ProductFAQ, ProductOption } from '@/types'
 import { supabase } from '@/lib/supabase'
 import { uploadProductImage, deleteProductImage } from '@/lib/api/storage'
@@ -23,6 +23,12 @@ export default function ProductFormModal({ product, categories, onClose, onSaved
   const [images, setImages] = useState<string[]>(product?.images ?? [])
   const [faq, setFaq] = useState<ProductFAQ[]>(product?.faq ?? [])
   const [options, setOptions] = useState<ProductOption[]>(product?.options ?? [])
+  
+  // TAREA 6: NUEVOS ESTADOS
+  const [features, setFeatures] = useState<string[]>(product?.features ?? [])
+  const [newFeature, setNewFeature] = useState('')
+  const [specifications, setSpecifications] = useState<{label: string, value: string}[]>(product?.specifications ?? [])
+
   const [uploading, setUploading] = useState(false)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
@@ -75,6 +81,23 @@ export default function ProductFormModal({ product, categories, onClose, onSaved
   }
   function removeOption(i: number) { setOptions(prev => prev.filter((_, idx) => idx !== i)) }
 
+  // TAREA 6: HANDLERS DE FEATURES
+  function addFeature() {
+    if (!newFeature.trim()) return
+    setFeatures(prev => [...prev, newFeature.trim()])
+    setNewFeature('')
+  }
+  function removeFeature(i: number) {
+    setFeatures(prev => prev.filter((_, idx) => idx !== i))
+  }
+
+  // TAREA 6: HANDLERS DE SPECIFICATIONS
+  function addSpec() { setSpecifications(prev => [...prev, { label: '', value: '' }]) }
+  function updateSpec(i: number, field: 'label' | 'value', val: string) {
+    setSpecifications(prev => prev.map((s, idx) => idx === i ? { ...s, [field]: val } : s))
+  }
+  function removeSpec(i: number) { setSpecifications(prev => prev.filter((_, idx) => idx !== i)) }
+
   async function handleSave() {
     if (!name || !description || !price || !stock || !categorySlug) {
       setError('Completa todos los campos obligatorios')
@@ -94,6 +117,9 @@ export default function ProductFormModal({ product, categories, onClose, onSaved
       active: true,
       faq,
       options,
+      // TAREA 6: PAYLOAD UPDATE
+      features,
+      specifications,
     }
     const { error: dbError } = product
       ? await supabase.from('products').update(payload).eq('id', product.id)
@@ -203,6 +229,49 @@ export default function ProductFormModal({ product, categories, onClose, onSaved
                 </div>
                 <textarea value={f.answer} onChange={(e) => updateFaq(i, 'answer', e.target.value)} placeholder="Respuesta"
                   rows={2} className="px-3 py-2 rounded-xl border border-gray-200 text-sm outline-none resize-none" />
+              </div>
+            ))}
+          </div>
+
+          {/* TAREA 6: SECCIÓN FEATURES */}
+          <div className="flex flex-col gap-2">
+            <label className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Características destacadas</label>
+            <div className="flex items-center gap-2">
+              <input value={newFeature} onChange={(e) => setNewFeature(e.target.value)} placeholder="Ej: Material impermeable"
+                onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addFeature())}
+                className="flex-1 h-11 px-4 rounded-xl border border-gray-200 text-sm outline-none" />
+              <button onClick={addFeature} className="h-11 w-11 bg-gray-100 rounded-xl flex items-center justify-center text-[#1B2B5E]">
+                <Plus size={20} />
+              </button>
+            </div>
+            {features.map((feature, i) => (
+              <div key={i} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                <div className="flex items-center gap-2 overflow-hidden">
+                  <CheckCircle2 size={14} className="text-[#C9A84C] shrink-0" />
+                  <span className="text-sm text-gray-600 truncate">{feature}</span>
+                </div>
+                <button onClick={() => removeFeature(i)}><X size={16} className="text-gray-400" /></button>
+              </div>
+            ))}
+          </div>
+
+          {/* TAREA 6: SECCIÓN SPECIFICATIONS */}
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Especificaciones técnicas</label>
+              <button onClick={addSpec} className="flex items-center gap-1 text-xs text-[#1B2B5E] font-semibold">
+                <Plus size={12} /> Agregar
+              </button>
+            </div>
+            {specifications.map((spec, i) => (
+              <div key={i} className="flex flex-col gap-2 p-3 bg-gray-50 rounded-2xl">
+                <div className="flex items-center gap-2">
+                  <input value={spec.label} onChange={(e) => updateSpec(i, 'label', e.target.value)} placeholder="Etiqueta (Ej: Material)"
+                    className="flex-1 h-9 px-3 rounded-xl border border-gray-200 text-sm outline-none" />
+                  <button onClick={() => removeSpec(i)}><X size={16} className="text-gray-400" /></button>
+                </div>
+                <input value={spec.value} onChange={(e) => updateSpec(i, 'value', e.target.value)} placeholder="Valor (Ej: 100% Algodón)"
+                  className="h-9 px-3 rounded-xl border border-gray-200 text-sm outline-none font-semibold" />
               </div>
             ))}
           </div>

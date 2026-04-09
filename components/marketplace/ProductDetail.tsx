@@ -1,240 +1,246 @@
 'use client'
-import { Product } from '@/types'
-import Image from 'next/image'
-import { useState, useEffect, useRef } from 'react'
-import { ArrowLeft, Star, ShoppingCart, Plus, Minus, ChevronDown } from 'lucide-react'
-import { useRouter } from 'next/navigation'
+
+import { useState } from 'react'
+import { ShoppingCart, Plus, Minus, ArrowLeft, Heart, Share2, Star, Truck, ShieldCheck, RefreshCcw, CheckCircle2 } from 'lucide-react'
 import { useCartStore } from '@/store/cart'
-import { getRelatedProducts } from '@/lib/api/products'
-import ProductCard from './ProductCard'
+import { useRouter } from 'next/navigation'
+import Image from 'next/image'
+import { Product } from '@/types'
 
-interface Props { product: Product }
-
-function formatCOP(price: number) {
-  return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }).format(price)
+interface ProductDetailProps {
+  product: Product
 }
 
-function getDiscount(original: number, current: number) {
-  return Math.round((1 - current / original) * 100)
-}
-
-export default function ProductDetail({ product }: Props) {
-  const router = useRouter()
-  const [activeImage, setActiveImage] = useState(0)
+export default function ProductDetail({ product }: ProductDetailProps) {
   const [quantity, setQuantity] = useState(1)
-  const [added, setAdded] = useState(false)
-  const [related, setRelated] = useState<Product[]>([])
-  const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>({})
-  const [openFaq, setOpenFaq] = useState<number | null>(null)
-  const [showSheet, setShowSheet] = useState(false)
-  const cartIconRef = useRef<DOMRect | null>(null)
-  const [flyPos, setFlyPos] = useState<{ x: number; y: number } | null>(null)
-  const [flying, setFlying] = useState(false)
-
-  const discount = product.originalPrice ? getDiscount(product.originalPrice, product.price) : null
+  const [activeImage, setActiveImage] = useState(0)
   const addItem = useCartStore((state) => state.addItem)
+  const router = useRouter()
 
-  useEffect(() => {
-    getRelatedProducts(product.category, product.id).then(setRelated).catch(() => {})
-  }, [product.id, product.category])
+  const images = product.images && product.images.length > 0 
+    ? product.images 
+    : ['/images/placeholder.svg']
 
-  function handleAdd(e: React.MouseEvent<HTMLButtonElement>) {
+  const handleAddToCart = () => {
     addItem(product, quantity)
-    const rect = e.currentTarget.getBoundingClientRect()
-    const cartEl = document.querySelector('[data-cart-icon]')
-    const cartRect = cartEl?.getBoundingClientRect()
-    if (cartRect) {
-      setFlyPos({ x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 })
-      setFlying(true)
-      setTimeout(() => { setFlying(false); setFlyPos(null); setShowSheet(true) }, 700)
-    } else {
-      setShowSheet(true)
-    }
+  }
+
+  const handleBuyNow = () => {
+    addItem(product, quantity)
+    router.push('/carrito')
+  }
+
+  // Helper para renderizar estrellas
+  const renderStars = (rating: number) => {
+    return (
+      <div className="flex gap-0.5">
+        {[1, 2, 3, 4, 5].map((s) => (
+          <Star
+            key={s}
+            size={14}
+            className={s <= Math.round(rating) ? 'fill-[#C9A84C] text-[#C9A84C]' : 'text-gray-300'}
+          />
+        ))}
+      </div>
+    )
   }
 
   return (
-    <div className="pb-32">
-      {/* Back */}
-      <button onClick={() => router.back()} className="flex items-center gap-2 px-4 pt-4 pb-2 text-[#1B2B5E]">
-        <ArrowLeft size={18} />
-        <span className="text-sm font-medium">Volver</span>
-      </button>
-
-      {/* Imagen principal */}
-      <div className="mx-4 rounded-2xl bg-gray-50 aspect-[4/3] flex items-center justify-center relative overflow-hidden">
-        {product.images?.[activeImage] ? (
-          <Image src={product.images[activeImage]} alt={product.name} fill className="object-contain rounded-2xl" sizes="(max-width: 768px) 100vw, 500px" />
-        ) : (
-          <span className="text-8xl">🛍️</span>
-        )}
-      </div>
-
-      {/* Miniaturas */}
-      {product.images?.length > 1 && (
-        <div className="flex gap-2 px-4 mt-3 overflow-x-auto pb-1">
-          {product.images.map((img, i) => (
-            <button key={i} onClick={() => setActiveImage(i)}
-              className={`relative w-16 h-16 rounded-xl overflow-hidden shrink-0 border-2 transition-all ${activeImage === i ? 'border-[#1B2B5E]' : 'border-transparent'}`}>
-              <Image src={img} alt={`${product.name} ${i + 1}`} fill className="object-cover" sizes="64px" />
-            </button>
-          ))}
-        </div>
-      )}
-
-      {/* Info */}
-      <div className="px-4 pt-4 flex flex-col gap-3">
-        <div className="flex items-center justify-between">
-          <span className="text-xs text-gray-400 uppercase tracking-wide font-medium">{product.category}</span>
-          <div className="flex items-center gap-1">
-            <Star size={13} className="fill-[#C9A84C] text-[#C9A84C]" />
-            <span className="text-xs font-semibold text-gray-700">{product.rating}</span>
-            <span className="text-xs text-gray-400">({product.reviewCount} reseñas)</span>
-          </div>
-        </div>
-
-        <h1 className="text-xl font-bold text-gray-900 leading-tight">{product.name}</h1>
-        <p className="text-sm text-gray-500 leading-relaxed">{product.description}</p>
-
-        <div className="flex items-end gap-3">
-          <span className="text-3xl font-bold text-[#1B2B5E]">{formatCOP(product.price)}</span>
-          {product.originalPrice && (
-            <div className="flex flex-col">
-              <span className="text-sm text-gray-400 line-through">{formatCOP(product.originalPrice)}</span>
-              {discount && <span className="text-xs font-bold text-[#C9A84C]">Ahorras {discount}%</span>}
-            </div>
-          )}
-        </div>
-
-        <p className="text-xs text-green-600 font-medium">✓ {product.stock} unidades disponibles</p>
-
-        {/* Opciones */}
-        {product.options?.length > 0 && (
-          <div className="flex flex-col gap-3">
-            {product.options.map((opt) => (
-              <div key={opt.name}>
-                <p className="text-xs font-semibold text-gray-600 mb-2">
-                  {opt.name}{selectedOptions[opt.name] ? `: ${selectedOptions[opt.name]}` : ''}
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {opt.values.map((val) => (
-                    <button key={val} onClick={() => setSelectedOptions(prev => ({ ...prev, [opt.name]: val }))}
-                      className={`px-3 py-1.5 rounded-xl border text-sm transition-all ${
-                        selectedOptions[opt.name] === val
-                          ? 'bg-[#1B2B5E] text-white border-[#1B2B5E]'
-                          : 'border-gray-200 text-gray-700'
-                      }`}>
-                      {val}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        <div className="h-px bg-gray-100" />
-
-        {/* Cantidad */}
-        <div className="flex items-center justify-between">
-          <span className="text-sm font-medium text-gray-700">Cantidad</span>
-          <div className="flex items-center gap-3">
-            <button onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-              className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 active:bg-gray-100">
-              <Minus size={14} />
-            </button>
-            <span className="text-base font-bold text-gray-900 w-4 text-center">{quantity}</span>
-            <button onClick={() => setQuantity((q) => Math.min(product.stock, q + 1))}
-              className="w-8 h-8 rounded-full bg-[#1B2B5E] flex items-center justify-center text-white active:opacity-80">
-              <Plus size={14} />
-            </button>
-          </div>
-        </div>
-
-        {/* FAQ */}
-        {product.faq?.length > 0 && (
-          <div className="flex flex-col gap-2 pt-2">
-            <p className="text-sm font-bold text-gray-900">Preguntas frecuentes</p>
-            {product.faq.map((f, i) => (
-              <div key={i} className="border border-gray-100 rounded-2xl overflow-hidden">
-                <button onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                  className="w-full flex items-center justify-between px-4 py-3 text-left">
-                  <span className="text-sm font-medium text-gray-800">{f.question}</span>
-                  <ChevronDown size={16} className={`text-gray-400 transition-transform shrink-0 ml-2 ${openFaq === i ? 'rotate-180' : ''}`} />
-                </button>
-                {openFaq === i && (
-                  <div className="px-4 pb-3">
-                    <p className="text-sm text-gray-500 leading-relaxed">{f.answer}</p>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Productos relacionados */}
-        {related.length > 0 && (
-          <div className="pt-4">
-            <h2 className="text-base font-bold text-gray-900 mb-3">También te puede gustar</h2>
-            <div className="grid grid-cols-2 gap-3">
-              {related.map(p => <ProductCard key={p.id} product={p} />)}
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Fly particle */}
-      {flying && flyPos && (
-        <div
-          className="fixed z-50 w-10 h-10 rounded-full bg-[#1B2B5E] flex items-center justify-center pointer-events-none"
-          style={{
-            left: flyPos.x - 20,
-            top: flyPos.y - 20,
-            animation: 'flyToCart 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards',
-          } as any}
+    <div className="pb-28">
+      {/* Header flotante */}
+      <div className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 h-16 pointer-events-none">
+        <button 
+          onClick={() => router.back()}
+          className="w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm shadow-md flex items-center justify-center pointer-events-auto active:scale-95 transition-all"
         >
-          <ShoppingCart size={18} className="text-white" />
-        </div>
-      )}
-
-      {/* Bottom sheet */}
-      {showSheet && (
-        <div className="fixed inset-0 z-40 flex flex-col justify-end bg-black/20" onClick={() => setShowSheet(false)}>
-          <div className="bg-white rounded-t-3xl px-4 pt-5 pb-8 shadow-2xl flex flex-col gap-3"
-            onClick={e => e.stopPropagation()}>
-            <div className="w-10 h-1 bg-gray-200 rounded-full mx-auto mb-1" />
-            <div className="flex items-center gap-3 pb-2 border-b border-gray-100">
-              <div className="w-12 h-12 rounded-xl bg-gray-50 overflow-hidden relative shrink-0">
-                {product.images?.[0]
-                  ? <Image src={product.images[0]} alt={product.name} fill className="object-cover" sizes="48px" />
-                  : <span className="text-2xl flex items-center justify-center h-full">🛍️</span>}
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-gray-900 leading-tight">{product.name}</p>
-                <p className="text-xs text-green-600 font-medium mt-0.5">✓ Agregado al carrito</p>
-              </div>
-            </div>
-            <button onClick={() => { setShowSheet(false); router.push('/carrito') }}
-              className="w-full h-12 bg-[#1B2B5E] text-white rounded-2xl font-semibold text-sm flex items-center justify-center gap-2">
-              <ShoppingCart size={17} /> Comprar ahora
-            </button>
-            <button onClick={() => setShowSheet(false)}
-              className="w-full h-12 border border-gray-200 text-gray-700 rounded-2xl font-semibold text-sm">
-              Seguir comprando
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* CTA fijo */}
-      {!showSheet && (
-        <div className="fixed bottom-16 left-0 right-0 px-4 py-3 bg-white border-t border-gray-100 max-w-lg mx-auto">
-          <button onClick={handleAdd}
-            className="w-full h-12 rounded-2xl flex items-center justify-center gap-2 font-semibold text-sm bg-[#1B2B5E] text-white active:opacity-80">
-            <ShoppingCart size={18} />
-            {`Agregar al carrito · ${formatCOP(product.price * quantity)}`}
+          <ArrowLeft size={20} className="text-[#1B2B5E]" />
+        </button>
+        <div className="flex gap-2">
+          <button className="w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm shadow-md flex items-center justify-center pointer-events-auto active:scale-95 transition-all text-gray-400">
+            <Heart size={20} />
+          </button>
+          <button className="w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm shadow-md flex items-center justify-center pointer-events-auto active:scale-95 transition-all text-gray-400">
+            <Share2 size={20} />
           </button>
         </div>
-      )}
+      </div>
+
+      {/* Galería de Imágenes */}
+      <div className="relative aspect-square bg-white w-full max-w-lg mx-auto">
+        <Image
+          src={images[activeImage]}
+          alt={product.name}
+          fill
+          className="object-contain p-4"
+          priority
+        />
+        {images.length > 1 && (
+          <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2">
+            {images.map((_, idx) => (
+              <button
+                key={idx}
+                onClick={() => setActiveImage(idx)}
+                className={`w-2 h-2 rounded-full transition-all ${
+                  idx === activeImage ? 'bg-[#C9A84C] w-6' : 'bg-gray-300'
+                }`}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Información del Producto */}
+      <div className="max-w-lg mx-auto px-4 pt-6 space-y-8">
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <span className="bg-blue-50 text-[#1B2B5E] text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
+                {product.category || 'Producto'}
+              </span>
+              {product.stock <= 5 && product.stock > 0 && (
+                <span className="bg-orange-50 text-orange-600 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
+                  Últimas {product.stock} unidades
+                </span>
+              )}
+            </div>
+          </div>
+          <h1 className="text-2xl font-bold text-[#1B2B5E] leading-tight mb-2">
+            {product.name}
+          </h1>
+          
+          <div className="flex items-center justify-between">
+            <div className="flex items-baseline gap-2">
+              <span className="text-2xl font-black text-[#C9A84C]">
+                ${product.price.toLocaleString('es-CO')}
+              </span>
+              {product.originalPrice && (
+                <span className="text-sm text-gray-400 line-through">
+                  ${product.originalPrice.toLocaleString('es-CO')}
+                </span>
+              )}
+            </div>
+            
+            {/* TAREA 4: RATING */}
+            <div className="flex items-center gap-2">
+              {renderStars(product.rating)}
+              <span className="text-xs font-medium text-gray-500">
+                ({product.reviewCount})
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* BADGES DE CONFIANZA - NO CARDS VERSION */}
+        <div className="flex items-center justify-between py-4 border-y border-gray-100">
+          <div className="flex items-center gap-2">
+            <Truck size={15} className="text-green-500" />
+            <span className="text-[11px] font-bold text-gray-600">Envío gratis</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <ShieldCheck size={15} className="text-blue-500" />
+            <span className="text-[11px] font-bold text-gray-600">Garantía 12m</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <RefreshCcw size={15} className="text-purple-500" />
+            <span className="text-[11px] font-bold text-gray-600">30 días devolución</span>
+          </div>
+        </div>
+
+        {/* Descripción */}
+        <div className="space-y-2">
+          <h3 className="text-xs font-bold text-[#1B2B5E] uppercase tracking-wider">
+            Descripción
+          </h3>
+          <p className="text-sm text-gray-600 leading-relaxed">
+            {product.description || 'Sin descripción disponible.'}
+          </p>
+        </div>
+
+        {/* TAREA 4: CARACTERÍSTICAS (FEATURES) */}
+        {product.features && product.features.length > 0 && (
+          <div className="space-y-3">
+            <h3 className="text-xs font-bold text-[#1B2B5E] uppercase tracking-wider">
+              Características destacadas
+            </h3>
+            <div className="grid grid-cols-1 gap-2">
+              {product.features.map((feature, i) => (
+                <div key={i} className="flex items-start gap-2">
+                  <CheckCircle2 size={16} className="text-[#C9A84C] shrink-0 mt-0.5" />
+                  <span className="text-sm text-gray-600">{feature}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* TAREA 4: ESPECIFICACIONES (TABLE) */}
+        {product.specifications && product.specifications.length > 0 && (
+          <div className="space-y-3">
+            <h3 className="text-xs font-bold text-[#1B2B5E] uppercase tracking-wider">
+              Especificaciones técnicas
+            </h3>
+            <div className="bg-white border border-gray-100 rounded-2xl overflow-hidden divide-y divide-gray-50">
+              {product.specifications.map((spec, i) => (
+                <div key={i} className="flex items-center px-4 py-3 text-sm">
+                  <span className="w-1/3 text-gray-400 font-medium">{spec.label}</span>
+                  <span className="flex-1 text-[#1B2B5E] font-semibold">{spec.value}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Selector de Cantidad */}
+        <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-50 flex items-center justify-between">
+          <div className="space-y-0.5">
+            <span className="text-xs font-bold text-[#1B2B5E] uppercase tracking-wider block">
+              Cantidad
+            </span>
+            <span className="text-[10px] text-gray-400">
+              Disponible: {product.stock}
+            </span>
+          </div>
+          <div className="flex items-center gap-4 bg-gray-50 rounded-xl p-1">
+            <button 
+              onClick={() => setQuantity(prev => Math.max(1, prev - 1))}
+              className="w-8 h-8 rounded-lg bg-white shadow-sm flex items-center justify-center text-[#1B2B5E] active:scale-90 transition-all"
+            >
+              <Minus size={16} />
+            </button>
+            <span className="font-bold text-[#1B2B5E] w-4 text-center">
+              {quantity}
+            </span>
+            <button 
+              onClick={() => setQuantity(prev => Math.min(product.stock, prev + 1))}
+              className="w-8 h-8 rounded-lg bg-white shadow-sm flex items-center justify-center text-[#1B2B5E] active:scale-90 transition-all disabled:opacity-30"
+              disabled={quantity >= product.stock}
+            >
+              <Plus size={16} />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Botón flotante de acción - TAREA 4: COMPRAR AHORA */}
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/80 backdrop-blur-lg border-t border-gray-100 z-40">
+        <div className="max-w-lg mx-auto flex gap-3">
+          <button 
+            onClick={handleAddToCart}
+            disabled={product.stock <= 0}
+            className="w-14 h-14 bg-gray-50 text-[#1B2B5E] rounded-2xl font-bold flex items-center justify-center shadow-sm border border-gray-100 active:scale-95 transition-all text-gray-400"
+            title="Añadir al carrito"
+          >
+            <ShoppingCart size={22} />
+          </button>
+          <button 
+            onClick={handleBuyNow}
+            disabled={product.stock <= 0}
+            className="flex-1 h-14 bg-[#1B2B5E] text-white rounded-2xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-blue-900/20 active:scale-[0.98] transition-all disabled:opacity-50 disabled:grayscale"
+          >
+            {product.stock > 0 ? 'Comprar ahora' : 'Agotado'}
+          </button>
+        </div>
+      </div>
     </div>
   )
 }

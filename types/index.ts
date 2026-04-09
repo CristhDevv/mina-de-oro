@@ -23,6 +23,8 @@ export interface Product {
   createdAt: Date
   faq: ProductFAQ[]
   options: ProductOption[]
+  specifications?: { label: string; value: string }[]
+  features?: string[]
 }
 
 export interface Category {

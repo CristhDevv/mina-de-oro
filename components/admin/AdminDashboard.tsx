@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react'
 import {
   Package, ShoppingBag, Users, DollarSign,
-  Clock, ChevronRight, Plus, ArrowLeft, Tag
+  Clock, ChevronRight, Plus, ArrowLeft, Tag,
+  BarChart2, Settings
 } from 'lucide-react'
 import { getAdminStats, getAllOrders, updateOrderStatus, getAllUsers, updateUserRole } from '@/lib/api/admin'
 import { getProducts } from '@/lib/api/products'
