@@ -12,9 +12,10 @@ import { Product, Category } from '@/types'
 import ProductFormModal from './ProductFormModal'
 import CategoryFormModal from './CategoryFormModal'
 import InventoryView from './InventoryView'
-import { BarChart2 } from 'lucide-react'
+import { BarChart2, Settings } from 'lucide-react'
+import SettingsView from './SettingsView'
 
-type Tab = 'dashboard' | 'orders' | 'products' | 'inventory' | 'users' | 'categories'
+type Tab = 'dashboard' | 'orders' | 'products' | 'inventory' | 'users' | 'categories' | 'settings'
 
 const STATUS_LABELS: Record<string, string> = {
   pending: 'Pendiente',
@@ -86,6 +87,7 @@ export default function AdminDashboard() {
     { id: 'inventory' as Tab, label: 'Inventario', icon: BarChart2 },
     { id: 'users' as Tab, label: 'Usuarios', icon: Users },
     { id: 'categories' as Tab, label: 'Categorías', icon: Tag },
+    { id: 'settings' as Tab, label: 'Ajustes', icon: Settings },
   ]
 
   return (
@@ -318,6 +320,8 @@ export default function AdminDashboard() {
           </div>
         )}
 
+        {/* SETTINGS */}
+        {tab === 'settings' && <SettingsView />}
       </div>
 
       {showForm && (

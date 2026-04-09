@@ -73,3 +73,11 @@ export interface Order {
   updated_at: string
   order_items?: OrderItem[]
 }
+
+export interface HeroBannerSettings {
+  label: string
+  title: string
+  description: string
+  buttonText: string
+  alignment: 'left' | 'center' | 'right'
+}
