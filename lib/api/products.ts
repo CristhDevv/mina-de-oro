@@ -17,6 +17,8 @@ function mapProduct(row: Record<string, unknown>): Product {
     createdAt: new Date(row.created_at as string),
     faq: (row.faq as ProductFAQ[]) ?? [],
     options: (row.options as ProductOption[]) ?? [],
+    specifications: (row.specifications as { label: string; value: string }[]) ?? [],
+    features: (row.features as string[]) ?? [],
   }
 }
 
