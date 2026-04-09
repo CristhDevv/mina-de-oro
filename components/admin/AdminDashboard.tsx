@@ -88,7 +88,7 @@ export default function AdminDashboard() {
 
   async function handleLogout() {
     await supabase.auth.signOut()
-    router.push('/admin/login')
+    router.push('/')
     router.refresh()
   }
 

@@ -30,7 +30,6 @@ export default function ProductDetail({ product }: ProductDetailProps) {
     router.push('/carrito')
   }
 
-  // Helper para renderizar estrellas
   const renderStars = (rating: number) => {
     return (
       <div className="flex gap-0.5">
@@ -46,8 +45,8 @@ export default function ProductDetail({ product }: ProductDetailProps) {
   }
 
   return (
-    <div className="pb-28">
-      {/* Header flotante */}
+    <div className="pb-8">
+      {/* Header flotante transparente */}
       <div className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 h-16 pointer-events-none">
         <button 
           onClick={() => router.back()}
@@ -65,7 +64,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
         </div>
       </div>
 
-      {/* Galería de Imágenes */}
+      {/* 1. Galería de Imágenes */}
       <div className="relative aspect-square bg-white w-full max-w-lg mx-auto">
         <Image
           src={images[activeImage]}
@@ -89,8 +88,8 @@ export default function ProductDetail({ product }: ProductDetailProps) {
         )}
       </div>
 
-      {/* Información del Producto */}
-      <div className="max-w-lg mx-auto px-4 pt-6 space-y-8">
+      <div className="max-w-lg mx-auto px-4 pt-6 space-y-6">
+        {/* 2. Información Principal */}
         <div>
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
@@ -120,7 +119,6 @@ export default function ProductDetail({ product }: ProductDetailProps) {
               )}
             </div>
             
-            {/* TAREA 4: RATING */}
             <div className="flex items-center gap-2">
               {renderStars(product.rating)}
               <span className="text-xs font-medium text-gray-500">
@@ -130,68 +128,8 @@ export default function ProductDetail({ product }: ProductDetailProps) {
           </div>
         </div>
 
-        {/* BADGES DE CONFIANZA - NO CARDS VERSION */}
-        <div className="flex items-center justify-between py-4 border-y border-gray-100">
-          <div className="flex items-center gap-2">
-            <Truck size={15} className="text-green-500" />
-            <span className="text-[11px] font-bold text-gray-600">Envío gratis</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <ShieldCheck size={15} className="text-blue-500" />
-            <span className="text-[11px] font-bold text-gray-600">Garantía 12m</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <RefreshCcw size={15} className="text-purple-500" />
-            <span className="text-[11px] font-bold text-gray-600">30 días devolución</span>
-          </div>
-        </div>
-
-        {/* Descripción */}
-        <div className="space-y-2">
-          <h3 className="text-xs font-bold text-[#1B2B5E] uppercase tracking-wider">
-            Descripción
-          </h3>
-          <p className="text-sm text-gray-600 leading-relaxed">
-            {product.description || 'Sin descripción disponible.'}
-          </p>
-        </div>
-
-        {/* TAREA 4: CARACTERÍSTICAS (FEATURES) */}
-        {product.features && product.features.length > 0 && (
-          <div className="space-y-3">
-            <h3 className="text-xs font-bold text-[#1B2B5E] uppercase tracking-wider">
-              Características destacadas
-            </h3>
-            <div className="grid grid-cols-1 gap-2">
-              {product.features.map((feature, i) => (
-                <div key={i} className="flex items-start gap-2">
-                  <CheckCircle2 size={16} className="text-[#C9A84C] shrink-0 mt-0.5" />
-                  <span className="text-sm text-gray-600">{feature}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* TAREA 4: ESPECIFICACIONES (TABLE) */}
-        {product.specifications && product.specifications.length > 0 && (
-          <div className="space-y-3">
-            <h3 className="text-xs font-bold text-[#1B2B5E] uppercase tracking-wider">
-              Especificaciones técnicas
-            </h3>
-            <div className="bg-white border border-gray-100 rounded-2xl overflow-hidden divide-y divide-gray-50">
-              {product.specifications.map((spec, i) => (
-                <div key={i} className="flex items-center px-4 py-3 text-sm">
-                  <span className="w-1/3 text-gray-400 font-medium">{spec.label}</span>
-                  <span className="flex-1 text-[#1B2B5E] font-semibold">{spec.value}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Selector de Cantidad */}
-        <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-50 flex items-center justify-between">
+        {/* 3. Selector de Cantidad */}
+        <div className="bg-transparent rounded-2xl p-4 border border-gray-100 flex items-center justify-between">
           <div className="space-y-0.5">
             <span className="text-xs font-bold text-[#1B2B5E] uppercase tracking-wider block">
               Cantidad
@@ -219,27 +157,87 @@ export default function ProductDetail({ product }: ProductDetailProps) {
             </button>
           </div>
         </div>
-      </div>
 
-      {/* Botón flotante de acción - TAREA 4: COMPRAR AHORA */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/80 backdrop-blur-lg border-t border-gray-100 z-40">
-        <div className="max-w-lg mx-auto flex gap-3">
-          <button 
-            onClick={handleAddToCart}
-            disabled={product.stock <= 0}
-            className="w-14 h-14 bg-gray-50 text-[#1B2B5E] rounded-2xl font-bold flex items-center justify-center shadow-sm border border-gray-100 active:scale-95 transition-all text-gray-400"
-            title="Añadir al carrito"
-          >
-            <ShoppingCart size={22} />
-          </button>
-          <button 
-            onClick={handleBuyNow}
-            disabled={product.stock <= 0}
-            className="flex-1 h-14 bg-[#1B2B5E] text-white rounded-2xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-blue-900/20 active:scale-[0.98] transition-all disabled:opacity-50 disabled:grayscale"
-          >
-            {product.stock > 0 ? 'Comprar ahora' : 'Agotado'}
-          </button>
+        {/* 4. Botones de Acción Inline */}
+        <div className="flex flex-col gap-3">
+          <div className="flex gap-3">
+            <button 
+              onClick={handleAddToCart}
+              disabled={product.stock <= 0}
+              className="w-14 h-14 bg-white text-[#1B2B5E] rounded-2xl font-bold flex items-center justify-center shadow-sm border border-gray-200 active:scale-95 transition-all hover:bg-gray-50 disabled:opacity-50"
+              title="Añadir al carrito"
+            >
+              <ShoppingCart size={22} />
+            </button>
+            <button 
+              onClick={handleBuyNow}
+              disabled={product.stock <= 0}
+              className="flex-1 h-14 bg-[#1B2B5E] text-white rounded-2xl font-black text-sm flex items-center justify-center gap-2 shadow-lg shadow-blue-900/10 active:scale-[0.98] transition-all disabled:opacity-50 disabled:grayscale uppercase tracking-wide"
+            >
+              {product.stock > 0 ? 'Comprar ahora' : 'Agotado'}
+            </button>
+          </div>
         </div>
+
+        {/* 5. Badges de Confianza */}
+        <div className="flex items-center justify-between py-4 border-y border-gray-100/60">
+          <div className="flex items-center gap-2">
+            <Truck size={15} className="text-green-500" />
+            <span className="text-[10px] font-bold text-gray-600 uppercase tracking-tight">Envío gratis</span>
+          </div>
+          <div className="flex items-center gap-2 border-x border-gray-100 px-3">
+            <ShieldCheck size={15} className="text-blue-500" />
+            <span className="text-[10px] font-bold text-gray-600 uppercase tracking-tight">Garantía 12m</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <RefreshCcw size={15} className="text-purple-500" />
+            <span className="text-[10px] font-bold text-gray-600 uppercase tracking-tight">30 Días devolución</span>
+          </div>
+        </div>
+
+        {/* 6. Descripción */}
+        <div className="space-y-2">
+          <h3 className="text-[11px] font-bold text-[#1B2B5E]/50 uppercase tracking-[0.1em]">
+            Descripción del producto
+          </h3>
+          <p className="text-sm text-gray-600 leading-relaxed">
+            {product.description || 'Sin descripción disponible.'}
+          </p>
+        </div>
+
+        {/* 7. Características Destacadas (SIN CARDS) */}
+        {product.features && product.features.length > 0 && (
+          <div className="space-y-4 pt-2">
+            <h3 className="text-[11px] font-bold text-[#1B2B5E]/50 uppercase tracking-[0.1em]">
+              Características
+            </h3>
+            <div className="grid grid-cols-1 gap-3">
+              {product.features.map((feature, i) => (
+                <div key={i} className="flex items-start gap-3">
+                  <CheckCircle2 size={14} className="text-[#C9A84C] shrink-0 mt-0.5" />
+                  <span className="text-sm text-gray-600">{feature}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* 8. Especificaciones Técnicas (LIMPIO) */}
+        {product.specifications && product.specifications.length > 0 && (
+          <div className="space-y-4 pt-2">
+            <h3 className="text-[11px] font-bold text-[#1B2B5E]/50 uppercase tracking-[0.1em]">
+              Especificaciones
+            </h3>
+            <div className="divide-y divide-gray-100">
+              {product.specifications.map((spec, i) => (
+                <div key={i} className="flex items-center py-3 text-sm">
+                  <span className="w-1/3 text-gray-400 font-medium">{spec.label}</span>
+                  <span className="flex-1 text-[#1B2B5E] font-semibold">{spec.value}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )
