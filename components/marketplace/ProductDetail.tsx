@@ -65,7 +65,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
       <div className="max-w-lg mx-auto px-4 pt-6 space-y-4">
         {/* 2. Información Principal (Sin categoría ni rating) */}
         <div className="space-y-1">
-          <h1 className="text-xl font-bold text-[#1B2B5E] leading-tight font-serif">
+          <h1 className="text-xl font-bold text-[#1B2B5E] leading-tight">
             {product.name}
           </h1>
           
