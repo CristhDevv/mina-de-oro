@@ -1,3 +1,4 @@
+export const revalidate = 0
 import { getProductBySlug, getProducts } from '@/lib/api/products'
 import { notFound } from 'next/navigation'
 import ProductDetail from '@/components/marketplace/ProductDetail'
