@@ -1,3 +1,4 @@
+export const revalidate = 0
 import HeroBanner from '@/components/marketplace/HeroBanner'
 import CategoryRow from '@/components/marketplace/CategoryRow'
 import ProductGrid from '@/components/marketplace/ProductGrid'
