@@ -5,7 +5,7 @@ export async function uploadProductImage(
   productSlug: string
 ): Promise<string> {
   const ext = file.name.split('.').pop()
-  const path = `${productSlug}/${Date.now()}.${ext}`
+  const path = `${productSlug}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
 
   const { error } = await supabase.storage
     .from('products')
