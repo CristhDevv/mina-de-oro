@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase'
-import { Product, ProductFAQ, ProductOption } from '@/types'
+import { Product, ProductFAQ, ProductOption, RichContentBlock } from '@/types'
 
 function mapProduct(row: Record<string, unknown>): Product {
   return {
@@ -19,6 +19,7 @@ function mapProduct(row: Record<string, unknown>): Product {
     options: (row.options as ProductOption[]) ?? [],
     specifications: (row.specifications as { label: string; value: string }[]) ?? [],
     features: (row.features as string[]) ?? [],
+    rich_content: (row.rich_content as RichContentBlock[]) ?? [],
   }
 }
 

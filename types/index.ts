@@ -8,6 +8,10 @@ export interface ProductOption {
   values: string[]    // Ej: ["Rojo", "Azul", "Verde"]
 }
 
+export type RichContentBlock =
+  | { type: 'text'; content: string }
+  | { type: 'image'; url: string; alt?: string }
+
 export interface Product {
   id: string
   slug: string
@@ -25,6 +29,7 @@ export interface Product {
   options: ProductOption[]
   specifications?: { label: string; value: string }[]
   features?: string[]
+  rich_content?: RichContentBlock[]
 }
 
 export interface Category {

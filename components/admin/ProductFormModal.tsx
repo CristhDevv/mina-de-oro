@@ -1,7 +1,7 @@
 'use client'
 import { useState, useRef } from 'react'
-import { X, ImagePlus, Trash2, Loader2, Plus, CheckCircle2 } from 'lucide-react'
-import { Product, Category, ProductFAQ, ProductOption } from '@/types'
+import { X, ImagePlus, Trash2, Loader2, Plus, CheckCircle2, ChevronUp, ChevronDown } from 'lucide-react'
+import { Product, Category, ProductFAQ, ProductOption, RichContentBlock } from '@/types'
 import { supabase } from '@/lib/supabase'
 import { uploadProductImage, deleteProductImage } from '@/lib/api/storage'
 import Image from 'next/image'
@@ -28,11 +28,13 @@ export default function ProductFormModal({ product, categories, onClose, onSaved
   const [features, setFeatures] = useState<string[]>(product?.features ?? [])
   const [newFeature, setNewFeature] = useState('')
   const [specifications, setSpecifications] = useState<{label: string, value: string}[]>(product?.specifications ?? [])
+  const [richContent, setRichContent] = useState<RichContentBlock[]>(product?.rich_content ?? [])
 
   const [uploading, setUploading] = useState(false)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const fileRef = useRef<HTMLInputElement>(null)
+  const richFileRef = useRef<HTMLInputElement>(null)
 
   function generateSlug(text: string) {
     return text.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
@@ -98,6 +100,39 @@ export default function ProductFormModal({ product, categories, onClose, onSaved
   }
   function removeSpec(i: number) { setSpecifications(prev => prev.filter((_, idx) => idx !== i)) }
 
+  // Rich Content handlers
+  function addRichText() { setRichContent(prev => [...prev, { type: 'text', content: '' }]) }
+  
+  async function addRichImage(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setUploading(true)
+    try {
+      const slug = product?.slug ?? generateSlug(name || 'producto')
+      const url = await uploadProductImage(file, slug)
+      setRichContent(prev => [...prev, { type: 'image', url }])
+    } catch {
+      setError('Error al subir imagen del contenido.')
+    } finally {
+      setUploading(false)
+      if (e.target) e.target.value = ''
+    }
+  }
+
+  function updateRichBlock(i: number, val: string) {
+    setRichContent(prev => prev.map((b, idx) => idx === i ? { ...b, content: val } : b))
+  }
+
+  function removeRichBlock(i: number) { setRichContent(prev => prev.filter((_, idx) => idx !== i)) }
+
+  function moveRichBlock(i: number, direction: 'up' | 'down') {
+    const nextIdx = direction === 'up' ? i - 1 : i + 1
+    if (nextIdx < 0 || nextIdx >= richContent.length) return
+    const newContent = [...richContent]
+    ;[newContent[i], newContent[nextIdx]] = [newContent[nextIdx], newContent[i]]
+    setRichContent(newContent)
+  }
+
   async function handleSave() {
     if (!name || !description || !price || !stock || !categorySlug) {
       setError('Completa todos los campos obligatorios')
@@ -120,6 +155,7 @@ export default function ProductFormModal({ product, categories, onClose, onSaved
       // TAREA 6: PAYLOAD UPDATE
       features,
       specifications,
+      rich_content: richContent,
     }
     const { error: dbError } = product
       ? await supabase.from('products').update(payload).eq('id', product.id)
@@ -274,6 +310,51 @@ export default function ProductFormModal({ product, categories, onClose, onSaved
                   className="h-9 px-3 rounded-xl border border-gray-200 text-sm outline-none font-semibold" />
               </div>
             ))}
+          </div>
+
+          {/* Rich Content Section */}
+          <div className="flex flex-col gap-3 py-4 border-t border-gray-100">
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Descripción Detallada (Rich Content)</label>
+              <div className="flex gap-2">
+                <button onClick={addRichText} className="text-[10px] bg-gray-100 px-2 py-1 rounded-lg font-bold text-[#1B2B5E]">
+                  + Texto
+                </button>
+                <button onClick={() => richFileRef.current?.click()} className="text-[10px] bg-gray-100 px-2 py-1 rounded-lg font-bold text-[#1B2B5E]">
+                  + Imagen
+                </button>
+                <input ref={richFileRef} type="file" className="hidden" onChange={addRichImage} />
+              </div>
+            </div>
+            
+            <div className="space-y-3">
+              {richContent.map((block, i) => (
+                <div key={i} className="relative group bg-gray-50 rounded-2xl p-3 border border-transparent hover:border-gray-200 transition-all">
+                  <div className="absolute -left-2 top-1/2 -translate-y-1/2 flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button onClick={() => moveRichBlock(i, 'up')} className="bg-white shadow-md p-1 rounded-full"><ChevronUp size={12} className="text-[#1B2B5E]" /></button>
+                    <button onClick={() => moveRichBlock(i, 'down')} className="bg-white shadow-md p-1 rounded-full"><ChevronDown size={12} className="text-[#1B2B5E]" /></button>
+                  </div>
+                  
+                  {block.type === 'text' ? (
+                    <textarea 
+                      value={block.content} 
+                      onChange={(e) => updateRichBlock(i, e.target.value)}
+                      placeholder="Escribe contenido descriptivo..."
+                      className="w-full bg-transparent text-sm outline-none resize-none"
+                      rows={3}
+                    />
+                  ) : (
+                    <div className="relative aspect-video rounded-xl overflow-hidden border border-gray-200">
+                      <Image src={block.url} alt="Bloque" fill className="object-cover" />
+                    </div>
+                  )}
+                  
+                  <button onClick={() => removeRichBlock(i)} className="absolute -right-2 -top-2 bg-white shadow-md p-1.5 rounded-full text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Trash2 size={12} />
+                  </button>
+                </div>
+              ))}
+            </div>
           </div>
 
           {error && <p className="text-xs text-red-500 font-medium">{error}</p>}

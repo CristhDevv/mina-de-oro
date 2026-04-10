@@ -188,6 +188,31 @@ export default function ProductDetail({ product }: ProductDetailProps) {
             </div>
           </div>
         )}
+
+        {/* 9. Descripción Detallada (Rich Content) */}
+        {product.rich_content && product.rich_content.length > 0 && (
+          <div className="space-y-6 pt-6 border-t border-gray-100 pb-10">
+            {product.rich_content.map((block, i) => (
+              <div key={i} className="animate-in fade-in slide-in-from-bottom-2 duration-500 delay-75">
+                {block.type === 'text' ? (
+                  <p className="text-base text-gray-700 leading-[1.6] whitespace-pre-wrap px-1">
+                    {block.content}
+                  </p>
+                ) : (
+                  <div className="relative w-full aspect-[16/10] sm:aspect-video rounded-3xl overflow-hidden shadow-sm border border-gray-100 bg-gray-50">
+                    <Image
+                      src={block.url}
+                      alt={block.alt || product.name}
+                      fill
+                      className="object-cover hover:scale-105 transition-transform duration-700"
+                      sizes="(max-width: 512px) 100vw, 512px"
+                    />
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   )
