@@ -64,10 +64,6 @@ export default function ProductCard({ product }: Props) {
             )}
           </div>
 
-          <div className="flex items-center gap-1 mt-0.5">
-            <span className="text-[#C9A84C] text-xs">★</span>
-            <span className="text-xs text-gray-500">{product.rating} ({product.reviewCount})</span>
-          </div>
         </div>
 
       </div>
