@@ -16,7 +16,7 @@ export default function CategoryRow({ categories }: Props) {
             href={`/categorias/${cat.slug}`}
             className="flex flex-col items-center gap-1.5 shrink-0"
           >
-            <div className="w-14 h-14 rounded-2xl bg-[#EFF6FF] flex items-center justify-center text-2xl">
+            <div className="w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center text-2xl">
               {cat.icon}
             </div>
             <span className="text-[11px] text-gray-600 font-medium text-center">
