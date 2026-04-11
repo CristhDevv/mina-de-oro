@@ -20,26 +20,33 @@ const sortLabels: Record<SortOption, string> = {
   rating: 'Mejor valorados',
 }
 
+const priceRanges = [
+  { label: 'Todos los precios', min: undefined, max: undefined },
+  { label: 'Menos de $50.000', min: undefined, max: 50000 },
+  { label: '$50.000 - $200.000', min: 50000, max: 200000 },
+  { label: '$200.000 - $500.000', min: 200000, max: 500000 },
+  { label: 'Más de $500.000', min: 500000, max: undefined },
+]
+
 export default function ProductsFilterView({ initialProducts, categories }: Props) {
   const [products, setProducts] = useState<Product[]>(initialProducts)
   const [loading, setLoading] = useState(false)
   const [showFilters, setShowFilters] = useState(false)
   
-  // Calcular el precio máximo real del catálogo
-  const maxCatalogPrice = Math.max(...initialProducts.map(p => p.price), 1000000)
-
   // Estados de filtros
   const [categorySlug, setCategorySlug] = useState<string>('')
-  const [maxPrice, setMaxPrice] = useState<number>(maxCatalogPrice)
+  const [rangeIndex, setRangeIndex] = useState<number>(0)
   const [sortBy, setSortBy] = useState<SortOption>('relevance')
 
   useEffect(() => {
     async function updateProducts() {
       setLoading(true)
       try {
+        const range = priceRanges[rangeIndex]
         const results = await searchProducts('', {
           categorySlug: categorySlug || undefined,
-          maxPrice: maxPrice,
+          minPrice: range.min,
+          maxPrice: range.max,
           sortBy: sortBy
         })
         setProducts(results)
@@ -51,7 +58,7 @@ export default function ProductsFilterView({ initialProducts, categories }: Prop
     }
     
     updateProducts()
-  }, [categorySlug, maxPrice, sortBy])
+  }, [categorySlug, rangeIndex, sortBy])
 
   function formatCOP(price: number) {
     return new Intl.NumberFormat('es-CO', {
@@ -74,7 +81,7 @@ export default function ProductsFilterView({ initialProducts, categories }: Prop
         >
           <SlidersHorizontal size={18} />
           <span className="text-xs font-bold uppercase tracking-wide">Filtros</span>
-          {(categorySlug || maxPrice < maxCatalogPrice) && (
+          {(categorySlug || rangeIndex > 0) && (
             <span className="w-2 h-2 rounded-full bg-[#C9A84C]" />
           )}
         </button>
@@ -130,25 +137,22 @@ export default function ProductsFilterView({ initialProducts, categories }: Prop
 
           <div className="h-px bg-gray-100" /> {/* Separador */}
 
-          <div className="space-y-5">
-            <div className="flex items-center justify-between px-1">
-              <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Precio Máximo</p>
-              <span className="text-sm font-black text-[#C9A84C]">{formatCOP(maxPrice)}</span>
-            </div>
-            <div className="px-1">
-              <input 
-                type="range"
-                min={20000}
-                max={maxCatalogPrice}
-                step={20000}
-                value={maxPrice}
-                onChange={(e) => setMaxPrice(parseInt(e.target.value))}
-                className="w-full h-1.5 bg-gray-100 rounded-lg appearance-none cursor-pointer accent-[#1B2B5E]"
-              />
-              <div className="flex justify-between text-[9px] font-bold text-gray-300 mt-2 uppercase tracking-tighter">
-                <span>$20k</span>
-                <span>{maxCatalogPrice >= 1000000 ? `$${(maxCatalogPrice / 1000000).toFixed(1)}M+` : formatCOP(maxCatalogPrice)}</span>
-              </div>
+          <div className="space-y-4">
+            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Rango de Precio</p>
+            <div className="flex flex-wrap gap-2">
+              {priceRanges.map((range, index) => (
+                <button
+                  key={index}
+                  onClick={() => setRangeIndex(index)}
+                  className={`px-4 py-2 rounded-xl text-[11px] font-bold transition-all border ${
+                    rangeIndex === index 
+                      ? 'bg-[#1B2B5E] text-white border-[#1B2B5E]' 
+                      : 'bg-white text-gray-600 border-gray-100'
+                  }`}
+                >
+                  {range.label}
+                </button>
+              ))}
             </div>
           </div>
           
@@ -176,7 +180,7 @@ export default function ProductsFilterView({ initialProducts, categories }: Prop
           <div className="py-24 text-center space-y-5 h-full">
             <p className="font-black text-[#1B2B5E] uppercase text-sm">Sin coincidencias</p>
             <button 
-              onClick={() => { setCategorySlug(''); setMaxPrice(maxCatalogPrice); setSortBy('relevance'); }}
+              onClick={() => { setCategorySlug(''); setRangeIndex(0); setSortBy('relevance'); }}
               className="px-8 py-3 bg-gray-100 text-[#1B2B5E] rounded-2xl text-[11px] font-black uppercase"
             >
               Reiniciar
