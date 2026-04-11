@@ -5,7 +5,7 @@ import { Home, Grid2x2, ShoppingCart, User } from 'lucide-react'
 
 const links = [
   { href: '/', label: 'Inicio', icon: Home },
-  { href: '/categorias', label: 'Categorías', icon: Grid2x2 },
+  { href: '/productos', label: 'Productos', icon: Grid2x2 },
   { href: '/carrito', label: 'Carrito', icon: ShoppingCart },
   { href: '/cuenta', label: 'Cuenta', icon: User },
 ]

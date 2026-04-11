@@ -23,6 +23,8 @@ export default function ProductFormModal({ product, categories, onClose, onSaved
   const [images, setImages] = useState<string[]>(product?.images ?? [])
   const [faq, setFaq] = useState<ProductFAQ[]>(product?.faq ?? [])
   const [options, setOptions] = useState<ProductOption[]>(product?.options ?? [])
+  const [featured, setFeatured] = useState(product?.featured ?? false)
+
   
   // TAREA 6: NUEVOS ESTADOS
   const [features, setFeatures] = useState<string[]>(product?.features ?? [])
@@ -156,6 +158,7 @@ export default function ProductFormModal({ product, categories, onClose, onSaved
       features,
       specifications,
       rich_content: richContent,
+      featured,
     }
     const { error: dbError } = product
       ? await supabase.from('products').update(payload).eq('id', product.id)
@@ -224,6 +227,21 @@ export default function ProductFormModal({ product, categories, onClose, onSaved
                 <option key={cat.id} value={cat.slug}>{cat.icon} {cat.name}</option>
               ))}
             </select>
+          </div>
+
+          {/* Destacado */}
+          <div className="flex items-center justify-between py-3 border-b border-gray-100">
+            <div className="flex flex-col gap-0.5">
+              <span className="text-sm font-bold text-[#1B2B5E]">Producto Destacado</span>
+              <span className="text-[10px] text-gray-400">Aparecerá en la sección principal de la tienda</span>
+            </div>
+            <button 
+              type="button"
+              onClick={() => setFeatured(!featured)}
+              className={`w-12 h-6 rounded-full transition-colors relative ${featured ? 'bg-[#C9A84C]' : 'bg-gray-200'}`}
+            >
+              <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${featured ? 'right-1' : 'left-1'}`} />
+            </button>
           </div>
 
           {/* Opciones */}

@@ -65,7 +65,10 @@ export default function CategoryView({ category, products }: Props) {
       {/* Category title */}
       <div className="flex items-center gap-3 px-4 pb-4">
         <div className="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center text-2xl">
-          {category.icon}
+          {(() => {
+            const Icon = categoryIcons[category.slug] ?? Tag
+            return <Icon size={24} className="text-gray-700" />
+          })()}
         </div>
         <div>
           <h1 className="text-lg font-bold text-[#1B2B5E]">{category.name}</h1>

@@ -20,6 +20,7 @@ function mapProduct(row: Record<string, unknown>): Product {
     specifications: (row.specifications as { label: string; value: string }[]) ?? [],
     features: (row.features as string[]) ?? [],
     rich_content: (row.rich_content as RichContentBlock[]) ?? [],
+    featured: row.featured as boolean,
   }
 }
 
@@ -28,6 +29,18 @@ export async function getProducts(): Promise<Product[]> {
     .from('products')
     .select('*')
     .eq('active', true)
+    .order('created_at', { ascending: false })
+
+  if (error) throw new Error(error.message)
+  return (data ?? []).map(mapProduct)
+}
+
+export async function getFeaturedProducts(): Promise<Product[]> {
+  const { data, error } = await supabase
+    .from('products')
+    .select('*')
+    .eq('active', true)
+    .eq('featured', true)
     .order('created_at', { ascending: false })
 
   if (error) throw new Error(error.message)

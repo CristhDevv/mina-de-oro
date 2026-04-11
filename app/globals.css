@@ -140,3 +140,13 @@
   60%  { transform: scale(0.6) translate(calc(var(--cart-x, 0px) * 0.6), calc(var(--cart-y, 0px) * 0.6)); opacity: 1; }
   100% { transform: scale(0) translate(var(--cart-x, -300px), var(--cart-y, -500px)); opacity: 0; }
 }
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}

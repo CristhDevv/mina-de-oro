@@ -30,6 +30,7 @@ export interface Product {
   specifications?: { label: string; value: string }[]
   features?: string[]
   rich_content?: RichContentBlock[]
+  featured: boolean
 }
 
 export interface Category {
