@@ -1,7 +1,7 @@
 'use client'
 import { Category, Product } from '@/types'
 import { useState } from 'react'
-import { ArrowLeft, SlidersHorizontal } from 'lucide-react'
+import { ArrowLeft, SlidersHorizontal, Shirt, Home, UtensilsCrossed, Gamepad2, Sparkles, Cpu, Tag } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import ProductGrid from './ProductGrid'
 
@@ -17,6 +17,15 @@ const sortLabels: Record<SortOption, string> = {
   price_asc: 'Menor precio',
   price_desc: 'Mayor precio',
   rating: 'Mejor valorado',
+}
+
+const categoryIcons: Record<string, React.ElementType> = {
+  ropa: Shirt,
+  hogar: Home,
+  cocina: UtensilsCrossed,
+  juguetes: Gamepad2,
+  belleza: Sparkles,
+  electronica: Cpu,
 }
 
 export default function CategoryView({ category, products }: Props) {
