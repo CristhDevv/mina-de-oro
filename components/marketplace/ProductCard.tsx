@@ -48,7 +48,7 @@ export default function ProductCard({ product }: Props) {
 
         {/* Info */}
         <div className="p-3 flex flex-col gap-1">
-          <span className="text-xs text-gray-500 truncate">{product.category}</span>
+          <span className="text-xs text-gray-500 truncate capitalize">{product.category}</span>
           <h3 className="text-sm font-semibold text-gray-800 leading-tight line-clamp-2">
             {product.name}
           </h3>
