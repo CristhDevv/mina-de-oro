@@ -8,7 +8,8 @@ export async function createOrder(
     phone: string
     address: string
     city: string
-  }
+  },
+  paymentMethod: 'wompi' | 'contraentrega' = 'wompi'
 ) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Usuario no autenticado')
@@ -23,7 +24,8 @@ export async function createOrder(
       user_id: user.id,
       total,
       shipping_address: shippingAddress,
-      status: 'pending'
+      status: paymentMethod === 'contraentrega' ? 'confirmed' : 'pending',
+      payment_method: paymentMethod
     })
     .select()
     .single()

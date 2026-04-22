@@ -1,23 +1,19 @@
 import { Product } from '@/types'
 import Link from 'next/link'
 import Image from 'next/image'
+import { formatCurrency } from '@/lib/utils'
 
 interface Props {
   product: Product
+  priority?: boolean
 }
 
-function formatCOP(price: number) {
-  return new Intl.NumberFormat('es-CO', {
-    style: 'currency', currency: 'COP',
-    minimumFractionDigits: 0,
-  }).format(price)
-}
 
 function getDiscount(original: number, current: number) {
   return Math.round((1 - current / original) * 100)
 }
 
-export default function ProductCard({ product }: Props) {
+export default function ProductCard({ product, priority = false }: Props) {
   const discount = product.originalPrice
     ? getDiscount(product.originalPrice, product.price)
     : null
@@ -34,7 +30,8 @@ export default function ProductCard({ product }: Props) {
               alt={product.name}
               fill
               className="object-cover"
-              sizes="(max-width: 768px) 50vw, 200px"
+              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 250px"
+              priority={priority}
             />
           ) : (
             <span className="text-4xl">🛍️</span>
@@ -55,11 +52,11 @@ export default function ProductCard({ product }: Props) {
 
           <div className="mt-1">
             <span className="text-base font-bold text-[#1B2B5E]">
-              {formatCOP(product.price)}
+              {formatCurrency(product.price)}
             </span>
             {product.originalPrice && (
               <span className="ml-1.5 text-xs text-gray-400 line-through">
-                {formatCOP(product.originalPrice)}
+                {formatCurrency(product.originalPrice)}
               </span>
             )}
           </div>

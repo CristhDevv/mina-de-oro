@@ -2,13 +2,8 @@
 import { useCartStore } from '@/store/cart'
 import { Trash2, Plus, Minus } from 'lucide-react'
 import Link from 'next/link'
+import { formatCurrency } from '@/lib/utils'
 
-function formatCOP(price: number) {
-  return new Intl.NumberFormat('es-CO', {
-    style: 'currency', currency: 'COP',
-    minimumFractionDigits: 0,
-  }).format(price)
-}
 
 export default function CartView() {
   const { items, removeItem, updateQuantity, totalPrice, clearCart } = useCartStore()
@@ -59,7 +54,7 @@ export default function CartView() {
                 {product.name}
               </h3>
               <span className="text-base font-bold text-[#1B2B5E]">
-                {formatCOP(product.price)}
+                {formatCurrency(product.price)}
               </span>
 
               {/* Quantity + Delete */}
@@ -95,7 +90,7 @@ export default function CartView() {
       <div className="fixed bottom-16 left-0 right-0 bg-white border-t border-gray-100 px-4 py-3 max-w-lg mx-auto">
         <div className="flex items-center justify-between mb-3">
           <span className="text-sm text-gray-500">Total</span>
-          <span className="text-xl font-bold text-[#1B2B5E]">{formatCOP(totalPrice())}</span>
+          <span className="text-xl font-bold text-[#1B2B5E]">{formatCurrency(totalPrice())}</span>
         </div>
         <Link
           href="/checkout"

@@ -1,10 +1,13 @@
 'use client'
 
 import { Category, Product } from '@/types'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
+import { useSearchParams, useRouter, usePathname } from 'next/navigation'
 import { SlidersHorizontal } from 'lucide-react'
 import ProductGrid from './ProductGrid'
+import { ProductGridSkeleton } from './ProductSkeleton'
 import { searchProducts } from '@/lib/api/products'
+import { formatCurrency } from '@/lib/utils'
 
 interface Props {
   initialProducts: Product[]
@@ -28,15 +31,49 @@ const priceRanges = [
   { label: 'Más de $500.000', min: 500000, max: undefined },
 ]
 
-export default function ProductsFilterView({ initialProducts, categories }: Props) {
+export default function ProductsFilterView(props: Props) {
+  return (
+    <Suspense fallback={<div className="p-10 text-center text-xs text-gray-400 uppercase font-black">Cargando filtros...</div>}>
+      <FilterContent {...props} />
+    </Suspense>
+  )
+}
+
+function FilterContent({ initialProducts, categories }: Props) {
+  const searchParams = useSearchParams()
+  const router = useRouter()
+  const pathname = usePathname()
+
   const [products, setProducts] = useState<Product[]>(initialProducts)
   const [loading, setLoading] = useState(false)
   const [showFilters, setShowFilters] = useState(false)
   
-  // Estados de filtros
-  const [categorySlug, setCategorySlug] = useState<string>('')
-  const [rangeIndex, setRangeIndex] = useState<number>(0)
-  const [sortBy, setSortBy] = useState<SortOption>('relevance')
+  // Estados de filtros inicializados desde la URL
+  const [categorySlug, setCategorySlug] = useState<string>(searchParams.get('categoria') || '')
+  const [rangeIndex, setRangeIndex] = useState<number>(Number(searchParams.get('rango')) || 0)
+  const [sortBy, setSortBy] = useState<SortOption>((searchParams.get('orden') as SortOption) || 'relevance')
+
+  // Sincronizar estado con la URL
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams.toString())
+    
+    if (categorySlug) params.set('categoria', categorySlug)
+    else params.delete('categoria')
+    
+    if (rangeIndex > 0) params.set('rango', rangeIndex.toString())
+    else params.delete('rango')
+    
+    if (sortBy !== 'relevance') params.set('orden', sortBy)
+    else params.delete('orden')
+
+    const query = params.toString()
+    const url = query ? `${pathname}?${query}` : pathname
+    
+    // Solo actualizar si la URL realmente cambió para evitar bucles
+    if (window.location.search !== `?${query}` && (window.location.search !== '' || query !== '')) {
+      router.push(url, { scroll: false })
+    }
+  }, [categorySlug, rangeIndex, sortBy, pathname, router, searchParams])
 
   useEffect(() => {
     async function updateProducts() {
@@ -60,12 +97,6 @@ export default function ProductsFilterView({ initialProducts, categories }: Prop
     updateProducts()
   }, [categorySlug, rangeIndex, sortBy])
 
-  function formatCOP(price: number) {
-    return new Intl.NumberFormat('es-CO', {
-      style: 'currency', currency: 'COP',
-      minimumFractionDigits: 0,
-    }).format(price)
-  }
 
   return (
     <div className="pb-20 min-h-screen bg-white">
@@ -173,9 +204,11 @@ export default function ProductsFilterView({ initialProducts, categories }: Prop
         {loading && <div className="w-4 h-4 border-2 border-[#1B2B5E] border-t-transparent rounded-full animate-spin" />}
       </div>
 
-      <div className={`transition-opacity duration-300 ${loading ? 'opacity-40' : 'opacity-100'}`}>
-        {products.length > 0 ? (
-          <ProductGrid products={products} />
+      <div className="transition-all duration-300">
+        {loading ? (
+          <ProductGridSkeleton count={products.length || 6} />
+        ) : products.length > 0 ? (
+          <ProductGrid products={products} priorityCount={2} />
         ) : (
           <div className="py-24 text-center space-y-5 h-full">
             <p className="font-black text-[#1B2B5E] uppercase text-sm">Sin coincidencias</p>

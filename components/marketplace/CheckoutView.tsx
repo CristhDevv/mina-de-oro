@@ -24,7 +24,14 @@ export default function CheckoutView() {
     setReady(true)
   }, [user, loading, items, router])
 
-  if (!ready) return null
+  if (!ready) {
+    return (
+      <div className="flex flex-col items-center justify-center h-[60vh] gap-4">
+        <div className="w-10 h-10 border-4 border-[#1B2B5E] border-t-transparent rounded-full animate-spin" />
+        <p className="text-sm text-gray-500 font-medium">Cargando checkout...</p>
+      </div>
+    )
+  }
 
   return (
     <div className="max-w-md mx-auto px-4 py-6">

@@ -163,30 +163,32 @@ export default function ProductDetail({ product }: ProductDetailProps) {
 
         {/* 7. Características Destacadas - Más sutiles */}
         {product.features && product.features.length > 0 && (
-          <div className="space-y-2 pt-2 border-t border-gray-50">
-            <div className="grid grid-cols-1 gap-2.5">
+          <section className="space-y-2 pt-2 border-t border-gray-50">
+            <h2 className="sr-only">Características destacadas</h2>
+            <ul className="grid grid-cols-1 gap-2.5">
               {product.features.map((feature, i) => (
-                <div key={i} className="flex items-start gap-3">
-                  <CheckCircle2 size={14} className="text-gray-400 shrink-0 mt-0.5" />
+                <li key={i} className="flex items-start gap-3">
+                  <CheckCircle2 size={14} className="text-gray-400 shrink-0 mt-0.5" aria-hidden="true" />
                   <span className="text-sm text-gray-600 leading-tight">{feature}</span>
-                </div>
+                </li>
               ))}
-            </div>
-          </div>
+            </ul>
+          </section>
         )}
 
         {/* 8. Especificaciones Técnicas - Tabla minimalista sin título visible */}
         {product.specifications && product.specifications.length > 0 && (
-          <div className="pt-2 border-t border-gray-50">
-            <div className="divide-y divide-gray-50">
+          <section className="pt-2 border-t border-gray-50">
+            <h2 className="sr-only">Especificaciones técnicas</h2>
+            <dl className="divide-y divide-gray-50">
               {product.specifications.map((spec, i) => (
                 <div key={i} className="flex items-center py-2.5 text-sm">
-                  <span className="w-1/3 text-gray-400 text-xs">{spec.label}</span>
-                  <span className="flex-1 text-gray-700 font-medium text-xs">{spec.value}</span>
+                  <dt className="w-1/3 text-gray-400 text-xs">{spec.label}</dt>
+                  <dd className="flex-1 text-gray-700 font-medium text-xs">{spec.value}</dd>
                 </div>
               ))}
-            </div>
-          </div>
+            </dl>
+          </section>
         )}
 
         {/* 9. Descripción Detallada (Rich Content) */}
@@ -212,6 +214,21 @@ export default function ProductDetail({ product }: ProductDetailProps) {
               </div>
             ))}
           </div>
+        )}
+
+        {/* 10. Preguntas Frecuentes (GEO Optimized) */}
+        {product.faq && product.faq.length > 0 && (
+          <section className="space-y-4 pt-8 border-t border-gray-100 pb-10">
+            <h2 className="text-lg font-bold text-[#1B2B5E] px-1">Preguntas Frecuentes</h2>
+            <div className="space-y-4">
+              {product.faq.map((item, i) => (
+                <div key={i} className="bg-gray-50 rounded-2xl p-4 border border-gray-100">
+                  <h3 className="text-sm font-bold text-[#1B2B5E] mb-2">{item.question}</h3>
+                  <p className="text-sm text-gray-600 leading-relaxed">{item.answer}</p>
+                </div>
+              ))}
+            </div>
+          </section>
         )}
       </div>
     </div>

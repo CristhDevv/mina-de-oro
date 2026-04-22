@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { ArrowLeft, SlidersHorizontal, Shirt, Home, UtensilsCrossed, Gamepad2, Sparkles, Cpu, Tag } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import ProductGrid from './ProductGrid'
+import { formatCurrency } from '@/lib/utils'
 
 interface Props {
   category: Category
@@ -43,12 +44,6 @@ export default function CategoryView({ category, products }: Props) {
       return 0
     })
 
-  function formatCOP(price: number) {
-    return new Intl.NumberFormat('es-CO', {
-      style: 'currency', currency: 'COP',
-      minimumFractionDigits: 0,
-    }).format(price)
-  }
 
   return (
     <div className="pb-6">
@@ -113,7 +108,7 @@ export default function CategoryView({ category, products }: Props) {
           <div>
             <div className="flex items-center justify-between mb-2">
               <p className="text-xs font-semibold text-[#1B2B5E] uppercase tracking-wide">Precio máximo</p>
-              <span className="text-xs font-bold text-[#C9A84C]">{formatCOP(maxPrice)}</span>
+              <span className="text-xs font-bold text-[#C9A84C]">{formatCurrency(maxPrice)}</span>
             </div>
             <input
               type="range"

@@ -1,26 +1,19 @@
 import { supabase } from '@/lib/supabase'
-import { Product, ProductFAQ, ProductOption, RichContentBlock } from '@/types'
+import { Product } from '@/types'
+import { productSchema } from '@/lib/schemas'
 
-function mapProduct(row: Record<string, unknown>): Product {
-  return {
-    id: row.id as string,
-    slug: row.slug as string,
-    name: row.name as string,
-    description: row.description as string,
-    price: row.price as number,
-    originalPrice: row.original_price as number | undefined,
-    images: (row.images as string[]) ?? [],
-    category: row.category_slug as string,
-    stock: row.stock as number,
-    rating: Number(row.rating),
-    reviewCount: row.review_count as number,
-    createdAt: new Date(row.created_at as string),
-    faq: (row.faq as ProductFAQ[]) ?? [],
-    options: (row.options as ProductOption[]) ?? [],
-    specifications: (row.specifications as { label: string; value: string }[]) ?? [],
-    features: (row.features as string[]) ?? [],
-    rich_content: (row.rich_content as RichContentBlock[]) ?? [],
-    featured: row.featured as boolean,
+function mapProduct(row: any): Product {
+  try {
+    return productSchema.parse({
+      ...row,
+      originalPrice: row.original_price ?? undefined,
+      category: row.category_slug,
+      reviewCount: row.review_count ?? 0,
+      createdAt: row.created_at,
+    })
+  } catch (error) {
+    console.error(`Error de validación en producto [${row.id}]:`, error)
+    throw error
   }
 }
 

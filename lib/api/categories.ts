@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase'
 import { Category } from '@/types'
+import { categorySchema } from '@/lib/schemas'
 
 export async function getCategories(): Promise<Category[]> {
   const { data, error } = await supabase
@@ -8,12 +9,7 @@ export async function getCategories(): Promise<Category[]> {
     .order('name', { ascending: true })
 
   if (error) throw new Error(error.message)
-  return (data ?? []).map((row) => ({
-    id: row.id,
-    name: row.name,
-    slug: row.slug,
-    icon: row.icon,
-  }))
+  return (data ?? []).map((row) => categorySchema.parse(row))
 }
 
 export async function getCategoryBySlug(slug: string): Promise<Category | null> {
@@ -24,7 +20,7 @@ export async function getCategoryBySlug(slug: string): Promise<Category | null> 
     .single()
 
   if (error) return null
-  return { id: data.id, name: data.name, slug: data.slug, icon: data.icon }
+  return categorySchema.parse(data)
 }
 
 export async function createCategory(data: { name: string; slug: string; icon: string }) {

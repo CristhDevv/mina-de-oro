@@ -36,9 +36,9 @@ export default async function HomePage() {
           </div>
           
           <div className="flex overflow-x-auto gap-4 px-5 pb-2 no-scrollbar scroll-smooth">
-            {featured.map((product) => (
+            {featured.map((product, index) => (
               <div key={product.id} className="min-w-[200px] transition-transform active:scale-95">
-                <ProductCard product={product} />
+                <ProductCard product={product} priority={index < 2} />
               </div>
             ))}
           </div>

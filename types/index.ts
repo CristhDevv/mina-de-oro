@@ -1,86 +1,31 @@
-export interface ProductFAQ {
-  question: string
-  answer: string
-}
+import { z } from 'zod'
+import {
+  productFAQSchema,
+  productOptionSchema,
+  richContentBlockSchema,
+  productSchema,
+  categorySchema,
+  userSchema,
+  shippingAddressSchema,
+  orderItemSchema,
+  orderSchema
+} from '@/lib/schemas'
 
-export interface ProductOption {
-  name: string        // Ej: "Color", "Talla"
-  values: string[]    // Ej: ["Rojo", "Azul", "Verde"]
-}
-
-export type RichContentBlock =
-  | { type: 'text'; content: string }
-  | { type: 'image'; url: string; alt?: string }
-
-export interface Product {
-  id: string
-  slug: string
-  name: string
-  description: string
-  price: number
-  originalPrice?: number
-  images: string[]
-  category: string
-  stock: number
-  rating: number
-  reviewCount: number
-  createdAt: Date
-  faq: ProductFAQ[]
-  options: ProductOption[]
-  specifications?: { label: string; value: string }[]
-  features?: string[]
-  rich_content?: RichContentBlock[]
-  featured: boolean
-}
-
-export interface Category {
-  id: string
-  name: string
-  slug: string
-  icon: string
-}
+export type ProductFAQ = z.infer<typeof productFAQSchema>
+export type ProductOption = z.infer<typeof productOptionSchema>
+export type RichContentBlock = z.infer<typeof richContentBlockSchema>
+export type Product = z.infer<typeof productSchema>
+export type Category = z.infer<typeof categorySchema>
 
 export interface CartItem {
   product: Product
   quantity: number
 }
 
-export interface User {
-  id: string
-  name: string
-  email: string
-  role: "customer" | "seller" | "admin"
-}
-
-export interface ShippingAddress {
-  name: string
-  phone: string
-  address: string
-  city: string
-}
-
-export interface OrderItem {
-  id: string
-  order_id: string
-  product_id: string
-  quantity: number
-  unit_price: number
-  products?: {
-    name: string
-    images: string[]
-  }
-}
-
-export interface Order {
-  id: string
-  user_id: string
-  status: 'pending' | 'confirmed' | 'shipped' | 'delivered' | 'cancelled'
-  total: number
-  shipping_address: ShippingAddress
-  created_at: string
-  updated_at: string
-  order_items?: OrderItem[]
-}
+export type User = z.infer<typeof userSchema>
+export type ShippingAddress = z.infer<typeof shippingAddressSchema>
+export type OrderItem = z.infer<typeof orderItemSchema>
+export type Order = z.infer<typeof orderSchema>
 
 export interface HeroBannerSettings {
   label: string

@@ -42,6 +42,11 @@ export function useAuth(): AuthState {
     let mounted = true
 
     async function init() {
+      // Timeout de seguridad de 5 segundos
+      const timeoutId = setTimeout(() => {
+        if (mounted) setLoading(false)
+      }, 5000)
+
       try {
         const { data: { session } } = await supabase.auth.getSession()
         if (!mounted) return
@@ -51,6 +56,7 @@ export function useAuth(): AuthState {
       } catch (error) {
         console.error('Auth init error:', error)
       } finally {
+        clearTimeout(timeoutId)
         if (mounted) setLoading(false)
       }
     }

@@ -15,6 +15,7 @@ import CategoryFormModal from './CategoryFormModal'
 import InventoryView from './InventoryView'
 import SettingsView from './SettingsView'
 import { createClient } from '@/lib/supabase/client'
+import { formatCurrency } from '@/lib/utils'
 import { LogOut } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
@@ -28,6 +29,11 @@ const STATUS_LABELS: Record<string, string> = {
   cancelled: 'Cancelado',
 }
 
+const PAYMENT_LABELS: Record<string, string> = {
+  wompi: 'Wompi / Tarjeta',
+  contraentrega: 'Contraentrega',
+}
+
 const STATUS_COLORS: Record<string, string> = {
   pending: 'bg-yellow-100 text-yellow-700',
   confirmed: 'bg-blue-100 text-blue-700',
@@ -36,9 +42,6 @@ const STATUS_COLORS: Record<string, string> = {
   cancelled: 'bg-red-100 text-red-700',
 }
 
-function formatCOP(n: number) {
-  return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }).format(n)
-}
 
 function formatDate(d: string) {
   return new Date(d).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' })
@@ -145,7 +148,7 @@ export default function AdminDashboard() {
               <>
                 <div className="grid grid-cols-2 gap-3">
                   {[
-                    { label: 'Ingresos totales', value: formatCOP(stats?.totalRevenue ?? 0), icon: DollarSign, color: 'bg-green-50 text-green-700' },
+                    { label: 'Ingresos totales', value: formatCurrency(stats?.totalRevenue ?? 0), icon: DollarSign, color: 'bg-green-50 text-green-700' },
                     { label: 'Pedidos pendientes', value: stats?.pendingOrders ?? 0, icon: Clock, color: 'bg-yellow-50 text-yellow-700' },
                     { label: 'Productos', value: stats?.totalProducts ?? 0, icon: Package, color: 'bg-blue-50 text-blue-700' },
                     { label: 'Usuarios', value: stats?.totalUsers ?? 0, icon: Users, color: 'bg-purple-50 text-purple-700' },
@@ -172,10 +175,11 @@ export default function AdminDashboard() {
                         <p className="text-xs text-gray-400">{formatDate(order.created_at)}</p>
                       </div>
                       <div className="text-right">
-                        <p className="text-xs font-bold text-gray-800">{formatCOP(order.total)}</p>
+                        <p className="text-xs font-bold text-gray-800">{formatCurrency(order.total)}</p>
                         <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${STATUS_COLORS[order.status]}`}>
                           {STATUS_LABELS[order.status]}
                         </span>
+                        <p className="text-[9px] text-gray-400 mt-0.5 font-medium">{PAYMENT_LABELS[order.payment_method ?? 'wompi']}</p>
                       </div>
                     </div>
                   ))}
@@ -216,16 +220,20 @@ export default function AdminDashboard() {
                       <p className="text-xs text-gray-500">{order.shipping_address?.phone}</p>
                     </div>
                     <div>
+                      <p className="text-xs font-semibold text-gray-500 mb-1">Pago</p>
+                      <p className="text-xs font-bold text-[#1B2B5E]">{PAYMENT_LABELS[order.payment_method ?? 'wompi']}</p>
+                    </div>
+                    <div>
                       <p className="text-xs font-semibold text-gray-500 mb-1">Productos</p>
                       {order.order_items?.map((item: any) => (
                         <div key={item.id} className="flex justify-between text-xs text-gray-700 py-1 border-b border-gray-50 last:border-0">
                           <span>{item.products?.name} × {item.quantity}</span>
-                          <span className="font-semibold">{formatCOP(item.unit_price * item.quantity)}</span>
+                          <span className="font-semibold">{formatCurrency(item.unit_price * item.quantity)}</span>
                         </div>
                       ))}
                     </div>
                     <div className="flex justify-between items-center">
-                      <p className="text-xs font-bold text-gray-800">Total: {formatCOP(order.total)}</p>
+                      <p className="text-xs font-bold text-gray-800">Total: {formatCurrency(order.total)}</p>
                     </div>
                     <div className="flex flex-col gap-1.5">
                       <p className="text-xs font-semibold text-gray-500">Cambiar estado</p>
@@ -261,7 +269,7 @@ export default function AdminDashboard() {
                   <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center shrink-0 text-lg">🛍️</div>
                   <div className="min-w-0">
                     <p className="text-sm font-semibold text-gray-800 truncate">{product.name}</p>
-                    <p className="text-xs text-[#C9A84C] font-medium">{formatCOP(product.price)}</p>
+                    <p className="text-xs text-[#C9A84C] font-medium">{formatCurrency(product.price)}</p>
                   </div>
                 </div>
                 <button
