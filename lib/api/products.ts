@@ -1,4 +1,5 @@
-import { supabase } from '@/lib/supabase'
+import { createClient } from '@/lib/supabase/client'
+const supabase = createClient()
 import { Product } from '@/types'
 import { productSchema } from '@/lib/schemas'
 

@@ -1,4 +1,6 @@
-import { supabase } from '@/lib/supabase'
+import { createClient } from '@/lib/supabase/client'
+
+const supabase = createClient()
 
 export async function getAdminStats() {
   const [{ data: products }, { data: orders }, { data: users }] = await Promise.all([
