@@ -156,7 +156,14 @@ export default function AdminDashboard() {
             </div>
           ) : (
             <div className="w-full">
-              {tab === 'dashboard' && stats && <OverviewTab stats={stats} recentOrders={orders} onViewAllOrders={() => setTab('orders')} />}
+              {tab === 'dashboard' && stats && (
+                <OverviewTab 
+                  stats={stats} 
+                  recentOrders={orders} 
+                  onViewAllOrders={() => setTab('orders')} 
+                  onNavigate={(t: Tab) => setTab(t)}
+                />
+              )}
               {tab === 'orders' && <OrdersTab orders={orders} onStatusChange={handleStatusChange} />}
               {tab === 'products' && (
                 <ProductsTab 

@@ -7,6 +7,7 @@ interface OverviewTabProps {
   stats: any
   recentOrders: any[]
   onViewAllOrders: () => void
+  onNavigate: (tab: any) => void
 }
 
 const STATUS_LABELS: Record<string, string> = {
@@ -25,35 +26,39 @@ const STATUS_COLORS: Record<string, string> = {
   cancelled: 'bg-rose-100 text-rose-700',
 }
 
-export default function OverviewTab({ stats, recentOrders, onViewAllOrders }: OverviewTabProps) {
+export default function OverviewTab({ stats, recentOrders, onViewAllOrders, onNavigate }: OverviewTabProps) {
   const statCards = [
     { 
       label: 'Ingresos Totales', 
       value: formatCurrency(stats?.totalRevenue ?? 0), 
       icon: DollarSign, 
       color: 'from-emerald-500 to-emerald-600',
-      bg: 'bg-emerald-50'
+      bg: 'bg-emerald-50',
+      tab: 'orders'
     },
     { 
       label: 'Pendientes', 
       value: stats?.pendingOrders ?? 0, 
       icon: Clock, 
       color: 'from-amber-500 to-amber-600',
-      bg: 'bg-amber-50'
+      bg: 'bg-amber-50',
+      tab: 'orders'
     },
     { 
       label: 'Productos Activos', 
       value: stats?.totalProducts ?? 0, 
       icon: Package, 
       color: 'from-blue-500 to-blue-600',
-      bg: 'bg-blue-50'
+      bg: 'bg-blue-50',
+      tab: 'products'
     },
     { 
       label: 'Clientes Registrados', 
       value: stats?.totalUsers ?? 0, 
       icon: Users, 
       color: 'from-indigo-500 to-indigo-600',
-      bg: 'bg-indigo-50'
+      bg: 'bg-indigo-50',
+      tab: 'users'
     },
   ]
 
@@ -63,14 +68,18 @@ export default function OverviewTab({ stats, recentOrders, onViewAllOrders }: Ov
       {/* Stats Grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {statCards.map((stat) => (
-          <div key={stat.label} className="bg-white rounded-3xl p-5 border border-gray-100 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+          <button 
+            key={stat.label} 
+            onClick={() => onNavigate(stat.tab)}
+            className="bg-white rounded-3xl p-5 border border-gray-100 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group text-left w-full"
+          >
             <div className={`absolute -right-4 -top-4 w-16 h-16 rounded-full ${stat.bg} opacity-50 group-hover:scale-110 transition-transform`} />
             <div className={`w-10 h-10 rounded-2xl bg-gradient-to-br ${stat.color} flex items-center justify-center text-white mb-3 shadow-lg shadow-black/5`}>
               <stat.icon size={20} />
             </div>
             <p className="text-xl font-black text-gray-900 truncate">{stat.value}</p>
             <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">{stat.label}</p>
-          </div>
+          </button>
         ))}
       </div>
 
@@ -97,7 +106,11 @@ export default function OverviewTab({ stats, recentOrders, onViewAllOrders }: Ov
               <div className="p-10 text-center text-gray-400 italic text-sm">No hay pedidos recientes</div>
             ) : (
               recentOrders.slice(0, 6).map((order) => (
-                <div key={order.id} className="px-6 py-4 flex items-center justify-between hover:bg-gray-50/50 transition-colors">
+                <button 
+                  key={order.id} 
+                  onClick={() => onNavigate('orders')}
+                  className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50/50 transition-colors text-left"
+                >
                   <div className="flex items-center gap-4 min-w-0">
                     <div className={`w-2 h-2 rounded-full shrink-0 ${order.status === 'pending' ? 'bg-amber-400 animate-pulse' : 'bg-gray-200'}`} />
                     <div className="min-w-0">
@@ -113,7 +126,7 @@ export default function OverviewTab({ stats, recentOrders, onViewAllOrders }: Ov
                       {STATUS_LABELS[order.status]}
                     </span>
                   </div>
-                </div>
+                </button>
               ))
             )}
           </div>
@@ -137,12 +150,16 @@ export default function OverviewTab({ stats, recentOrders, onViewAllOrders }: Ov
             <h3 className="text-sm font-black text-gray-900 uppercase tracking-wider mb-4">Atajos Rápidos</h3>
             <div className="grid grid-cols-2 gap-2">
               {[
-                { label: 'Publicar', icon: Plus, bg: 'bg-blue-50 text-blue-600' },
-                { label: 'Stock', icon: Package, bg: 'bg-amber-50 text-amber-600' },
-                { label: 'Clientes', icon: Users, bg: 'bg-purple-50 text-purple-600' },
-                { label: 'Ajustes', icon: Settings, bg: 'bg-gray-50 text-gray-600' },
+                { label: 'Publicar', icon: Plus, bg: 'bg-blue-50 text-blue-600', tab: 'products' },
+                { label: 'Stock', icon: Package, bg: 'bg-amber-50 text-amber-600', tab: 'inventory' },
+                { label: 'Clientes', icon: Users, bg: 'bg-purple-50 text-purple-600', tab: 'users' },
+                { label: 'Ajustes', icon: Settings, bg: 'bg-gray-50 text-gray-600', tab: 'settings' },
               ].map((item) => (
-                <button key={item.label} className="flex flex-col items-center justify-center p-3 rounded-2xl border border-gray-50 hover:border-gray-100 hover:bg-gray-50 transition-all gap-2 group">
+                <button 
+                  key={item.label} 
+                  onClick={() => onNavigate(item.tab)}
+                  className="flex flex-col items-center justify-center p-3 rounded-2xl border border-gray-50 hover:border-gray-100 hover:bg-gray-50 transition-all gap-2 group"
+                >
                   <div className={`w-8 h-8 rounded-xl ${item.bg} flex items-center justify-center group-hover:scale-110 transition-transform`}>
                     <item.icon size={16} />
                   </div>

@@ -11,7 +11,8 @@ export const productOptionSchema = z.object({
 })
 
 export const richContentBlockSchema = z.discriminatedUnion('type', [
-  z.object({ type: z.literal('text'), content: z.string() }),
+  z.object({ type: z.literal('text'), content: z.string(), bold: z.boolean().optional() }),
+  z.object({ type: z.literal('heading'), content: z.string(), level: z.number().min(1).max(6) }),
   z.object({ type: z.literal('image'), url: z.string(), alt: z.string().optional() }),
 ])
 

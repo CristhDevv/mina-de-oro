@@ -196,12 +196,20 @@ export default function ProductDetail({ product }: ProductDetailProps) {
           <div className="space-y-6 pt-6 border-t border-gray-100 pb-10">
             {product.rich_content.map((block, i) => (
               <div key={i} className="animate-in fade-in slide-in-from-bottom-2 duration-500 delay-75">
-                {block.type === 'text' ? (
-                  <p className="text-base text-gray-700 leading-[1.6] whitespace-pre-wrap px-1">
+                {block.type === 'heading' ? (
+                  block.level === 1 ? (
+                    <h1 className="text-2xl font-black text-[#1B2B5E] mb-4 mt-6">{block.content}</h1>
+                  ) : block.level === 2 ? (
+                    <h2 className="text-xl font-bold text-[#1B2B5E] mb-3 mt-5">{block.content}</h2>
+                  ) : (
+                    <h3 className="text-lg font-bold text-[#1B2B5E] mb-2 mt-4">{block.content}</h3>
+                  )
+                ) : block.type === 'text' ? (
+                  <p className={`text-base text-gray-700 leading-[1.6] whitespace-pre-wrap px-1 ${block.bold ? 'font-bold' : ''}`}>
                     {block.content}
                   </p>
                 ) : (
-                  <div className="relative w-full aspect-[16/10] sm:aspect-video rounded-3xl overflow-hidden shadow-sm border border-gray-100 bg-gray-50">
+                  <div className="relative w-full aspect-[16/10] sm:aspect-video rounded-3xl overflow-hidden shadow-sm border border-gray-100 bg-gray-50 my-4">
                     <Image
                       src={block.url}
                       alt={block.alt || product.name}
