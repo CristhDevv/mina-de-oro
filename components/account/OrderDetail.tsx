@@ -106,7 +106,7 @@ export default function OrderDetail({ orderId }: { orderId: string }) {
             })}
           </div>
         </div>
-      )}
+      ) : null}
       
       {/* Tracking Number (Nuevo) */}
       {order.tracking_number && (
