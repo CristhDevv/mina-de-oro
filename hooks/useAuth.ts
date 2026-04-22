@@ -12,77 +12,73 @@ export function useAuth(): AuthState {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
 
-  const fetchUser = useCallback(async (authUser: { id: string; email?: string; user_metadata?: { name?: string } }) => {
-    try {
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('name, role')
-        .eq('id', authUser.id)
-        .single()
-
-      setUser({
-        id: authUser.id,
-        name: profile?.name ?? authUser.user_metadata?.name ?? authUser.email?.split('@')[0] ?? '',
-        email: authUser.email ?? '',
-        role: (profile?.role as User['role']) ?? 'customer',
-      })
-    } catch (error) {
-      console.error('Error fetching user profile:', error)
-      // Fallback a metadatos básicos si el perfil falla
-      setUser({
-        id: authUser.id,
-        name: authUser.user_metadata?.name ?? authUser.email?.split('@')[0] ?? '',
-        email: authUser.email ?? '',
-        role: 'customer',
-      })
-    }
-  }, [])
+  const mapUser = useCallback((authUser: any, profile?: any): User => ({
+    id: authUser.id,
+    name: profile?.name || authUser.user_metadata?.name || authUser.email?.split('@')[0] || 'Usuario',
+    email: authUser.email || '',
+    role: (profile?.role as User['role']) || 'customer',
+  }), [])
 
   useEffect(() => {
     let mounted = true
 
-    async function init() {
-      // Timeout de seguridad de 5 segundos
-      const timeoutId = setTimeout(() => {
-        if (mounted) setLoading(false)
-      }, 5000)
-
+    // 1. Carga inicial ultra rápida
+    async function initAuth() {
       try {
         const { data: { session } } = await supabase.auth.getSession()
         if (!mounted) return
+        
         if (session?.user) {
-          await fetchUser(session.user)
+          // Primero seteamos datos básicos de la sesión para desbloquear la UI
+          setUser(mapUser(session.user))
+          setLoading(false)
+
+          // Luego buscamos el perfil completo en segundo plano
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('name, role')
+            .eq('id', session.user.id)
+            .single()
+          
+          if (mounted && profile) {
+            setUser(mapUser(session.user, profile))
+          }
+        } else {
+          setLoading(false)
         }
-      } catch (error) {
-        console.error('Auth init error:', error)
-      } finally {
-        clearTimeout(timeoutId)
+      } catch (e) {
         if (mounted) setLoading(false)
       }
     }
 
-    init()
+    initAuth()
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    // 2. Suscripción a cambios
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (!mounted) return
-      try {
-        if (session?.user) {
-          await fetchUser(session.user)
-        } else {
-          setUser(null)
+      
+      if (session?.user) {
+        setUser(mapUser(session.user))
+        // Actualizar perfil si es un login nuevo
+        if (event === 'SIGNED_IN') {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('name, role')
+            .eq('id', session.user.id)
+            .single()
+          if (mounted) setUser(mapUser(session.user, profile))
         }
-      } catch (error) {
-        console.error('Auth state change error:', error)
-      } finally {
-        if (mounted) setLoading(false)
+      } else {
+        setUser(null)
       }
+      setLoading(false)
     })
 
     return () => {
       mounted = false
       subscription.unsubscribe()
     }
-  }, [fetchUser])
+  }, [mapUser])
 
   return { user, loading }
 }

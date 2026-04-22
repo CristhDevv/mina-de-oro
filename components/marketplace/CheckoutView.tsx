@@ -14,7 +14,7 @@ export default function CheckoutView() {
   useEffect(() => {
     if (loading) return
     if (!user) {
-      router.replace('/cuenta')
+      router.replace(`/cuenta?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}`)
       return
     }
     if (items.length === 0) {

@@ -23,6 +23,7 @@ type Order = {
     address: string
     city: string
   }
+  tracking_number?: string
   order_items: OrderItem[]
 }
 
@@ -105,10 +106,16 @@ export default function OrderDetail({ orderId }: { orderId: string }) {
             })}
           </div>
         </div>
-      ) : (
-        <div className="bg-red-50 border border-red-100 rounded-2xl p-4 mb-4 flex items-center gap-3">
-          <XCircle size={20} className="text-red-500 shrink-0" />
-          <p className="text-sm text-red-600 font-semibold">Este pedido fue cancelado</p>
+      )}
+      
+      {/* Tracking Number (Nuevo) */}
+      {order.tracking_number && (
+        <div className="bg-blue-50 border border-blue-100 rounded-2xl p-4 mb-4 flex items-center gap-3">
+          <Truck size={20} className="text-[#1B2B5E] shrink-0" />
+          <div>
+            <p className="text-xs font-semibold text-[#1B2B5E] uppercase tracking-wide">Número de guía</p>
+            <p className="text-sm font-bold text-gray-900">{order.tracking_number}</p>
+          </div>
         </div>
       )}
 

@@ -35,10 +35,13 @@ export async function getAllOrders() {
   return data
 }
 
-export async function updateOrderStatus(orderId: string, status: string) {
+export async function updateOrderStatus(orderId: string, status: string, trackingNumber?: string) {
   const { error } = await supabase
     .from('orders')
-    .update({ status })
+    .update({ 
+      status,
+      tracking_number: trackingNumber 
+    })
     .eq('id', orderId)
 
   if (error) throw error

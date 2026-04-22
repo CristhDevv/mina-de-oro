@@ -24,7 +24,7 @@ export async function createOrder(
       user_id: user.id,
       total,
       shipping_address: shippingAddress,
-      status: paymentMethod === 'contraentrega' ? 'confirmed' : 'pending',
+      status: 'pending',
       payment_method: paymentMethod
     })
     .select()

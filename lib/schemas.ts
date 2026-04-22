@@ -76,6 +76,7 @@ export const orderSchema = z.object({
   payment_method: z.enum(['wompi', 'contraentrega']).default('wompi'),
   total: z.number(),
   shipping_address: shippingAddressSchema,
+  tracking_number: z.string().optional(),
   created_at: z.string(),
   updated_at: z.string(),
   order_items: z.array(orderItemSchema).optional(),
