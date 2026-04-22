@@ -1,12 +1,13 @@
 'use client'
-import { useState } from 'react'
-import { supabase } from '@/lib/supabase'
+import { useState, useMemo } from 'react'
+import { createClient } from '@/lib/supabase/client'
 import { Eye, EyeOff } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
 
 type Mode = 'login' | 'register'
 
 export default function GuestView() {
+  const supabase = useMemo(() => createClient(), [])
   const [mode, setMode] = useState<Mode>('login')
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')

@@ -1,7 +1,8 @@
 'use client'
+import { useMemo } from 'react'
 import { User } from '@/types'
 import { ShoppingBag, Heart, MapPin, HelpCircle, LogOut, ChevronRight, LayoutDashboard } from 'lucide-react'
-import { supabase } from '@/lib/supabase'
+import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
 import PushNotificationToggle from '@/components/ui/PushNotificationToggle'
 
@@ -17,6 +18,7 @@ const menuItems = [
 ]
 
 export default function UserView({ user }: Props) {
+  const supabase = useMemo(() => createClient(), [])
   async function handleLogout() {
     await supabase.auth.signOut()
   }

@@ -1,6 +1,6 @@
 'use client'
-import { useEffect, useState, useCallback } from 'react'
-import { supabase } from '@/lib/supabase'
+import { useEffect, useState, useCallback, useMemo } from 'react'
+import { createClient } from '@/lib/supabase/client'
 import { User } from '@/types'
 
 interface AuthState {
@@ -9,6 +9,7 @@ interface AuthState {
 }
 
 export function useAuth(): AuthState {
+  const supabase = useMemo(() => createClient(), [])
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
 
