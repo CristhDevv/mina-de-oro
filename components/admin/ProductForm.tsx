@@ -182,10 +182,10 @@ export default function ProductForm({ product, categories, onCancel, onSaved }: 
   )
 
   return (
-    <div className="w-full max-w-3xl mx-auto bg-white rounded-[40px] shadow-xl flex flex-col my-8 border border-gray-100">
-      {/* Header Fixed */}
-      <div className="px-8 pt-8 pb-4 bg-white rounded-t-[40px] shrink-0 border-b border-gray-50">
-        <div className="flex items-center justify-between">
+    <div className="w-full min-h-screen bg-[#F8F9FD]">
+      <div className="w-full max-w-3xl mx-auto flex flex-col">
+        {/* Header Fixed */}
+        <div className="sticky top-0 z-30 px-8 py-6 bg-white border-b border-gray-200 flex items-center justify-between">
           <div>
             <h2 className="text-xl font-black text-[#1B2B5E]">
               {product ? 'Editar Producto' : 'Nuevo Producto'}
@@ -199,14 +199,12 @@ export default function ProductForm({ product, categories, onCancel, onSaved }: 
             <X size={20} />
           </button>
         </div>
-      </div>
 
-      {/* Scrollable Content */}
-      <div className="flex-1 px-8 py-8">
-        <div className="flex flex-col gap-10">
+        {/* Scrollable Content */}
+        <div className="flex-1 flex flex-col">
           
           {/* Section: Media */}
-          <section>
+          <section className="bg-white p-8 border-b border-gray-100">
             <SectionHeader icon={ImagePlus} title="Galería de Imágenes" description="Sube hasta 10 fotos. La primera será la principal." />
             <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-3 mt-4">
               {images.map((url, index) => (
@@ -240,7 +238,7 @@ export default function ProductForm({ product, categories, onCancel, onSaved }: 
           </section>
 
           {/* Section: Basic Info */}
-          <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <section className="bg-white p-8 border-b border-gray-100 grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="md:col-span-2">
               <SectionHeader icon={Info} title="Información General" />
             </div>
@@ -315,7 +313,7 @@ export default function ProductForm({ product, categories, onCancel, onSaved }: 
           </section>
 
           {/* Section: Price & Inventory */}
-          <section className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6 bg-blue-50/30 rounded-[32px] border border-blue-100/50">
+          <section className="bg-white p-8 border-b border-gray-100 grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="md:col-span-3">
               <SectionHeader icon={Tag} title="Precio e Inventario" />
             </div>
@@ -361,7 +359,7 @@ export default function ProductForm({ product, categories, onCancel, onSaved }: 
           </section>
 
           {/* Section: Customization */}
-          <section className="space-y-8">
+          <section className="bg-white p-8 border-b border-gray-100 space-y-8">
             <SectionHeader icon={Layers} title="Personalización y Atributos" description="Configura tallas, colores y detalles técnicos." />
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -474,7 +472,7 @@ export default function ProductForm({ product, categories, onCancel, onSaved }: 
           </section>
 
           {/* Section: Rich Content */}
-          <section className="space-y-6 pt-6 border-t border-gray-100">
+          <section className="bg-white p-8 border-b border-gray-100 space-y-6">
             <div className="flex flex-col gap-1">
               <SectionHeader icon={Type} title="Contenido Detallado" description="Diseña la descripción extendida del producto." />
               <div className="flex flex-wrap gap-2 mt-2">
@@ -575,7 +573,7 @@ export default function ProductForm({ product, categories, onCancel, onSaved }: 
           </section>
 
           {/* Section: FAQ */}
-          <section className="space-y-6 pb-10">
+          <section className="bg-white p-8 space-y-6">
             <SectionHeader icon={HelpCircle} title="Preguntas Frecuentes" description="Resuelve dudas comunes sobre este producto." />
             <div className="space-y-3">
               {faq.map((f, i) => (
@@ -608,37 +606,37 @@ export default function ProductForm({ product, categories, onCancel, onSaved }: 
           </section>
 
         </div>
-      </div>
 
-      {/* Footer Fixed */}
-      <div className="sticky bottom-0 left-0 right-0 p-8 bg-white/80 backdrop-blur-xl border-t border-gray-100 flex items-center justify-between gap-4 rounded-b-[40px] z-10">
-        <div className="hidden sm:block">
-          {error && <p className="text-[10px] text-red-500 font-bold uppercase tracking-tight max-w-[200px] truncate">{error}</p>}
-        </div>
-        <div className="flex gap-3 w-full sm:w-auto">
-          <button 
-            onClick={onCancel}
-            className="flex-1 sm:flex-none h-12 px-8 rounded-2xl font-bold text-sm text-gray-400 hover:bg-gray-50 transition-colors"
-          >
-            Cancelar
-          </button>
-          <button 
-            onClick={handleSave} 
-            disabled={saving || uploading}
-            className="flex-1 sm:flex-none h-12 px-10 bg-[#1B2B5E] text-white font-bold text-sm rounded-2xl shadow-xl shadow-blue-900/20 disabled:opacity-50 active:scale-95 transition-all flex items-center justify-center gap-2"
-          >
-            {saving ? (
-              <>
-                <Loader2 size={16} className="animate-spin" />
-                Guardando...
-              </>
-            ) : (
-              <>
-                <CheckCircle2 size={16} />
-                {product ? 'Actualizar Producto' : 'Publicar Producto'}
-              </>
-            )}
-          </button>
+        {/* Footer Fixed */}
+        <div className="sticky bottom-0 z-30 px-8 py-6 bg-white border-t border-gray-200 flex items-center justify-between gap-4">
+          <div className="hidden sm:block">
+            {error && <p className="text-[10px] text-red-500 font-bold uppercase tracking-tight max-w-[200px] truncate">{error}</p>}
+          </div>
+          <div className="flex gap-3 w-full sm:w-auto">
+            <button 
+              onClick={onCancel}
+              className="flex-1 sm:flex-none h-12 px-8 rounded-2xl font-bold text-sm text-gray-400 hover:bg-gray-50 transition-colors"
+            >
+              Cancelar
+            </button>
+            <button 
+              onClick={handleSave} 
+              disabled={saving || uploading}
+              className="flex-1 sm:flex-none h-12 px-10 bg-[#1B2B5E] text-white font-bold text-sm rounded-2xl shadow-xl shadow-blue-900/20 disabled:opacity-50 active:scale-95 transition-all flex items-center justify-center gap-2"
+            >
+              {saving ? (
+                <>
+                  <Loader2 size={16} className="animate-spin" />
+                  Guardando...
+                </>
+              ) : (
+                <>
+                  <CheckCircle2 size={16} />
+                  {product ? 'Actualizar Producto' : 'Publicar Producto'}
+                </>
+              )}
+            </button>
+          </div>
         </div>
       </div>
     </div>
