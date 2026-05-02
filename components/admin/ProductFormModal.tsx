@@ -33,6 +33,7 @@ export default function ProductFormModal({ product, categories, onClose, onSaved
   const [newFeature, setNewFeature] = useState('')
   const [specifications, setSpecifications] = useState<{label: string, value: string}[]>(product?.specifications ?? [])
   const [richContent, setRichContent] = useState<RichContentBlock[]>(product?.rich_content ?? [])
+  const [brandColor, setBrandColor] = useState(product?.brand_color ?? '#1B2B5E')
 
   const [uploading, setUploading] = useState(false)
   const [saving, setSaving] = useState(false)
@@ -159,6 +160,7 @@ export default function ProductFormModal({ product, categories, onClose, onSaved
       specifications,
       rich_content: richContent,
       featured,
+      brand_color: brandColor,
     }
     const { error: dbError } = product
       ? await supabase.from('products').update(payload).eq('id', product.id)
@@ -283,6 +285,25 @@ export default function ProductFormModal({ product, categories, onClose, onSaved
                 >
                   <div className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow-sm transition-all ${featured ? 'right-0.5' : 'left-0.5'}`} />
                 </button>
+              </div>
+
+              <div className="flex items-center justify-between px-5 h-12 rounded-2xl border border-gray-100 bg-gray-50/30">
+                <div className="flex items-center gap-2">
+                  <div 
+                    className="w-4 h-4 rounded-full border border-gray-200"
+                    style={{ backgroundColor: brandColor }}
+                  />
+                  <span className="text-xs font-bold text-[#1B2B5E]">Color de marca</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="text-[10px] text-gray-400 font-mono uppercase">{brandColor}</span>
+                  <input
+                    type="color"
+                    value={brandColor}
+                    onChange={(e) => setBrandColor(e.target.value)}
+                    className="w-8 h-8 rounded-lg border-0 cursor-pointer bg-transparent p-0 overflow-hidden"
+                  />
+                </div>
               </div>
 
               <div className="md:col-span-2 flex flex-col gap-1.5">
