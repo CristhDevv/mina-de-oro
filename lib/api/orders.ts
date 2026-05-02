@@ -2,50 +2,14 @@ import { createClient } from '@/lib/supabase/client'
 const supabase = createClient()
 import { CartItem } from '@/types'
 
-export async function createOrder(
-  items: CartItem[],
-  shippingAddress: {
-    name: string
-    phone: string
-    address: string
-    city: string
-  },
-  paymentMethod: 'wompi' | 'contraentrega' = 'wompi'
-) {
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) throw new Error('Usuario no autenticado')
-
-  const total = items.reduce(
-    (sum, item) => sum + item.product.price * item.quantity, 0
-  )
-
-  const { data: order, error: orderError } = await supabase
-    .from('orders')
-    .insert({
-      user_id: user.id,
-      total,
-      shipping_address: shippingAddress,
-      status: 'pending',
-      payment_method: paymentMethod
-    })
-    .select()
-    .single()
-
-  if (orderError) throw orderError
-
-  const orderItems = items.map(item => ({
-    order_id: order.id,
-    product_id: item.product.id,
-    quantity: item.quantity,
-    unit_price: item.product.price
-  }))
-
-  const { error: itemsError } = await supabase
-    .from('order_items')
-    .insert(orderItems)
-
-  if (itemsError) throw itemsError
-
+export async function createOrder(items: CartItem[], shippingAddress: any, paymentMethod: 'wompi' | 'contraentrega' = 'wompi') {
+  const res = await fetch('/api/orders', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ items, shippingAddress, paymentMethod })
+  })
+  if (!res.ok) throw new Error(await res.text())
+  const { order } = await res.json()
   return order
 }
 
