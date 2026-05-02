@@ -16,6 +16,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
   const [activeImage, setActiveImage] = useState(0)
   const addItem = useCartStore((state) => state.addItem)
   const router = useRouter()
+  const accent = product.brand_color || '#1B2B5E'
 
   const images = product.images && product.images.length > 0 
     ? product.images 
@@ -31,7 +32,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
   }
 
   return (
-    <div className="pb-8 bg-white">
+    <div className="pb-8 bg-white" style={{ '--accent': accent } as React.CSSProperties}>
       {/* 1. Galería de Imágenes - Estilo Amazon con Thumbnails */}
       <div className="w-full max-w-lg mx-auto bg-white pt-2">
         <div className="relative aspect-square w-full">
@@ -51,9 +52,8 @@ export default function ProductDetail({ product }: ProductDetailProps) {
               <button
                 key={idx}
                 onClick={() => setActiveImage(idx)}
-                className={`relative w-14 h-14 rounded-xl overflow-hidden border-2 transition-all ${
-                  idx === activeImage ? 'border-[#C9A84C]' : 'border-transparent'
-                }`}
+                className={`relative w-14 h-14 rounded-xl overflow-hidden border-2 transition-all`}
+                style={{ borderColor: idx === activeImage ? accent : 'transparent' }}
               >
                 <Image src={img} alt="" fill className="object-contain p-1" />
               </button>
@@ -65,12 +65,12 @@ export default function ProductDetail({ product }: ProductDetailProps) {
       <div className="max-w-lg mx-auto px-4 pt-6 space-y-4">
         {/* 2. Información Principal (Sin categoría ni rating) */}
         <div className="space-y-1">
-          <h1 className="text-xl font-bold text-[#1B2B5E] leading-tight">
+          <h1 className="text-xl font-bold leading-tight" style={{ color: accent }}>
             {product.name}
           </h1>
           
           <div className="flex items-baseline gap-2">
-            <span className="text-2xl font-black text-[#1B2B5E]">
+            <span className="text-2xl font-black" style={{ color: accent }}>
               ${product.price.toLocaleString('es-CO')}
             </span>
             {product.originalPrice && (
@@ -89,23 +89,25 @@ export default function ProductDetail({ product }: ProductDetailProps) {
         {/* 3. Selector de Cantidad */}
         <div className="bg-transparent rounded-2xl p-4 border border-gray-100 flex items-center justify-between">
           <div className="space-y-0.5">
-            <span className="text-xs font-bold text-[#1B2B5E] uppercase tracking-wider block">
+            <span className="text-xs font-bold uppercase tracking-wider block" style={{ color: accent }}>
               Cantidad
             </span>
           </div>
           <div className="flex items-center gap-4 bg-gray-50 rounded-xl p-1">
             <button 
               onClick={() => setQuantity(prev => Math.max(1, prev - 1))}
-              className="w-8 h-8 rounded-lg bg-white shadow-sm flex items-center justify-center text-[#1B2B5E] active:scale-90 transition-all"
+              className="w-8 h-8 rounded-lg bg-white shadow-sm flex items-center justify-center active:scale-90 transition-all"
+              style={{ color: accent }}
             >
               <Minus size={16} />
             </button>
-            <span className="font-bold text-[#1B2B5E] w-4 text-center">
+            <span className="font-bold w-4 text-center" style={{ color: accent }}>
               {quantity}
             </span>
             <button 
               onClick={() => setQuantity(prev => Math.min(product.stock, prev + 1))}
-              className="w-8 h-8 rounded-lg bg-white shadow-sm flex items-center justify-center text-[#1B2B5E] active:scale-90 transition-all disabled:opacity-30"
+              className="w-8 h-8 rounded-lg bg-white shadow-sm flex items-center justify-center active:scale-90 transition-all disabled:opacity-30"
+              style={{ color: accent }}
               disabled={quantity >= product.stock}
             >
               <Plus size={16} />
@@ -119,7 +121,8 @@ export default function ProductDetail({ product }: ProductDetailProps) {
             <button 
               onClick={handleAddToCart}
               disabled={product.stock <= 0}
-              className="w-14 h-14 bg-white text-[#1B2B5E] rounded-2xl font-bold flex items-center justify-center shadow-sm border border-gray-200 active:scale-95 transition-all hover:bg-gray-50"
+              className="w-14 h-14 bg-white rounded-2xl font-bold flex items-center justify-center shadow-sm border border-gray-200 active:scale-95 transition-all hover:bg-gray-50"
+              style={{ color: accent }}
               title="Añadir al carrito"
             >
               <ShoppingCart size={22} />
@@ -127,7 +130,8 @@ export default function ProductDetail({ product }: ProductDetailProps) {
             <button 
               onClick={handleBuyNow}
               disabled={product.stock <= 0}
-              className="flex-1 h-14 bg-[#1B2B5E] text-white rounded-2xl font-black text-sm flex items-center justify-center gap-2 shadow-lg shadow-blue-900/10 active:scale-[0.98] transition-all disabled:opacity-50 disabled:grayscale uppercase tracking-wide"
+              className="flex-1 h-14 text-white rounded-2xl font-black text-sm flex items-center justify-center gap-2 shadow-lg shadow-blue-900/10 active:scale-[0.98] transition-all disabled:opacity-50 disabled:grayscale uppercase tracking-wide"
+              style={{ backgroundColor: accent }}
             >
               {product.stock > 0 ? 'Comprar ahora' : 'Agotado'}
             </button>
@@ -198,11 +202,11 @@ export default function ProductDetail({ product }: ProductDetailProps) {
               <div key={i} className="animate-in fade-in slide-in-from-bottom-2 duration-500 delay-75">
                 {block.type === 'heading' ? (
                   block.level === 1 ? (
-                    <h1 className="text-2xl font-black text-[#1B2B5E] mb-4 mt-6">{block.content}</h1>
+                    <h1 className="text-2xl font-black mb-4 mt-6" style={{ color: accent }}>{block.content}</h1>
                   ) : block.level === 2 ? (
-                    <h2 className="text-xl font-bold text-[#1B2B5E] mb-3 mt-5">{block.content}</h2>
+                    <h2 className="text-xl font-bold mb-3 mt-5" style={{ color: accent }}>{block.content}</h2>
                   ) : (
-                    <h3 className="text-lg font-bold text-[#1B2B5E] mb-2 mt-4">{block.content}</h3>
+                    <h3 className="text-lg font-bold mb-2 mt-4" style={{ color: accent }}>{block.content}</h3>
                   )
                 ) : block.type === 'text' ? (
                   <p className={`text-base text-gray-700 leading-[1.6] whitespace-pre-wrap px-1 ${block.bold ? 'font-bold' : ''}`}>
@@ -227,11 +231,11 @@ export default function ProductDetail({ product }: ProductDetailProps) {
         {/* 10. Preguntas Frecuentes (GEO Optimized) */}
         {product.faq && product.faq.length > 0 && (
           <section className="space-y-4 pt-8 border-t border-gray-100 pb-10">
-            <h2 className="text-lg font-bold text-[#1B2B5E] px-1">Preguntas Frecuentes</h2>
+            <h2 className="text-lg font-bold px-1" style={{ color: accent }}>Preguntas Frecuentes</h2>
             <div className="space-y-4">
               {product.faq.map((item, i) => (
                 <div key={i} className="bg-gray-50 rounded-2xl p-4 border border-gray-100">
-                  <h3 className="text-sm font-bold text-[#1B2B5E] mb-2">{item.question}</h3>
+                  <h3 className="text-sm font-bold mb-2" style={{ color: accent }}>{item.question}</h3>
                   <p className="text-sm text-gray-600 leading-relaxed">{item.answer}</p>
                 </div>
               ))}

@@ -35,6 +35,7 @@ export const productSchema = z.object({
   features: z.array(z.string()).optional(),
   rich_content: z.array(richContentBlockSchema).optional(),
   featured: z.boolean().default(false),
+  brand_color: z.string().optional(),
 })
 
 export const categorySchema = z.object({
