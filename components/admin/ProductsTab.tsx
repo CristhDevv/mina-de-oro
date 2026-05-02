@@ -3,14 +3,14 @@
 import { Package, Plus, Edit2, ExternalLink, Tag } from 'lucide-react'
 import { formatCurrency } from '@/lib/utils'
 import { Product } from '@/types'
+import { useRouter } from 'next/navigation'
 
 interface ProductsTabProps {
   products: Product[]
-  onEdit: (product: Product) => void
-  onAdd: () => void
 }
 
-export default function ProductsTab({ products, onEdit, onAdd }: ProductsTabProps) {
+export default function ProductsTab({ products }: ProductsTabProps) {
+  const router = useRouter()
   return (
     <div className="flex flex-col gap-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="flex items-center justify-between mb-2">
@@ -19,7 +19,7 @@ export default function ProductsTab({ products, onEdit, onAdd }: ProductsTabProp
           <p className="text-xs text-gray-500">{products.length} productos publicados</p>
         </div>
         <button
-          onClick={onAdd}
+          onClick={() => router.push('/admin/productos/nuevo')}
           className="flex items-center gap-2 bg-[#1B2B5E] text-white text-xs font-bold h-10 px-4 rounded-2xl hover:shadow-lg hover:shadow-[#1B2B5E]/20 transition-all active:scale-95"
         >
           <Plus size={16} /> <span className="hidden sm:inline">Nuevo Producto</span>
@@ -84,7 +84,7 @@ export default function ProductsTab({ products, onEdit, onAdd }: ProductsTabProp
                   <td className="px-6 py-4 text-right">
                     <div className="flex items-center justify-end gap-1">
                       <button
-                        onClick={() => onEdit(product)}
+                        onClick={() => router.push(`/admin/productos/${product.id}/editar`)}
                         className="w-8 h-8 rounded-xl flex items-center justify-center text-gray-400 hover:text-[#1B2B5E] hover:bg-[#1B2B5E]/5 transition-all"
                         title="Editar"
                       >

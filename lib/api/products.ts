@@ -53,6 +53,17 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
   return mapProduct(data)
 }
 
+export async function getProductById(id: string): Promise<Product | null> {
+  const { data, error } = await supabase
+    .from('products')
+    .select('*')
+    .eq('id', id)
+    .single()
+
+  if (error) return null
+  return mapProduct(data)
+}
+
 export async function getProductsByCategory(categorySlug: string): Promise<Product[]> {
   const { data, error } = await supabase
     .from('products')

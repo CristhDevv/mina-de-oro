@@ -10,7 +10,6 @@ import { getAdminStats, getAllOrders, updateOrderStatus, getAllUsers, updateUser
 import { getProducts } from '@/lib/api/products'
 import { getCategories, deleteCategory } from '@/lib/api/categories'
 import { Product, Category } from '@/types'
-import ProductFormModal from './ProductFormModal'
 import CategoryFormModal from './CategoryFormModal'
 import InventoryView from './InventoryView'
 import SettingsView from './SettingsView'
@@ -33,8 +32,6 @@ export default function AdminDashboard() {
   const [products, setProducts] = useState<Product[]>([])
   const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(true)
-  const [showForm, setShowForm] = useState(false)
-  const [editProduct, setEditProduct] = useState<Product | null>(null)
   const [showCategoryForm, setShowCategoryForm] = useState(false)
   const [editCategory, setEditCategory] = useState<Category | null>(null)
 
@@ -173,8 +170,6 @@ export default function AdminDashboard() {
               {tab === 'products' && (
                 <ProductsTab 
                   products={products} 
-                  onEdit={(p: Product) => { setEditProduct(p); setShowForm(true) }} 
-                  onAdd={() => { setEditProduct(null); setShowForm(true) }} 
                 />
               )}
               {tab === 'inventory' && <InventoryView />}
@@ -208,15 +203,6 @@ export default function AdminDashboard() {
           </button>
         ))}
       </div>
-
-      {showForm && (
-        <ProductFormModal
-          product={editProduct}
-          categories={categories}
-          onClose={() => setShowForm(false)}
-          onSaved={() => { setShowForm(false); load() }}
-        />
-      )}
 
       {showCategoryForm && (
         <CategoryFormModal
