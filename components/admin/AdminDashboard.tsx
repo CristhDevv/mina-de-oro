@@ -96,34 +96,39 @@ export default function AdminDashboard() {
     <div className="min-h-screen bg-[#F8F9FD] flex flex-col md:flex-row">
       
       {/* Sidebar (Desktop) */}
-      <aside className="hidden md:flex w-64 bg-[#1B2B5E] text-white flex-col sticky top-0 h-screen shrink-0">
-        <div className="p-8">
-          <h1 className="text-xl font-black tracking-tighter">MINA DE ORO</h1>
-          <p className="text-[10px] text-white/50 font-bold tracking-[0.2em] mt-1 uppercase">Admin Central</p>
+      <aside className="hidden md:flex w-[56px] hover:w-[220px] group transition-all duration-300 ease-in-out bg-[#1B2B5E] text-white flex-col sticky top-0 h-screen shrink-0 z-20 overflow-hidden">
+        <div className="h-24 flex flex-col justify-center px-4 whitespace-nowrap">
+          <div className="block group-hover:hidden text-center text-xl font-black w-full -ml-1">M</div>
+          <div className="hidden group-hover:block">
+            <h1 className="text-xl font-black tracking-tighter">MINA DE ORO</h1>
+            <p className="text-[10px] text-white/50 font-bold tracking-[0.2em] mt-1 uppercase">Admin Central</p>
+          </div>
         </div>
         
-        <nav className="flex-1 px-4 space-y-1">
+        <nav className="flex-1 px-2 group-hover:px-4 space-y-1 transition-all">
           {navItems.map(({ id, label, icon: Icon }) => (
             <button
               key={id}
               onClick={() => setTab(id)}
-              className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl text-sm font-bold transition-all ${
+              className={`w-full flex items-center gap-3 p-3 rounded-2xl text-sm font-bold transition-all whitespace-nowrap ${
                 tab === id ? 'bg-white text-[#1B2B5E] shadow-xl shadow-black/10' : 'text-white/60 hover:text-white hover:bg-white/5'
               }`}
+              title={label}
             >
-              <Icon size={18} />
-              {label}
+              <Icon size={18} className="shrink-0" />
+              <span className="hidden group-hover:block">{label}</span>
             </button>
           ))}
         </nav>
 
-        <div className="p-6 border-t border-white/5">
+        <div className="p-2 group-hover:p-4 border-t border-white/5 transition-all">
           <button 
             onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-4 py-3 text-rose-400 hover:bg-rose-500/10 rounded-2xl transition-all font-bold text-sm"
+            className="w-full flex items-center gap-3 p-3 text-rose-400 hover:bg-rose-500/10 rounded-2xl transition-all font-bold text-sm whitespace-nowrap"
+            title="Cerrar Sesión"
           >
-            <LogOut size={18} />
-            Cerrar Sesión
+            <LogOut size={18} className="shrink-0" />
+            <span className="hidden group-hover:block">Cerrar Sesión</span>
           </button>
         </div>
       </aside>
@@ -148,7 +153,7 @@ export default function AdminDashboard() {
         </header>
 
         {/* Content Container */}
-        <div className="p-4 md:p-10 max-w-6xl mx-auto w-full pb-32 md:pb-10 flex-1">
+        <div className="p-4 md:p-10 w-full pb-32 md:pb-10 flex-1">
           {loading ? (
             <div className="flex flex-col items-center justify-center h-[50vh] gap-4">
               <div className="w-12 h-12 border-4 border-[#1B2B5E] border-t-transparent rounded-full animate-spin" />
