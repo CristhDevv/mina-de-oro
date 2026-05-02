@@ -44,8 +44,12 @@ export default function CartView() {
           <div key={product.id} className="flex gap-3 bg-white rounded-2xl border border-gray-100 shadow-sm p-3">
 
             {/* Image */}
-            <div className="w-20 h-20 rounded-xl bg-gray-50 flex items-center justify-center shrink-0">
-              <span className="text-3xl">🛍️</span>
+            <div className="w-20 h-20 rounded-xl bg-gray-50 overflow-hidden shrink-0 relative">
+              {product.images?.[0] ? (
+                <img src={product.images[0]} alt={product.name} className="w-full h-full object-cover" />
+              ) : (
+                <span className="text-3xl flex items-center justify-center w-full h-full">🛍️</span>
+              )}
             </div>
 
             {/* Info */}
