@@ -294,7 +294,7 @@ export default function GuestCheckoutDrawer({ product, open, onClose }: GuestChe
                 </>
               ) : (
                 <>
-                  Confirmar pedido · ${total.toLocaleString('es-CO')}
+                  Confirmar pedido · ${total.toLocaleString('es-CO')} — Pago al recibir
                 </>
               )}
             </button>

@@ -51,10 +51,6 @@ export default function OrganizadorLanding({ product }: Props) {
   useEffect(() => {
     const ciudades = ['Bogotá', 'Medellín', 'Cali', 'Barranquilla', 'Bucaramanga', 'Pereira', 'Manizales', 'Cartagena', 'Cúcuta', 'Ibagué', 'Pasto', 'Villavicencio']
     const mensajes = [
-      'acaba de hacer su pedido',
-      'pidió el de 8 niveles',
-      'dejó sus datos para recibir el suyo',
-      'está mirando esta página ahora mismo',
       'acaba de apartar el suyo'
     ]
 
@@ -97,17 +93,17 @@ export default function OrganizadorLanding({ product }: Props) {
       
       {/* Top bar */}
       <div className="sticky top-0 z-40 bg-[#2C3E50] text-white text-center py-2.5 px-4 text-sm font-medium">
-        🚚 ENVÍO A TODO COLOMBIA · Pagas cuando recibes el producto en casa · Sin riesgos 🏠
+        🚚 Envío gratis a todo Colombia · Lo pagas cuando te llega · Sin riesgo 🏠
       </div>
 
       {/* Hero */}
       <section className="container mx-auto px-5 py-10 md:py-16 flex flex-col-reverse md:flex-row md:items-center fade-in-section opacity-0 translate-y-8 transition-all duration-700 ease-out">
         <div className="md:w-3/5 text-center md:text-left mt-10 md:mt-0 md:pr-10">
           <div className="inline-block bg-[#F8F1E3] text-[#A0856A] px-4 py-2 rounded-full font-semibold text-sm mb-5">
-            ⭐ Más de 2.300 hogares ya lo tienen
+            ⭐ +2.300 familias colombianas ya lo tienen
           </div>
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif text-[#2C3E50] mb-5 leading-tight">
-            ¿Tu entrada parece un <span className="text-[#D4691E]">caos</span> de zapatos?
+            ¿En tu casa los zapatos están por todas partes?
           </h1>
           <div className="flex items-center justify-center md:justify-start gap-2 mb-4">
             <div className="flex -space-x-2">
@@ -120,13 +116,13 @@ export default function OrganizadorLanding({ product }: Props) {
             <span className="text-sm text-gray-600 font-medium">+2.300 familias ordenadas ⭐⭐⭐⭐⭐</span>
           </div>
           <p className="text-lg text-gray-600 mb-8">
-            Organiza hasta 24 pares sin taladro, sin obras y en menos de 5 minutos.
+            Organiza hasta 24 pares hoy mismo — sin taladro, sin obras, en 5 minutos.
           </p>
           <button 
             onClick={() => setDrawerOpen(true)}
             className="inline-block bg-[#D4691E] text-white px-8 py-4 text-lg font-bold rounded-lg shadow-[0_4px_15px_rgba(232,98,26,0.4)] transition-transform hover:-translate-y-1 animate-[pulse_2s_infinite]"
           >
-            📦 LO QUIERO — Pago al recibir en casa
+            📦 PEDIR AHORA — Pago en casa
           </button>
           <div className="flex flex-wrap justify-center md:justify-start gap-5 mt-6 text-sm font-medium text-gray-700">
             <span className="flex items-center gap-1">🚚 Envío gratis</span>
@@ -156,7 +152,7 @@ export default function OrganizadorLanding({ product }: Props) {
 
       {/* Urgency */}
       <section className="bg-[#D4691E] text-white text-center p-5 font-bold text-lg">
-        🔥 OFERTA LIMITADA — Precio sube en:
+        🔥 Solo 7 unidades al precio de hoy · Precio sube en:
         <span className="font-mono text-3xl md:text-4xl block my-3">{formatTime(timeLeft)}</span>
         <span className="line-through opacity-70 text-base font-normal mr-2">$95.000</span>
         Solo $60.000
@@ -174,21 +170,21 @@ export default function OrganizadorLanding({ product }: Props) {
             />
           </div>
           <p className="text-sm font-normal opacity-90 mt-2">
-            ⚠️ El 86% del stock ya fue reservado
+            ⚠️ El 86% ya fue reservado — quedan 7 de 50
           </p>
         </div>
       </section>
 
       {/* Problem */}
       <section className="container mx-auto px-5 py-16 md:py-20 text-center fade-in-section opacity-0 translate-y-8 transition-all duration-700 ease-out">
-        <h2 className="text-3xl md:text-4xl font-serif text-[#2C3E50] mb-10">¿Te identificas con esto?</h2>
+        <h2 className="text-3xl md:text-4xl font-serif text-[#2C3E50] mb-10">¿Te suena familiar esto?</h2>
         <div className="relative max-w-3xl mx-auto rounded-xl overflow-hidden shadow-lg">
           <span className="absolute top-4 left-4 bg-[#D32F2F] text-white px-3 py-1.5 md:px-4 md:py-2 rounded-lg font-bold text-sm md:text-base z-10">❌ Antes</span>
           <span className="absolute top-4 right-4 bg-[#2E7D32] text-white px-3 py-1.5 md:px-4 md:py-2 rounded-lg font-bold text-sm md:text-base z-10">✅ Después</span>
           <Image src={IMAGES.antes_despues} alt="Antes y después" width={800} height={500} className="w-full object-cover" />
         </div>
         <p className="italic text-lg md:text-xl mt-8 text-gray-600 max-w-2xl mx-auto">
-          "Cada mañana buscas un zapato, encuentras el otro, llegas tarde. Y encima tropiezas con ellos."
+          "Salgo tarde, tropiezo con los zapatos, no encuentro el par... todos los días lo mismo."
         </p>
       </section>
 
@@ -199,7 +195,7 @@ export default function OrganizadorLanding({ product }: Props) {
           <div className="bg-[#E8F5F1] border border-[#A8D5C5] rounded-xl py-3 px-5 mb-8 flex items-center justify-center gap-3 max-w-2xl mx-auto">
             <span className="text-2xl">🛡️</span>
             <p className="text-[#1A6B50] font-semibold text-sm md:text-base text-center">
-              Recuerda que somos una <strong>tienda verificada</strong> — tu compra está 100% protegida
+              <strong>Tienda verificada</strong> · Tu plata está segura — pagas solo cuando el producto llega a tu puerta
             </p>
           </div>
           
@@ -208,7 +204,7 @@ export default function OrganizadorLanding({ product }: Props) {
               onClick={() => setDrawerOpen(true)}
               className="w-full md:w-auto md:min-w-[400px] bg-[#D4691E] text-white px-8 py-5 text-xl font-bold rounded-xl shadow-[0_4px_15px_rgba(232,98,26,0.4)] transition-transform hover:-translate-y-1 animate-[pulse_2s_infinite]"
             >
-              📦 LO QUIERO — Pago al recibir
+              📦 PEDIR AHORA — Pago en casa
             </button>
           </div>
 
@@ -230,13 +226,13 @@ export default function OrganizadorLanding({ product }: Props) {
       <section className="relative h-[400px] md:h-[500px] flex items-end fade-in-section opacity-0 translate-y-8 transition-all duration-700 ease-out">
         <Image src={IMAGES.sneakers} alt="Sneakers" fill className="object-cover" />
         <div className="relative w-full p-10 bg-gradient-to-t from-[#2C3E50] to-transparent text-center text-white z-10 pt-32">
-          <h2 className="text-3xl md:text-5xl font-serif mb-3 text-white">Organiza hasta 24 pares</h2>
-          <p className="text-lg md:text-xl opacity-90">Tallas, temporadas, tipos — todo tiene su sitio</p>
+          <h2 className="text-3xl md:text-5xl font-serif mb-3 text-white">Un lugar para cada par. Por fin.</h2>
+          <p className="text-lg md:text-xl opacity-90">24 pares organizados, a la vista, sin caos</p>
           <button
             onClick={() => setDrawerOpen(true)}
             className="mt-6 inline-block bg-[#D4691E] text-white px-8 py-4 text-lg font-bold rounded-lg shadow-[0_4px_15px_rgba(232,98,26,0.4)] transition-transform hover:-translate-y-1"
           >
-            📦 LO QUIERO — Pago al recibir
+            📦 PEDIR AHORA — Pago en casa
           </button>
         </div>
       </section>
@@ -269,13 +265,13 @@ export default function OrganizadorLanding({ product }: Props) {
           {/* Gancho emocional */}
           <div className="bg-[#F8F1E3] border-l-4 border-[#D4691E] rounded-xl p-6">
             <p className="text-[#2C3E50] font-serif text-lg leading-relaxed mb-4">
-              "Antes tardaba 10 minutos buscando mis zapatos cada mañana. Ahora entro, veo todo de un vistazo y salgo en 2."
+              "Antes perdía 10 minutos buscando zapatos cada mañana. Ahora agarro los que necesito y listo, en segundos."
             </p>
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-[#A0856A] flex items-center justify-center text-white font-bold">A</div>
               <div>
                 <span className="font-bold text-sm text-[#1A1A1A] block">Andrea P.</span>
-                <span className="text-xs text-gray-500">Bogotá · Comprador verificado</span>
+                <span className="text-xs text-gray-500">Bogotá · ✅ Compradora verificada</span>
               </div>
             </div>
           </div>
@@ -284,7 +280,7 @@ export default function OrganizadorLanding({ product }: Props) {
             onClick={() => setDrawerOpen(true)}
             className="mt-8 w-full bg-[#D4691E] text-white py-4 text-lg font-bold rounded-xl shadow-[0_4px_15px_rgba(232,98,26,0.4)] transition-transform hover:-translate-y-1"
           >
-            📦 LO QUIERO — Pago al recibir
+            📦 Lo quiero así en mi casa
           </button>
         </div>
       </section>
@@ -294,7 +290,7 @@ export default function OrganizadorLanding({ product }: Props) {
         <Image src={IMAGES.sneakers} alt="Fondo" fill className="object-cover" />
         <div className="absolute inset-0 bg-[#1B2F5E]/90"></div>
         <div className="container mx-auto px-5 relative z-10">
-          <h2 className="text-3xl md:text-4xl font-serif text-white text-center mb-12">Lo que dicen quienes ya lo tienen ⭐⭐⭐⭐⭐</h2>
+          <h2 className="text-3xl md:text-4xl font-serif text-white text-center mb-12">Lo que dicen los que ya lo tienen ⭐⭐⭐⭐⭐</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
             {/* Testimonio 1 — Mujer con rack */}
@@ -304,7 +300,7 @@ export default function OrganizadorLanding({ product }: Props) {
               </div>
               <div className="p-5">
                 <div className="text-[#A0856A] mb-2 tracking-widest text-sm">⭐⭐⭐⭐⭐</div>
-                <p className="italic text-gray-700 text-sm mb-4">"Lo monté en 5 minutos y mi entrada parece otra. ¡Por fin tengo todo ordenado!"</p>
+                <p className="italic text-gray-700 text-sm mb-4">"En serio, lo armé sola en 5 minutos. Mi entrada quedó como nueva. No puedo creer que antes vivía en ese desorden."</p>
                 <div className="flex items-center gap-3">
                   <div className="w-9 h-9 rounded-full bg-[#A0856A] flex items-center justify-center text-white font-bold text-sm">M</div>
                   <div>
@@ -322,7 +318,7 @@ export default function OrganizadorLanding({ product }: Props) {
               </div>
               <div className="p-5">
                 <div className="text-[#A0856A] mb-2 tracking-widest text-sm">⭐⭐⭐⭐⭐</div>
-                <p className="italic text-gray-700 text-sm mb-4">"Llegó rapidísimo y bien empacado. Lo armé sin instrucciones, muy intuitivo."</p>
+                <p className="italic text-gray-700 text-sm mb-4">"Llegó rápido, bien empacado y el armado fue pan comido. Sólido, no se mueve ni se dobla."</p>
                 <div className="flex items-center gap-3">
                   <div className="w-9 h-9 rounded-full bg-[#2C3E50] flex items-center justify-center text-white font-bold text-sm">C</div>
                   <div>
@@ -340,7 +336,7 @@ export default function OrganizadorLanding({ product }: Props) {
               </div>
               <div className="p-5">
                 <div className="text-[#A0856A] mb-2 tracking-widest text-sm">⭐⭐⭐⭐⭐</div>
-                <p className="italic text-gray-700 text-sm mb-4">"Tenía los zapatos por toda la habitación. Ahora tengo espacio y todo a la vista."</p>
+                <p className="italic text-gray-700 text-sm mb-4">"Tenía los zapatos por toda la pieza. Ahora los veo todos de una mirada y escojo sin estrés."</p>
                 <div className="flex items-center gap-3">
                   <div className="w-9 h-9 rounded-full bg-[#2E7D32] flex items-center justify-center text-white font-bold text-sm">L</div>
                   <div>
@@ -361,12 +357,12 @@ export default function OrganizadorLanding({ product }: Props) {
           <Image src={IMAGES.acero} alt="Calidad acero" width={600} height={600} className="rounded-xl w-full shadow-lg" />
         </div>
         <div className="md:w-1/2">
-          <h2 className="text-3xl md:text-4xl font-serif text-[#2C3E50] mb-8">Construido para durar</h2>
+          <h2 className="text-3xl md:text-4xl font-serif text-[#2C3E50] mb-8">Hecho para durar, no para botarlo al año</h2>
           <ul className="space-y-4">
             {[
-              'Acero inoxidable que no se oxida',
-              'Conectores ABS que no se rompen',
-              'Patas antideslizantes para cualquier suelo'
+              'Acero que no se oxida ni con la humedad',
+              'Conectores que no se parten con el peso',
+              'Patas que no rayan ni resbalan en ningún piso'
             ].map((item, i) => (
               <li key={i} className="flex items-center gap-3 text-lg text-gray-700">
                 <span className="text-[#A0856A] font-bold text-2xl">✓</span> {item}
@@ -379,7 +375,7 @@ export default function OrganizadorLanding({ product }: Props) {
       {/* Pricing */}
       <section id="comprar" className="bg-[#2C3E50] py-16 md:py-20 px-5 text-white fade-in-section opacity-0 translate-y-8 transition-all duration-700 ease-out">
         <div className="container mx-auto">
-          <h2 className="text-3xl md:text-4xl font-serif text-white text-center mb-10">Elige tu modelo</h2>
+          <h2 className="text-3xl md:text-4xl font-serif text-white text-center mb-10">¿Cuántos pares tienes en casa?</h2>
           
           <div className="flex flex-col md:flex-row justify-center gap-6 mb-10">
             {/* Opción A */}
@@ -387,7 +383,7 @@ export default function OrganizadorLanding({ product }: Props) {
               onClick={() => setSelectedOption(0)}
               className={`relative bg-white/5 border-2 rounded-xl p-8 cursor-pointer w-full md:w-[320px] transition-all hover:bg-white/10 ${selectedOption === 0 ? 'border-[#A0856A] bg-white/10' : 'border-white/20'}`}
             >
-              <h3 className="text-xl font-bold mb-4">Opción A — 6 Niveles</h3>
+              <h3 className="text-xl font-bold mb-4">Opción A — 6 Niveles · Perfecto para 1 persona</h3>
               <div className="line-through opacity-60 text-lg">$85.000</div>
               <div className="text-4xl font-bold text-[#A0856A] my-2">$55.000</div>
               <p className="opacity-80 text-sm">Organiza hasta 24 pares</p>
@@ -401,7 +397,7 @@ export default function OrganizadorLanding({ product }: Props) {
               <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-[#A0856A] text-white px-4 py-1 rounded-full text-xs font-bold tracking-wide">
                 MÁS POPULAR
               </div>
-              <h3 className="text-xl font-bold mb-4">Opción B — 8 Niveles</h3>
+              <h3 className="text-xl font-bold mb-4">Opción B — 8 Niveles · Ideal para toda la familia</h3>
               <div className="line-through opacity-60 text-lg">$95.000</div>
               <div className="text-4xl font-bold text-[#A0856A] my-2">$60.000</div>
               <p className="opacity-80 text-sm">Organiza hasta 32 pares</p>
@@ -414,7 +410,7 @@ export default function OrganizadorLanding({ product }: Props) {
               <div className="text-5xl mb-3">🏠</div>
               <div className="text-2xl md:text-3xl font-serif font-bold mb-3">Pago Contra Entrega</div>
               <div className="text-white/90 mb-6 text-sm md:text-base">
-                No pagas nada hoy. El mensajero llega a tu puerta, revisas el producto y <strong>solo entonces pagas.</strong>
+                No pagas nada hoy. El mensajero llega, tú revisas, y solo ahí pagas. Cero riesgo.
               </div>
               <div className="flex flex-wrap justify-center gap-3">
                 <span className="bg-white/15 px-4 py-1.5 rounded-full text-sm font-medium">✅ Cero riesgo</span>
@@ -459,7 +455,7 @@ export default function OrganizadorLanding({ product }: Props) {
               onClick={() => setDrawerOpen(true)}
               className="w-full bg-[#D4691E] text-white py-5 text-xl font-bold rounded-xl shadow-[0_4px_15px_rgba(232,98,26,0.4)] transition-transform hover:-translate-y-1 animate-[pulse_2s_infinite] mb-4"
             >
-              📦 HACER PEDIDO — Pago al recibir
+              📦 PEDIR AHORA — Pago en casa
             </button>
             
             <div className="flex flex-wrap justify-center gap-4 text-xs opacity-80 mt-4">
@@ -478,14 +474,14 @@ export default function OrganizadorLanding({ product }: Props) {
       {/* FAQ */}
       <section className="bg-white py-16 md:py-20 fade-in-section opacity-0 translate-y-8 transition-all duration-700 ease-out">
         <div className="container mx-auto px-5 max-w-3xl">
-          <h2 className="text-3xl md:text-4xl font-serif text-[#2C3E50] text-center mb-10">Preguntas frecuentes</h2>
+          <h2 className="text-3xl md:text-4xl font-serif text-[#2C3E50] text-center mb-10">Preguntas que nos hacen antes de pedir</h2>
           <div className="space-y-0">
             {[
-              { q: '¿Necesito herramientas para montarlo?', a: 'No, se ensambla a presión en 5 minutos.' },
-              { q: '¿Cuántos zapatos caben?', a: '3-4 pares por nivel: 24 pares en el de 6 niveles, 32 en el de 8.' },
-              { q: '¿Es resistente?', a: 'Sí, acero inoxidable cromado, soporta 15 kg por nivel.' },
-              { q: '¿Puedo devolver si no me gusta?', a: 'Sí, 30 días de devolución gratuita sin preguntas.' },
-              { q: '¿Cuándo llega?', a: 'Envío en 24-48 horas laborables.' }
+              { q: '¿Necesito herramientas para montarlo?', a: 'Ninguna. Encaja a presión en 5 minutos, lo arma cualquiera.' },
+              { q: '¿Cuántos zapatos caben?', a: '3-4 pares por nivel: 24 en el de 6 niveles, 32 en el de 8.' },
+              { q: '¿Es resistente de verdad?', a: 'Acero inoxidable cromado, aguanta 15 kg por nivel. No es plástico barato.' },
+              { q: '¿Y si no me gusta?', a: '30 días para devolverlo, sin preguntas, sin pagar envío.' },
+              { q: '¿Cuándo llega?', a: 'Entre 1 y 3 días hábiles a cualquier ciudad de Colombia.' }
             ].map((faq, i) => (
               <div key={i} className="border-b border-gray-200 py-5 cursor-pointer" onClick={() => toggleFaq(i)}>
                 <div className="flex justify-between items-center font-bold text-lg text-[#1A1A1A]">
@@ -504,19 +500,19 @@ export default function OrganizadorLanding({ product }: Props) {
       {/* Final CTA */}
       <section className="py-20 bg-gradient-to-br from-[#2C3E50] to-[#0a1128] text-center text-white fade-in-section opacity-0 translate-y-8 transition-all duration-700 ease-out px-5">
         <h2 className="text-4xl md:text-5xl font-serif mb-4 text-white">Tu casa ordenada.<br/>Esta semana.</h2>
-        <p className="text-lg opacity-80 mb-10">Más de 2.300 familias ya dieron el paso.</p>
+        <p className="text-lg opacity-80 mb-10">Más de 2.300 familias colombianas ya dieron el paso.</p>
         <button 
           onClick={() => setDrawerOpen(true)}
           className="inline-block bg-[#D4691E] text-white px-8 py-4 text-lg font-bold rounded-lg shadow-[0_4px_15px_rgba(232,98,26,0.4)] transition-transform hover:-translate-y-1 animate-[pulse_2s_infinite]"
         >
-          📦 LO QUIERO — Pago al recibir
+          📦 PEDIR AHORA — Pago en casa
         </button>
         <div className="font-mono text-2xl text-[#A0856A] mt-8">{formatTime(timeLeft)}</div>
         <div className="inline-flex items-center gap-4 bg-white/10 border border-white/20 rounded-xl p-5 mt-10 text-left max-w-md">
           <div className="text-4xl">🛡️</div>
           <div>
-            <div className="font-bold text-white mb-1">Garantía Total 30 días</div>
-            <div className="text-sm text-white/70">Si no te convence, te devolvemos cada céntimo.<br/>Sin formularios. Sin esperas.</div>
+            <div className="font-bold text-white mb-1">Garantía 30 días</div>
+            <div className="text-sm text-white/70">Si no te convence, te devolvemos cada peso.<br/>Sin formularios. Sin demoras.</div>
           </div>
         </div>
       </section>
@@ -538,7 +534,7 @@ export default function OrganizadorLanding({ product }: Props) {
           onClick={() => setDrawerOpen(true)}
           className="w-full bg-[#D4691E] text-white py-4 text-lg font-bold rounded-xl shadow-lg animate-[pulse_2s_infinite]"
         >
-          📦 LO QUIERO — Pago al recibir
+          📦 PEDIR AHORA — Pago en casa
         </button>
       </div>
 
