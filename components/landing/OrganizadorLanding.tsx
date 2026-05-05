@@ -195,25 +195,12 @@ export default function OrganizadorLanding({ product }: Props) {
       {/* Trust Bar & CTA */}
       <section className="bg-white py-10 md:py-16 fade-in-section opacity-0 translate-y-8 transition-all duration-700 ease-out">
         <div className="container mx-auto px-5 max-w-4xl">
-          <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-4 mb-8">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-              <div className="flex flex-col items-center gap-2">
-                <span className="text-2xl">🔒</span>
-                <span className="text-xs font-bold text-gray-700">Tienda verificada</span>
-              </div>
-              <div className="flex flex-col items-center gap-2">
-                <span className="text-2xl">🚚</span>
-                <span className="text-xs font-bold text-gray-700">Envío a todo Colombia</span>
-              </div>
-              <div className="flex flex-col items-center gap-2">
-                <span className="text-2xl">↩️</span>
-                <span className="text-xs font-bold text-gray-700">30 días de devolución</span>
-              </div>
-              <div className="flex flex-col items-center gap-2">
-                <span className="text-2xl">📦</span>
-                <span className="text-xs font-bold text-gray-700">Pagas al recibir</span>
-              </div>
-            </div>
+          {/* Trust Bar */}
+          <div className="bg-[#E8F5F1] border border-[#A8D5C5] rounded-xl py-3 px-5 mb-8 flex items-center justify-center gap-3 max-w-2xl mx-auto">
+            <span className="text-2xl">🛡️</span>
+            <p className="text-[#1A6B50] font-semibold text-sm md:text-base text-center">
+              Recuerda que somos una <strong>tienda verificada</strong> — tu compra está 100% protegida
+            </p>
           </div>
           
           <div className="text-center mb-12">
