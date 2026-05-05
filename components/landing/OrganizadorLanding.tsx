@@ -132,11 +132,11 @@ export default function OrganizadorLanding({ product }: Props) {
         <div className="container mx-auto px-5 text-center">
           <p className="text-xs text-gray-400 mb-4 uppercase tracking-widest font-semibold">Destacado en</p>
           <div className="flex justify-center items-center gap-6 md:gap-10 flex-wrap opacity-50 grayscale">
-            <span className="font-serif text-xl font-bold">Forbes</span>
-            <span className="font-sans text-lg font-bold tracking-tighter">El País</span>
-            <span className="font-sans text-lg font-bold">Hogar Hoy</span>
-            <span className="font-serif text-lg">Casa & Jardín</span>
-            <span className="font-sans text-lg font-black tracking-widest">DECOR</span>
+            <span className="font-serif text-xl font-bold">Homecenter</span>
+            <span className="font-sans text-lg font-bold tracking-tighter">Falabella</span>
+            <span className="font-sans text-lg font-bold">Alkosto</span>
+            <span className="font-serif text-lg">Paris</span>
+            <span className="font-sans text-lg font-black tracking-widest">Éxito</span>
           </div>
         </div>
       </section>
