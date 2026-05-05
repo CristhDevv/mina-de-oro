@@ -162,26 +162,39 @@ export default function OrganizadorLanding({ product }: Props) {
         </p>
       </section>
 
-      {/* Benefits */}
-      <section className="bg-white py-16 md:py-20 fade-in-section opacity-0 translate-y-8 transition-all duration-700 ease-out">
-        <div className="container mx-auto px-5">
-          <h2 className="text-3xl md:text-4xl font-serif text-[#2C3E50] text-center mb-12">Todo lo que necesitas. Nada que no necesitas.</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto mb-12">
-            {[
-              { icon: '⚡', title: '5 minutos', desc: 'Montaje sin herramientas' },
-              { icon: '📦', title: 'Hasta 24 pares', desc: '6 niveles independientes' },
-              { icon: '💪', title: 'Acero inoxidable', desc: 'Resistente y duradero' },
-              { icon: '🏠', title: 'Cabe en cualquier rincón', desc: 'Diseño compacto y vertical' },
-              { icon: '🔄', title: 'Desmontable', desc: 'Guárdalo cuando no lo uses' },
-              { icon: '✨', title: 'Fácil limpieza', desc: 'Materiales lavables' },
-            ].map((b, i) => (
-              <div key={i} className="bg-white p-6 rounded-xl shadow-sm border-t-4 border-[#A0856A] text-center">
-                <span className="text-4xl mb-4 block">{b.icon}</span>
-                <h3 className="text-lg font-serif text-[#2C3E50] font-bold mb-2">{b.title}</h3>
-                <p className="text-gray-600 text-sm">{b.desc}</p>
+      {/* Trust Bar & CTA */}
+      <section className="bg-white py-10 md:py-16 fade-in-section opacity-0 translate-y-8 transition-all duration-700 ease-out">
+        <div className="container mx-auto px-5 max-w-4xl">
+          <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-4 mb-8">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+              <div className="flex flex-col items-center gap-2">
+                <span className="text-2xl">🔒</span>
+                <span className="text-xs font-bold text-gray-700">Tienda verificada</span>
               </div>
-            ))}
+              <div className="flex flex-col items-center gap-2">
+                <span className="text-2xl">🚚</span>
+                <span className="text-xs font-bold text-gray-700">Envío a todo Colombia</span>
+              </div>
+              <div className="flex flex-col items-center gap-2">
+                <span className="text-2xl">↩️</span>
+                <span className="text-xs font-bold text-gray-700">30 días de devolución</span>
+              </div>
+              <div className="flex flex-col items-center gap-2">
+                <span className="text-2xl">📦</span>
+                <span className="text-xs font-bold text-gray-700">Pagas al recibir</span>
+              </div>
+            </div>
           </div>
+          
+          <div className="text-center mb-12">
+            <button 
+              onClick={() => setDrawerOpen(true)}
+              className="w-full md:w-auto md:min-w-[400px] bg-[#D4691E] text-white px-8 py-5 text-xl font-bold rounded-xl shadow-[0_4px_15px_rgba(232,98,26,0.4)] transition-transform hover:-translate-y-1 animate-[pulse_2s_infinite]"
+            >
+              📦 LO QUIERO — Pago al recibir
+            </button>
+          </div>
+
           <div className="max-w-3xl mx-auto rounded-xl overflow-hidden shadow-xl">
             <Image src={IMAGES.pares24} alt="24 pares organizados" width={800} height={600} className="w-full object-cover" />
           </div>
