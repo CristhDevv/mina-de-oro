@@ -131,7 +131,13 @@ export default function OrganizadorLanding({ product }: Props) {
           </div>
         </div>
         <div className="md:w-2/5 flex flex-col gap-5">
-          <Image src={IMAGES.dormitorio} alt="Organizador en dormitorio" width={600} height={600} className="rounded-xl shadow-lg w-full" priority />
+          <div className="relative">
+            <Image src={IMAGES.dormitorio} alt="Organizador en dormitorio" width={600} height={600} className="rounded-xl shadow-lg w-full" priority />
+            <div className="absolute top-3 left-3 bg-black/60 backdrop-blur-sm text-white px-3 py-2 rounded-lg">
+              <div className="text-xs font-bold tracking-wide">🥿 Organizador de Zapatos</div>
+              <div className="text-[10px] text-yellow-300 mt-0.5">⭐⭐⭐⭐⭐ +2.300 vendidos</div>
+            </div>
+          </div>
           <Image src={IMAGES.producto} alt="Detalle producto" width={600} height={600} className="rounded-xl shadow-lg w-full" />
         </div>
       </section>
