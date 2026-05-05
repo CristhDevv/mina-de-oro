@@ -106,6 +106,16 @@ export default function OrganizadorLanding({ product }: Props) {
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif text-[#2C3E50] mb-5 leading-tight">
             ¿Tu entrada parece un <span className="text-[#D4691E]">caos</span> de zapatos?
           </h1>
+          <div className="flex items-center justify-center md:justify-start gap-2 mb-4">
+            <div className="flex -space-x-2">
+              {['#A0856A','#2C3E50','#2E7D32'].map((color, i) => (
+                <div key={i} className="w-8 h-8 rounded-full border-2 border-white flex items-center justify-center text-white text-xs font-bold" style={{ backgroundColor: color }}>
+                  {['M','C','L'][i]}
+                </div>
+              ))}
+            </div>
+            <span className="text-sm text-gray-600 font-medium">+2.300 familias ordenadas ⭐⭐⭐⭐⭐</span>
+          </div>
           <p className="text-lg text-gray-600 mb-8">
             Organiza hasta 24 pares sin taladro, sin obras y en menos de 5 minutos.
           </p>
@@ -122,8 +132,8 @@ export default function OrganizadorLanding({ product }: Props) {
           </div>
         </div>
         <div className="md:w-2/5 flex flex-col gap-5">
-          <Image src={IMAGES.producto} alt="Detalle producto" width={600} height={600} className="rounded-xl shadow-lg w-full" priority />
-          <Image src={IMAGES.dormitorio} alt="Organizador" width={600} height={600} className="rounded-xl shadow-lg w-full" />
+          <Image src={IMAGES.dormitorio} alt="Organizador en dormitorio" width={600} height={600} className="rounded-xl shadow-lg w-full" priority />
+          <Image src={IMAGES.producto} alt="Detalle producto" width={600} height={600} className="rounded-xl shadow-lg w-full" />
         </div>
       </section>
 
