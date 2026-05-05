@@ -5,7 +5,7 @@ import { ShoppingBag, Loader2, CreditCard, Banknote } from 'lucide-react'
 import { createOrder, sendWhatsAppConfirmation } from '@/lib/api/orders'
 import { useCartStore } from '@/store/cart'
 import { CartItem } from '@/types'
-import { baseUrl, generateReference, getWompiSignature, openWompiCheckout } from '@/lib/api/wompi'
+import { baseUrl, getWompiSignature, openWompiCheckout } from '@/lib/api/wompi'
 
 interface Props {
   items: CartItem[]
@@ -19,7 +19,7 @@ export default function CheckoutForm({ items }: Props) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [paymentMethod, setPaymentMethod] = useState<'wompi' | 'contraentrega'>('wompi')
-  const [form, setForm] = useState({ name: '', phone: '', address: '', city: '' })
+  const [form, setForm] = useState({ name: '', email: '', phone: '', address: '', city: '' })
 
   // Restaurar datos del form si el usuario retrocedió desde Wompi
   useEffect(() => {
@@ -37,7 +37,7 @@ export default function CheckoutForm({ items }: Props) {
   }
 
   async function handleSubmit() {
-    if (!form.name || !form.phone || !form.address || !form.city) {
+    if (!form.name || !form.email || !form.phone || !form.address || !form.city) {
       setError('Completa todos los campos')
       return
     }
@@ -49,7 +49,7 @@ export default function CheckoutForm({ items }: Props) {
 
       const digits = form.phone.replace(/\D/g, '')
       const normalizedPhone = digits.startsWith('57') ? `+${digits}` : `+57${digits}`
-      const order = await createOrder(items, { ...form, phone: normalizedPhone }, paymentMethod)
+      const { order, reference } = await createOrder(items, { ...form, phone: normalizedPhone }, paymentMethod)
 
       if (paymentMethod === 'contraentrega') {
         // Ejecutar WhatsApp en segundo plano para no bloquear al usuario
@@ -65,7 +65,6 @@ export default function CheckoutForm({ items }: Props) {
         return
       }
 
-      const reference = generateReference(order.id)
       const signature = await getWompiSignature(reference, amountInCents)
 
       openWompiCheckout({
@@ -75,7 +74,7 @@ export default function CheckoutForm({ items }: Props) {
         currency: 'COP',
         signature,
         redirectUrl: `${baseUrl}/pedido/${order.id}?confirmed=true`,
-        customerEmail: form.phone,
+        customerEmail: form.email,
       })
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Error al procesar el pedido')
@@ -90,6 +89,8 @@ export default function CheckoutForm({ items }: Props) {
       <input name="name" placeholder="Nombre completo" value={form.name} onChange={handleChange}
         className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm outline-none focus:border-[#1B2B5E]" />
       <input name="phone" placeholder="Teléfono / WhatsApp" value={form.phone} onChange={handleChange}
+        className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm outline-none focus:border-[#1B2B5E]" />
+      <input name="email" type="email" placeholder="Correo electrónico" value={form.email} onChange={handleChange}
         className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm outline-none focus:border-[#1B2B5E]" />
       <input name="address" placeholder="Dirección" value={form.address} onChange={handleChange}
         className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm outline-none focus:border-[#1B2B5E]" />

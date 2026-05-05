@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
   if (event === 'transaction.updated' && data.transaction.status === 'APPROVED') {
     const supabase = await createClient()
     const ref = data.transaction.reference
-    await supabase.from('orders').update({ status: 'pagado' }).eq('reference', ref)
+    await supabase.from('orders').update({ status: 'confirmed' }).eq('reference', ref)
   }
 
   return NextResponse.json({ ok: true })

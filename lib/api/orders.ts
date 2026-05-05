@@ -9,8 +9,8 @@ export async function createOrder(items: CartItem[], shippingAddress: any, payme
     body: JSON.stringify({ items, shippingAddress, paymentMethod })
   })
   if (!res.ok) throw new Error(await res.text())
-  const { order } = await res.json()
-  return order
+  const { order, reference } = await res.json()
+  return { order, reference }
 }
 
 export async function getUserOrders() {
