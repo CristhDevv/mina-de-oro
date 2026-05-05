@@ -115,210 +115,144 @@ export default function GuestCheckoutDrawer({ product, open, onClose }: GuestChe
         role="dialog"
         aria-modal="true"
         aria-label="Finalizar compra"
-        className={`fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-3xl shadow-2xl transition-transform duration-300 ease-out max-h-[92dvh] flex flex-col ${
+        className={`fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-2xl shadow-2xl transition-transform duration-300 ease-out h-[90vh] flex flex-col overflow-hidden ${
           open ? 'translate-y-0' : 'translate-y-full'
         }`}
       >
         {/* Handle */}
-        <div className="flex justify-center pt-3 pb-1 flex-shrink-0">
-          <div className="w-10 h-1 rounded-full bg-gray-200" />
+        <div className="flex justify-center pt-2 pb-1 flex-shrink-0">
+          <div className="w-8 h-1 rounded-full bg-gray-200" />
         </div>
 
-        {/* Header */}
-        <div className="flex items-center justify-between px-5 py-3 border-b border-gray-100 flex-shrink-0">
-          <h2 className="font-black text-base" style={{ color: accent }}>
-            Finalizar pedido
+        {/* Header Compacto */}
+        <div className="flex items-center justify-between px-4 py-2 border-b border-gray-100 flex-shrink-0">
+          <h2 className="font-bold text-sm" style={{ color: accent }}>
+            {product.name} · ${product.price.toLocaleString('es-CO')}
           </h2>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center active:scale-90 transition-all"
+            className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center"
             aria-label="Cerrar"
           >
-            <X size={16} className="text-gray-500" />
+            <X size={14} className="text-gray-500" />
           </button>
         </div>
 
-        {/* Content — scrollable */}
-        <div className="overflow-y-auto flex-1 px-5 py-4">
+        {/* Content — No scroll */}
+        <div className="flex-1 px-4 py-3 overflow-hidden">
 
           {/* ── STEP: FORM ── */}
           {(step === 'form' || step === 'loading') && (
-            <form id="guest-checkout-form" onSubmit={handleSubmit} className="space-y-4">
-
-              {/* Resumen del producto */}
-              <div className="flex items-center gap-3 bg-gray-50 rounded-2xl p-3">
-                <div
-                  className="w-10 h-10 rounded-xl flex-shrink-0 text-white flex items-center justify-center text-xs font-black"
-                  style={{ backgroundColor: accent }}
-                >
-                  ×{form.quantity}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-bold text-gray-900 truncate">{product.name}</p>
-                  <p className="text-xs text-gray-500">${product.price.toLocaleString('es-CO')} c/u</p>
-                </div>
-                <p className="font-black text-base flex-shrink-0" style={{ color: accent }}>
-                  ${total.toLocaleString('es-CO')}
-                </p>
-              </div>
-
-              {/* Selector de cantidad */}
-              <div className="flex items-center justify-between bg-gray-50 rounded-2xl px-4 py-3">
-                <span className="text-sm font-bold text-gray-700">Cantidad</span>
-                <div className="flex items-center gap-3">
+            <form id="guest-checkout-form" onSubmit={handleSubmit} className="space-y-3">
+              
+              {/* Selector de cantidad y Título datos */}
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400">Datos de envío</span>
+                <div className="flex items-center gap-2 bg-gray-50 px-2 py-1 rounded-lg">
                   <button
                     type="button"
                     onClick={() => setForm(p => ({ ...p, quantity: Math.max(1, p.quantity - 1) }))}
-                    className="w-8 h-8 rounded-lg bg-white shadow-sm flex items-center justify-center active:scale-90 transition-all"
+                    className="w-6 h-6 rounded bg-white shadow-sm flex items-center justify-center text-xs"
                     style={{ color: accent }}
-                    aria-label="Reducir cantidad"
                   >
-                    <Minus size={15} />
+                    <Minus size={12} />
                   </button>
-                  <span className="font-black w-5 text-center" style={{ color: accent }}>
+                  <span className="font-bold text-xs min-w-[12px] text-center" style={{ color: accent }}>
                     {form.quantity}
                   </span>
                   <button
                     type="button"
                     onClick={() => setForm(p => ({ ...p, quantity: Math.min(product.stock, p.quantity + 1) }))}
                     disabled={form.quantity >= product.stock}
-                    className="w-8 h-8 rounded-lg bg-white shadow-sm flex items-center justify-center active:scale-90 transition-all disabled:opacity-30"
+                    className="w-6 h-6 rounded bg-white shadow-sm flex items-center justify-center text-xs disabled:opacity-30"
                     style={{ color: accent }}
-                    aria-label="Aumentar cantidad"
                   >
-                    <Plus size={15} />
+                    <Plus size={12} />
                   </button>
                 </div>
               </div>
 
-              {/* Separador */}
-              <p className="text-xs font-bold uppercase tracking-widest text-gray-400 pt-1">
-                Datos de envío
-              </p>
-
-              {/* Nombre */}
-              <div className="space-y-1">
-                <label htmlFor="checkout-name" className="text-xs font-semibold text-gray-600">
-                  Nombre completo *
-                </label>
-                <input
-                  id="checkout-name"
-                  name="name"
-                  type="text"
-                  autoComplete="name"
-                  value={form.name}
-                  onChange={handleChange}
-                  placeholder="Juan García"
-                  required
-                  className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-current focus:bg-white transition-all"
-                  style={{ '--tw-ring-color': accent } as React.CSSProperties}
-                  onFocus={e => e.target.style.borderColor = accent}
-                  onBlur={e => e.target.style.borderColor = ''}
-                />
-              </div>
-
-              {/* Teléfono */}
-              <div className="space-y-1">
-                <label htmlFor="checkout-phone" className="text-xs font-semibold text-gray-600">
-                  WhatsApp / Teléfono *
-                </label>
-                <input
-                  id="checkout-phone"
-                  name="phone"
-                  type="tel"
-                  autoComplete="tel"
-                  inputMode="numeric"
-                  value={form.phone}
-                  onChange={handleChange}
-                  placeholder="3001234567"
-                  required
-                  className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition-all"
-                  onFocus={e => e.target.style.borderColor = accent}
-                  onBlur={e => e.target.style.borderColor = ''}
-                />
-              </div>
-
-              {/* Ciudad */}
-              <div className="space-y-1">
-                <label htmlFor="checkout-city" className="text-xs font-semibold text-gray-600">
-                  Ciudad *
-                </label>
-                <input
-                  id="checkout-city"
-                  name="city"
-                  type="text"
-                  autoComplete="address-level2"
-                  value={form.city}
-                  onChange={handleChange}
-                  placeholder="Bogotá"
-                  required
-                  className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition-all"
-                  onFocus={e => e.target.style.borderColor = accent}
-                  onBlur={e => e.target.style.borderColor = ''}
-                />
-              </div>
-
-              {/* Dirección */}
-              <div className="space-y-1">
-                <label htmlFor="checkout-address" className="text-xs font-semibold text-gray-600">
-                  Dirección de entrega *
-                </label>
-                <input
-                  id="checkout-address"
-                  name="address"
-                  type="text"
-                  autoComplete="street-address"
-                  value={form.address}
-                  onChange={handleChange}
-                  placeholder="Calle 80 #45-23, Apto 301"
-                  required
-                  className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition-all"
-                  onFocus={e => e.target.style.borderColor = accent}
-                  onBlur={e => e.target.style.borderColor = ''}
-                />
-              </div>
-
-              {/* Badges de confianza */}
-              <div className="flex items-center justify-center gap-5 py-2">
-                <div className="flex items-center gap-1.5 text-gray-500">
-                  <Truck size={13} />
-                  <span className="text-[11px]">Envío gratis</span>
+              {/* Campos en columna única - Compactos */}
+              <div className="space-y-2">
+                <div>
+                  <input
+                    id="checkout-name"
+                    name="name"
+                    type="text"
+                    value={form.name}
+                    onChange={handleChange}
+                    placeholder="Nombre completo"
+                    required
+                    className="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm outline-none focus:bg-white transition-all"
+                  />
                 </div>
-                <div className="flex items-center gap-1.5 text-gray-500">
-                  <ShieldCheck size={13} />
-                  <span className="text-[11px]">Pago contra entrega</span>
+
+                <div>
+                  <input
+                    id="checkout-phone"
+                    name="phone"
+                    type="tel"
+                    inputMode="numeric"
+                    value={form.phone}
+                    onChange={handleChange}
+                    placeholder="WhatsApp / Teléfono"
+                    required
+                    className="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm outline-none focus:bg-white transition-all"
+                  />
+                </div>
+
+                <div>
+                  <input
+                    id="checkout-city"
+                    name="city"
+                    type="text"
+                    value={form.city}
+                    onChange={handleChange}
+                    placeholder="Ciudad"
+                    required
+                    className="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm outline-none focus:bg-white transition-all"
+                  />
+                </div>
+
+                <div>
+                  <input
+                    id="checkout-address"
+                    name="address"
+                    type="text"
+                    value={form.address}
+                    onChange={handleChange}
+                    placeholder="Dirección de entrega"
+                    required
+                    className="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm outline-none focus:bg-white transition-all"
+                  />
                 </div>
               </div>
 
-              {/* Spacer para que el botón sticky no tape el contenido */}
-              <div className="h-2" />
+              {/* Badges de confianza ultra-compactos */}
+              <div className="flex items-center justify-center gap-4 py-1">
+                <div className="flex items-center gap-1 text-gray-400 text-[10px]">
+                  <Truck size={12} />
+                  <span>Envío gratis</span>
+                </div>
+                <div className="flex items-center gap-1 text-gray-400 text-[10px]">
+                  <ShieldCheck size={12} />
+                  <span>Pago contra entrega</span>
+                </div>
+              </div>
             </form>
           )}
 
           {/* ── STEP: SUCCESS ── */}
           {step === 'success' && (
-            <div className="flex flex-col items-center text-center py-6 space-y-4">
-              <div
-                className="w-16 h-16 rounded-full flex items-center justify-center"
-                style={{ backgroundColor: `${accent}15` }}
-              >
-                <CheckCircle2 size={36} style={{ color: accent }} />
-              </div>
+            <div className="flex flex-col items-center text-center py-4 space-y-3">
+              <CheckCircle2 size={40} style={{ color: accent }} />
               <div className="space-y-1">
-                <h3 className="text-lg font-black" style={{ color: accent }}>¡Pedido recibido!</h3>
-                <p className="text-sm text-gray-600 leading-relaxed">
-                  Nos comunicaremos contigo pronto para coordinar la entrega.
-                </p>
+                <h3 className="text-base font-bold" style={{ color: accent }}>¡Pedido recibido!</h3>
+                <p className="text-xs text-gray-600">Nos comunicaremos pronto para coordinar.</p>
               </div>
-              {reference && (
-                <div className="bg-gray-50 rounded-2xl px-4 py-3 w-full">
-                  <p className="text-xs text-gray-400 mb-1">Número de referencia</p>
-                  <p className="font-mono text-sm font-bold text-gray-700 break-all">{reference}</p>
-                </div>
-              )}
               <button
                 onClick={onClose}
-                className="w-full h-12 rounded-2xl font-bold text-sm text-white mt-2"
+                className="w-full py-3 rounded-xl font-bold text-sm text-white mt-2"
                 style={{ backgroundColor: accent }}
               >
                 Cerrar
@@ -328,38 +262,34 @@ export default function GuestCheckoutDrawer({ product, open, onClose }: GuestChe
 
           {/* ── STEP: ERROR ── */}
           {step === 'error' && (
-            <div className="flex flex-col items-center text-center py-6 space-y-4">
-              <div className="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center">
-                <AlertCircle size={36} className="text-red-500" />
-              </div>
-              <div className="space-y-1">
-                <h3 className="text-lg font-black text-gray-900">Algo salió mal</h3>
-                <p className="text-sm text-gray-500 leading-relaxed">{errorMsg}</p>
-              </div>
+            <div className="flex flex-col items-center text-center py-4 space-y-3">
+              <AlertCircle size={40} className="text-red-500" />
+              <h3 className="text-base font-bold text-gray-900">Algo salió mal</h3>
+              <p className="text-xs text-gray-500">{errorMsg}</p>
               <button
                 onClick={() => setStep('form')}
-                className="w-full h-12 rounded-2xl font-bold text-sm text-white"
+                className="w-full py-3 rounded-xl font-bold text-sm text-white"
                 style={{ backgroundColor: accent }}
               >
-                Intentar de nuevo
+                Reintentar
               </button>
             </div>
           )}
         </div>
 
-        {/* Footer sticky — solo visible en el form */}
+        {/* Footer sticky — Siempre visible */}
         {(step === 'form' || step === 'loading') && (
-          <div className="px-5 pb-6 pt-3 border-t border-gray-100 flex-shrink-0 bg-white">
+          <div className="px-4 pb-4 pt-2 border-t border-gray-100 flex-shrink-0 bg-white">
             <button
               type="submit"
               form="guest-checkout-form"
               disabled={!isValid || step === 'loading'}
-              className="w-full h-14 rounded-2xl font-black text-sm text-white flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:opacity-40"
+              className="w-full h-12 rounded-xl font-bold text-sm text-white flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:opacity-40 shadow-lg"
               style={{ backgroundColor: accent }}
             >
               {step === 'loading' ? (
                 <>
-                  <Loader2 size={18} className="animate-spin" />
+                  <Loader2 size={16} className="animate-spin" />
                   Procesando…
                 </>
               ) : (
