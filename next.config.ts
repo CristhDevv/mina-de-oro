@@ -40,8 +40,9 @@ const nextConfig: NextConfig = {
       beforeFiles: [
         {
           // organizador.minadeoro.com.co → /l/organizador
-          source: '/:path*',
-          destination: '/l/organizador/:path*',
+          // Excluimos rutas internas para que carguen los assets correctamente
+          source: '/:path((?!api|_next/static|_next/image|favicon.ico).*)',
+          destination: '/l/organizador/:path',
           has: [{ type: 'host', value: 'organizador.minadeoro.com.co' }],
         },
       ],
