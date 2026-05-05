@@ -195,8 +195,16 @@ export default function OrganizadorLanding({ product }: Props) {
             </button>
           </div>
 
-          <div className="max-w-3xl mx-auto rounded-xl overflow-hidden shadow-xl">
+          <div className="max-w-3xl mx-auto rounded-xl overflow-hidden shadow-xl relative">
             <Image src={IMAGES.pares24} alt="24 pares organizados" width={800} height={600} className="w-full object-cover" />
+            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-6 flex justify-end">
+              <button
+                onClick={() => setDrawerOpen(true)}
+                className="bg-[#D4691E] text-white px-6 py-3 text-base font-bold rounded-lg shadow-lg transition-transform hover:-translate-y-1"
+              >
+                Quiero el mío →
+              </button>
+            </div>
           </div>
         </div>
       </section>
@@ -207,6 +215,12 @@ export default function OrganizadorLanding({ product }: Props) {
         <div className="relative w-full p-10 bg-gradient-to-t from-[#2C3E50] to-transparent text-center text-white z-10 pt-32">
           <h2 className="text-3xl md:text-5xl font-serif mb-3 text-white">Organiza hasta 24 pares</h2>
           <p className="text-lg md:text-xl opacity-90">Tallas, temporadas, tipos — todo tiene su sitio</p>
+          <button
+            onClick={() => setDrawerOpen(true)}
+            className="mt-6 inline-block bg-[#D4691E] text-white px-8 py-4 text-lg font-bold rounded-lg shadow-[0_4px_15px_rgba(232,98,26,0.4)] transition-transform hover:-translate-y-1"
+          >
+            📦 LO QUIERO — Pago al recibir
+          </button>
         </div>
       </section>
 
