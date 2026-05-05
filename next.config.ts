@@ -36,14 +36,18 @@ const nextConfig: NextConfig = {
     ],
   },
   async rewrites() {
-    return [
-      {
-        // organizador.minadeoro.com.co → /l/organizador
-        source: '/:path*',
-        destination: '/l/organizador/:path*',
-        has: [{ type: 'host', value: 'organizador.minadeoro.com.co' }],
-      },
-    ]
+    return {
+      beforeFiles: [
+        {
+          // organizador.minadeoro.com.co → /l/organizador
+          source: '/:path*',
+          destination: '/l/organizador/:path*',
+          has: [{ type: 'host', value: 'organizador.minadeoro.com.co' }],
+        },
+      ],
+      afterFiles: [],
+      fallback: [],
+    }
   },
 
   async headers() {
