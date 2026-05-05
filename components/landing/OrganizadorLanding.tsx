@@ -122,8 +122,8 @@ export default function OrganizadorLanding({ product }: Props) {
           </div>
         </div>
         <div className="md:w-2/5 flex flex-col gap-5">
-          <Image src={IMAGES.dormitorio} alt="Organizador" width={600} height={600} className="rounded-xl shadow-lg w-full" priority />
-          <Image src={IMAGES.producto} alt="Detalle producto" width={600} height={600} className="rounded-xl shadow-lg w-full" />
+          <Image src={IMAGES.producto} alt="Detalle producto" width={600} height={600} className="rounded-xl shadow-lg w-full" priority />
+          <Image src={IMAGES.dormitorio} alt="Organizador" width={600} height={600} className="rounded-xl shadow-lg w-full" />
         </div>
       </section>
 
