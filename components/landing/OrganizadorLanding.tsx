@@ -98,8 +98,8 @@ export default function OrganizadorLanding({ product }: Props) {
       </div>
 
       {/* Hero */}
-      <section className="container mx-auto px-5 py-10 md:py-16 flex flex-col md:flex-row md:items-center fade-in-section opacity-0 translate-y-8 transition-all duration-700 ease-out">
-        <div className="md:w-3/5 text-center md:text-left mb-8 md:mb-0 md:pr-10">
+      <section className="container mx-auto px-5 py-10 md:py-16 flex flex-col-reverse md:flex-row md:items-center fade-in-section opacity-0 translate-y-8 transition-all duration-700 ease-out">
+        <div className="md:w-3/5 text-center md:text-left mt-10 md:mt-0 md:pr-10">
           <div className="inline-block bg-[#F8F1E3] text-[#A0856A] px-4 py-2 rounded-full font-semibold text-sm mb-5">
             ⭐ Más de 2.300 hogares ya lo tienen
           </div>
