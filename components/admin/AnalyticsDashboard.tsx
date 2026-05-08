@@ -166,9 +166,9 @@ export default function AnalyticsDashboard() {
                 <h3 className="text-lg font-semibold leading-none tracking-tight">¿Hasta dónde leyeron la página?</h3>
                 <p className="text-sm text-gray-500 mt-1">Cuántas personas llegaron hasta cada parte</p>
               </div>
-              <div className="p-6 pt-0" style={{ height: '300px', minHeight: 0 }}>
+              <div className="p-6 pt-0">
                 {data.scroll_retention?.length > 0 ? (
-                  <ResponsiveContainer width="100%" height="100%">
+                  <ResponsiveContainer width="100%" height={280}>
                     <AreaChart data={data.scroll_retention}>
                       <CartesianGrid strokeDasharray="3 3" vertical={false} />
                       <XAxis dataKey="scroll" axisLine={false} tickLine={false} />
@@ -181,7 +181,7 @@ export default function AnalyticsDashboard() {
                     </AreaChart>
                   </ResponsiveContainer>
                 ) : (
-                  <div className="flex items-center justify-center h-full text-gray-400">Sin datos aún</div>
+                  <div className="flex items-center justify-center h-[280px] text-gray-400">Sin datos aún</div>
                 )}
               </div>
             </div>
@@ -192,9 +192,9 @@ export default function AnalyticsDashboard() {
                 <h3 className="text-lg font-semibold leading-none tracking-tight">¿En qué parte se detuvieron más?</h3>
                 <p className="text-sm text-gray-500 mt-1">Segundos promedio que miraron cada sección</p>
               </div>
-              <div className="p-6 pt-0" style={{ height: '300px', minHeight: 0 }}>
+              <div className="p-6 pt-0">
                 {data.section_heatmap?.length > 0 ? (
-                  <ResponsiveContainer width="100%" height="100%">
+                  <ResponsiveContainer width="100%" height={280}>
                     <BarChart data={data.section_heatmap} layout="vertical" margin={{ left: 20 }}>
                       <CartesianGrid strokeDasharray="3 3" horizontal={false} />
                       <XAxis type="number" axisLine={false} tickLine={false} />
@@ -204,7 +204,7 @@ export default function AnalyticsDashboard() {
                     </BarChart>
                   </ResponsiveContainer>
                 ) : (
-                  <div className="flex items-center justify-center h-full text-gray-400">Sin datos aún</div>
+                  <div className="flex items-center justify-center h-[280px] text-gray-400">Sin datos aún</div>
                 )}
               </div>
             </div>
@@ -216,20 +216,18 @@ export default function AnalyticsDashboard() {
               <div className="p-6 pb-2">
                 <h3 className="text-lg font-semibold leading-none tracking-tight">¿De dónde llegaron?</h3>
               </div>
-              <div className="p-6 pt-0" style={{ height: '250px', minHeight: 0 }}>
+              <div className="p-6 pt-0 flex justify-center">
                 {data.traffic_sources?.length > 0 ? (
-                  <ResponsiveContainer width="100%" height={220}>
-                    <PieChart>
-                      <Pie data={data.traffic_sources} cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={2} dataKey="value" nameKey="name" label>
-                        {data.traffic_sources.map((entry: any, index: number) => (
-                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                        ))}
-                      </Pie>
-                      <RechartsTooltip />
-                    </PieChart>
-                  </ResponsiveContainer>
+                  <PieChart width={400} height={220}>
+                    <Pie data={data.traffic_sources} cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={2} dataKey="value" nameKey="name" label>
+                      {data.traffic_sources.map((entry: any, index: number) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <RechartsTooltip />
+                  </PieChart>
                 ) : (
-                  <div className="flex items-center justify-center h-full text-gray-400">Sin datos aún</div>
+                  <div className="flex items-center justify-center h-[220px] text-gray-400">Sin datos aún</div>
                 )}
               </div>
             </div>
@@ -239,20 +237,18 @@ export default function AnalyticsDashboard() {
               <div className="p-6 pb-2">
                 <h3 className="text-lg font-semibold leading-none tracking-tight">¿Con qué dispositivo entraron?</h3>
               </div>
-              <div className="p-6 pt-0" style={{ height: '250px', minHeight: 0 }}>
+              <div className="p-6 pt-0 flex justify-center">
                 {data.devices?.length > 0 ? (
-                  <ResponsiveContainer width="100%" height={220}>
-                    <PieChart>
-                      <Pie data={data.devices} cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={2} dataKey="value" nameKey="name" label>
-                        {data.devices.map((entry: any, index: number) => (
-                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                        ))}
-                      </Pie>
-                      <RechartsTooltip />
-                    </PieChart>
-                  </ResponsiveContainer>
+                  <PieChart width={400} height={220}>
+                    <Pie data={data.devices} cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={2} dataKey="value" nameKey="name" label>
+                      {data.devices.map((entry: any, index: number) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <RechartsTooltip />
+                  </PieChart>
                 ) : (
-                  <div className="flex items-center justify-center h-full text-gray-400">Sin datos aún</div>
+                  <div className="flex items-center justify-center h-[220px] text-gray-400">Sin datos aún</div>
                 )}
               </div>
             </div>
@@ -265,9 +261,9 @@ export default function AnalyticsDashboard() {
                 <h3 className="text-lg font-semibold leading-none tracking-tight">Embudo de Conversión</h3>
                 <p className="text-sm text-gray-500 mt-1">Cómo avanzan los visitantes hacia la compra</p>
               </div>
-              <div className="p-6 pt-0" style={{ height: '300px', minHeight: 0 }}>
+              <div className="p-6 pt-0">
                 {data.conversion_funnel?.length > 0 ? (
-                  <ResponsiveContainer width="100%" height="100%">
+                  <ResponsiveContainer width="100%" height={280}>
                     <BarChart data={data.conversion_funnel} layout="vertical" margin={{ left: 40, right: 20 }}>
                       <CartesianGrid strokeDasharray="3 3" horizontal={false} />
                       <XAxis type="number" axisLine={false} tickLine={false} />
@@ -284,7 +280,7 @@ export default function AnalyticsDashboard() {
                     </BarChart>
                   </ResponsiveContainer>
                 ) : (
-                  <div className="flex items-center justify-center h-full text-gray-400">Sin datos aún</div>
+                  <div className="flex items-center justify-center h-[280px] text-gray-400">Sin datos aún</div>
                 )}
               </div>
             </div>
