@@ -1,5 +1,14 @@
 import { NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createClient } from '@supabase/supabase-js'
+
+// Usamos service_role para bypassear RLS en escrituras anónimas de la landing
+function createAdminClient() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { auth: { persistSession: false } }
+  )
+}
 
 export async function POST(request: Request) {
   try {
@@ -10,7 +19,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: true })
     }
 
-    const supabase = await createClient()
+    const supabase = createAdminClient()
 
     // 1. Upsert en landing_sessions por session_id
     const { error: sessionError } = await supabase
