@@ -21,8 +21,9 @@ import OrdersTab from './OrdersTab'
 import ProductsTab from './ProductsTab'
 import UsersTab from './UsersTab'
 import CategoriesTab from './CategoriesTab'
+import AnalyticsDashboard from './AnalyticsDashboard'
 
-type Tab = 'dashboard' | 'orders' | 'products' | 'inventory' | 'users' | 'categories' | 'settings'
+type Tab = 'dashboard' | 'orders' | 'products' | 'inventory' | 'users' | 'categories' | 'settings' | 'analytics'
 
 export default function AdminDashboard() {
   const [tab, setTab] = useState<Tab>('dashboard')
@@ -81,6 +82,7 @@ export default function AdminDashboard() {
 
   const navItems = [
     { id: 'dashboard' as Tab, label: 'Resumen', icon: BarChart2 },
+    { id: 'analytics' as Tab, label: 'Analytics', icon: BarChart2 },
     { id: 'orders' as Tab, label: 'Pedidos', icon: ShoppingBag },
     { id: 'products' as Tab, label: 'Productos', icon: Package },
     { id: 'inventory' as Tab, label: 'Stock', icon: Tag },
@@ -183,6 +185,7 @@ export default function AdminDashboard() {
                 />
               )}
               {tab === 'settings' && <SettingsView />}
+              {tab === 'analytics' && <AnalyticsDashboard />}
             </div>
           )}
         </div>

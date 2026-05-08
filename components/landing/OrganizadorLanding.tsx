@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { Product } from '@/types'
 import GuestCheckoutDrawer from '@/components/landing/GuestCheckoutDrawer'
+import { useLandingAnalytics } from '@/hooks/useLandingAnalytics'
 
 const STORAGE_URL = 'https://dpvobmhvsausguqwzrrm.supabase.co/storage/v1/object/public/products/organizador/'
 
@@ -26,6 +27,7 @@ interface Props {
 }
 
 export default function OrganizadorLanding({ product }: Props) {
+  useLandingAnalytics({ slug: product.slug })
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [timeLeft, setTimeLeft] = useState(24 * 60 * 60)
   const [activeFaq, setActiveFaq] = useState<number | null>(null)
@@ -97,7 +99,7 @@ export default function OrganizadorLanding({ product }: Props) {
       </div>
 
       {/* Hero */}
-      <section className="container mx-auto px-5 py-10 md:py-16 flex flex-col-reverse md:flex-row md:items-center fade-in-section opacity-0 translate-y-8 transition-all duration-700 ease-out">
+      <section data-section="hero" className="container mx-auto px-5 py-10 md:py-16 flex flex-col-reverse md:flex-row md:items-center fade-in-section opacity-0 translate-y-8 transition-all duration-700 ease-out">
         <div className="md:w-3/5 text-center md:text-left mt-10 md:mt-0 md:pr-10">
           <div className="inline-block bg-[#F8F1E3] text-[#A0856A] px-4 py-2 rounded-full font-semibold text-sm mb-5">
             ⭐ +2.300 familias colombianas ya lo tienen
@@ -182,7 +184,7 @@ export default function OrganizadorLanding({ product }: Props) {
       </section>
 
       {/* Problem */}
-      <section className="container mx-auto px-5 py-16 md:py-20 text-center fade-in-section opacity-0 translate-y-8 transition-all duration-700 ease-out">
+      <section data-section="problema" className="container mx-auto px-5 py-16 md:py-20 text-center fade-in-section opacity-0 translate-y-8 transition-all duration-700 ease-out">
         <h2 className="text-3xl md:text-4xl font-serif text-[#2C3E50] mb-10">¿Te suena familiar esto?</h2>
         <div className="relative max-w-3xl mx-auto rounded-xl overflow-hidden shadow-lg">
           <span className="absolute top-4 left-4 bg-[#D32F2F] text-white px-3 py-1.5 md:px-4 md:py-2 rounded-lg font-bold text-sm md:text-base z-10">❌ Antes</span>
@@ -195,7 +197,7 @@ export default function OrganizadorLanding({ product }: Props) {
       </section>
 
       {/* Trust Bar & CTA */}
-      <section className="bg-white py-10 md:py-16 fade-in-section opacity-0 translate-y-8 transition-all duration-700 ease-out">
+      <section data-section="trust-cta" className="bg-white py-10 md:py-16 fade-in-section opacity-0 translate-y-8 transition-all duration-700 ease-out">
         <div className="container mx-auto px-5 max-w-4xl">
           {/* Trust Bar */}
           <div className="bg-[#E8F5F1] border border-[#A8D5C5] rounded-xl py-3 px-5 mb-8 flex items-center justify-center gap-3 max-w-2xl mx-auto">
@@ -229,7 +231,7 @@ export default function OrganizadorLanding({ product }: Props) {
       </section>
 
       {/* Capacity Overlay */}
-      <section className="relative h-[400px] md:h-[500px] flex items-end fade-in-section opacity-0 translate-y-8 transition-all duration-700 ease-out">
+      <section data-section="capacidad" className="relative h-[400px] md:h-[500px] flex items-end fade-in-section opacity-0 translate-y-8 transition-all duration-700 ease-out">
         <Image src={IMAGES.sneakers} alt="Sneakers" fill className="object-cover" />
         <div className="relative w-full p-10 bg-gradient-to-t from-[#2C3E50] to-transparent text-center text-white z-10 pt-32">
           <h2 className="text-3xl md:text-5xl font-serif mb-3 text-white">Un lugar para cada par. Por fin.</h2>
@@ -244,7 +246,7 @@ export default function OrganizadorLanding({ product }: Props) {
       </section>
 
       {/* Specs */}
-      <section className="container mx-auto px-5 py-16 md:py-20 flex flex-col md:flex-row gap-10 md:gap-12 fade-in-section opacity-0 translate-y-8 transition-all duration-700 ease-out">
+      <section data-section="specs" className="container mx-auto px-5 py-16 md:py-20 flex flex-col md:flex-row gap-10 md:gap-12 fade-in-section opacity-0 translate-y-8 transition-all duration-700 ease-out">
         <div className="md:w-1/2 flex flex-col gap-6">
           <Image src={IMAGES.infografia} alt="Infografia" width={600} height={600} className="rounded-xl w-full shadow-lg" />
           <Image src={IMAGES.specs} alt="Specs" width={600} height={600} className="rounded-xl w-full shadow-lg" />
@@ -292,7 +294,7 @@ export default function OrganizadorLanding({ product }: Props) {
       </section>
 
       {/* Testimonials */}
-      <section className="relative py-16 md:py-20 fade-in-section opacity-0 translate-y-8 transition-all duration-700 ease-out">
+      <section data-section="testimonios" className="relative py-16 md:py-20 fade-in-section opacity-0 translate-y-8 transition-all duration-700 ease-out">
         <Image src={IMAGES.sneakers} alt="Fondo" fill className="object-cover" />
         <div className="absolute inset-0 bg-[#1B2F5E]/90"></div>
         <div className="container mx-auto px-5 relative z-10">
@@ -358,7 +360,7 @@ export default function OrganizadorLanding({ product }: Props) {
       </section>
 
       {/* Quality */}
-      <section className="container mx-auto px-5 py-16 md:py-20 flex flex-col md:flex-row items-center gap-10 md:gap-12 fade-in-section opacity-0 translate-y-8 transition-all duration-700 ease-out">
+      <section data-section="calidad" className="container mx-auto px-5 py-16 md:py-20 flex flex-col md:flex-row items-center gap-10 md:gap-12 fade-in-section opacity-0 translate-y-8 transition-all duration-700 ease-out">
         <div className="md:w-1/2">
           <Image src={IMAGES.acero} alt="Calidad acero" width={600} height={600} className="rounded-xl w-full shadow-lg" />
         </div>
@@ -379,7 +381,7 @@ export default function OrganizadorLanding({ product }: Props) {
       </section>
 
       {/* Pricing */}
-      <section id="comprar" className="bg-[#2C3E50] py-16 md:py-20 px-5 text-white fade-in-section opacity-0 translate-y-8 transition-all duration-700 ease-out">
+      <section data-section="pricing" id="comprar" className="bg-[#2C3E50] py-16 md:py-20 px-5 text-white fade-in-section opacity-0 translate-y-8 transition-all duration-700 ease-out">
         <div className="container mx-auto">
           <h2 className="text-3xl md:text-4xl font-serif text-white text-center mb-10">¿Cuántos pares tienes en casa?</h2>
           
@@ -478,7 +480,7 @@ export default function OrganizadorLanding({ product }: Props) {
       </section>
 
       {/* FAQ */}
-      <section className="bg-white py-16 md:py-20 fade-in-section opacity-0 translate-y-8 transition-all duration-700 ease-out">
+      <section data-section="faq" className="bg-white py-16 md:py-20 fade-in-section opacity-0 translate-y-8 transition-all duration-700 ease-out">
         <div className="container mx-auto px-5 max-w-3xl">
           <h2 className="text-3xl md:text-4xl font-serif text-[#2C3E50] text-center mb-10">Preguntas que nos hacen antes de pedir</h2>
           <div className="space-y-0">
@@ -504,7 +506,7 @@ export default function OrganizadorLanding({ product }: Props) {
       </section>
 
       {/* Final CTA */}
-      <section className="py-20 bg-gradient-to-br from-[#2C3E50] to-[#0a1128] text-center text-white fade-in-section opacity-0 translate-y-8 transition-all duration-700 ease-out px-5">
+      <section data-section="final-cta" className="py-20 bg-gradient-to-br from-[#2C3E50] to-[#0a1128] text-center text-white fade-in-section opacity-0 translate-y-8 transition-all duration-700 ease-out px-5">
         <h2 className="text-4xl md:text-5xl font-serif mb-4 text-white">Tu casa ordenada.<br/>Esta semana.</h2>
         <p className="text-lg opacity-80 mb-10">Más de 2.300 familias colombianas ya dieron el paso.</p>
         <button 

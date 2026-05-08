@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { X, Minus, Plus, Loader2, CheckCircle2, AlertCircle, ShieldCheck, Truck } from 'lucide-react'
 import { Product } from '@/types'
+import { trackEvent } from '@/lib/analytics'
 
 interface GuestCheckoutDrawerProps {
   product: Product
@@ -38,6 +39,7 @@ export default function GuestCheckoutDrawer({ product, open, onClose }: GuestChe
   useEffect(() => {
     if (open) {
       document.body.style.overflow = 'hidden'
+      trackEvent('checkout_open', { product_id: product.id, product_name: product.name })
     } else {
       document.body.style.overflow = ''
       // Reset al cerrar
@@ -48,7 +50,7 @@ export default function GuestCheckoutDrawer({ product, open, onClose }: GuestChe
       }, 300)
     }
     return () => { document.body.style.overflow = '' }
-  }, [open])
+  }, [open, product.id, product.name])
 
   const total = product.price * form.quantity
 
@@ -88,14 +90,17 @@ export default function GuestCheckoutDrawer({ product, open, onClose }: GuestChe
       if (!res.ok) {
         setErrorMsg(data.error || 'Error al procesar el pedido')
         setStep('error')
+        trackEvent('checkout_error', { error: data.error || 'Error al procesar el pedido' })
         return
       }
 
       setReference(data.reference)
       setStep('success')
+      trackEvent('checkout_success', { product_id: product.id, value: total, quantity: form.quantity, reference: data.reference })
     } catch {
       setErrorMsg('Error de conexión. Intenta de nuevo.')
       setStep('error')
+      trackEvent('checkout_error', { error: 'Error de conexión. Intenta de nuevo.' })
     }
   }
 
