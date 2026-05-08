@@ -166,7 +166,7 @@ export default function AnalyticsDashboard() {
                 <h3 className="text-lg font-semibold leading-none tracking-tight">¿Hasta dónde leyeron la página?</h3>
                 <p className="text-sm text-gray-500 mt-1">Cuántas personas llegaron hasta cada parte</p>
               </div>
-              <div className="p-6 pt-0 h-[300px]">
+              <div className="p-6 pt-0" style={{ height: '300px', minHeight: 0 }}>
                 {data.scroll_retention?.length > 0 ? (
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={data.scroll_retention}>
@@ -192,7 +192,7 @@ export default function AnalyticsDashboard() {
                 <h3 className="text-lg font-semibold leading-none tracking-tight">¿En qué parte se detuvieron más?</h3>
                 <p className="text-sm text-gray-500 mt-1">Segundos promedio que miraron cada sección</p>
               </div>
-              <div className="p-6 pt-0 h-[300px]">
+              <div className="p-6 pt-0" style={{ height: '300px', minHeight: 0 }}>
                 {data.section_heatmap?.length > 0 ? (
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={data.section_heatmap} layout="vertical" margin={{ left: 20 }}>
@@ -216,9 +216,9 @@ export default function AnalyticsDashboard() {
               <div className="p-6 pb-2">
                 <h3 className="text-lg font-semibold leading-none tracking-tight">¿De dónde llegaron?</h3>
               </div>
-              <div className="p-6 pt-0 h-[250px] pb-6">
+              <div className="p-6 pt-0" style={{ height: '250px', minHeight: 0 }}>
                 {data.traffic_sources?.length > 0 ? (
-                  <ResponsiveContainer width="100%" height="100%">
+                  <ResponsiveContainer width="100%" height={220}>
                     <PieChart>
                       <Pie data={data.traffic_sources} cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={2} dataKey="value" nameKey="name" label>
                         {data.traffic_sources.map((entry: any, index: number) => (
@@ -239,9 +239,9 @@ export default function AnalyticsDashboard() {
               <div className="p-6 pb-2">
                 <h3 className="text-lg font-semibold leading-none tracking-tight">¿Con qué dispositivo entraron?</h3>
               </div>
-              <div className="p-6 pt-0 h-[250px] pb-6">
+              <div className="p-6 pt-0" style={{ height: '250px', minHeight: 0 }}>
                 {data.devices?.length > 0 ? (
-                  <ResponsiveContainer width="100%" height="100%">
+                  <ResponsiveContainer width="100%" height={220}>
                     <PieChart>
                       <Pie data={data.devices} cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={2} dataKey="value" nameKey="name" label>
                         {data.devices.map((entry: any, index: number) => (
@@ -265,7 +265,7 @@ export default function AnalyticsDashboard() {
                 <h3 className="text-lg font-semibold leading-none tracking-tight">Embudo de Conversión</h3>
                 <p className="text-sm text-gray-500 mt-1">Cómo avanzan los visitantes hacia la compra</p>
               </div>
-              <div className="p-6 pt-0 h-[300px]">
+              <div className="p-6 pt-0" style={{ height: '300px', minHeight: 0 }}>
                 {data.conversion_funnel?.length > 0 ? (
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={data.conversion_funnel} layout="vertical" margin={{ left: 40, right: 20 }}>
