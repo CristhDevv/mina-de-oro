@@ -167,18 +167,22 @@ export default function AnalyticsDashboard() {
                 <p className="text-sm text-gray-500 mt-1">Cuántas personas llegaron hasta cada parte</p>
               </div>
               <div className="p-6 pt-0 h-[300px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={data.scroll_retention}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                    <XAxis dataKey="scroll" axisLine={false} tickLine={false} />
-                    <YAxis tickFormatter={(val: number | string) => `${val}%`} axisLine={false} tickLine={false} />
-                    <RechartsTooltip 
-                      formatter={(val) => [`${val}%`, 'de visitantes llegaron aquí']} 
-                      labelFormatter={(label: any) => `Posición en la página: ${label}`}
-                    />
-                    <Area type="monotone" dataKey="percentage" stroke="#2C3E50" strokeWidth={3} fill="#A0856A" fillOpacity={0.2} />
-                  </AreaChart>
-                </ResponsiveContainer>
+                {data.scroll_retention?.length > 0 ? (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={data.scroll_retention}>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                      <XAxis dataKey="scroll" axisLine={false} tickLine={false} />
+                      <YAxis tickFormatter={(val: number | string) => `${val}%`} axisLine={false} tickLine={false} />
+                      <RechartsTooltip 
+                        formatter={(val) => [`${val}%`, 'de visitantes llegaron aquí']} 
+                        labelFormatter={(label: any) => `Posición en la página: ${label}`}
+                      />
+                      <Area type="monotone" dataKey="percentage" stroke="#2C3E50" strokeWidth={3} fill="#A0856A" fillOpacity={0.2} />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="flex items-center justify-center h-full text-gray-400">Sin datos aún</div>
+                )}
               </div>
             </div>
 
@@ -189,15 +193,19 @@ export default function AnalyticsDashboard() {
                 <p className="text-sm text-gray-500 mt-1">Segundos promedio que miraron cada sección</p>
               </div>
               <div className="p-6 pt-0 h-[300px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={data.section_heatmap} layout="vertical" margin={{ left: 20 }}>
-                    <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-                    <XAxis type="number" axisLine={false} tickLine={false} />
-                    <YAxis dataKey="section" type="category" axisLine={false} tickLine={false} width={100} tick={{ fontSize: 12 }} />
-                    <RechartsTooltip formatter={(val) => [`${val}s`, 'segundos mirando']} />
-                    <Bar dataKey="avgTime" fill="#2C3E50" radius={[0, 4, 4, 0]} barSize={24} />
-                  </BarChart>
-                </ResponsiveContainer>
+                {data.section_heatmap?.length > 0 ? (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={data.section_heatmap} layout="vertical" margin={{ left: 20 }}>
+                      <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+                      <XAxis type="number" axisLine={false} tickLine={false} />
+                      <YAxis dataKey="section" type="category" axisLine={false} tickLine={false} width={100} tick={{ fontSize: 12 }} />
+                      <RechartsTooltip formatter={(val) => [`${val}s`, 'segundos mirando']} />
+                      <Bar dataKey="avgTime" fill="#2C3E50" radius={[0, 4, 4, 0]} barSize={24} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="flex items-center justify-center h-full text-gray-400">Sin datos aún</div>
+                )}
               </div>
             </div>
           </div>
@@ -209,16 +217,20 @@ export default function AnalyticsDashboard() {
                 <h3 className="text-lg font-semibold leading-none tracking-tight">¿De dónde llegaron?</h3>
               </div>
               <div className="p-6 pt-0 h-[250px] pb-6">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie data={data.traffic_sources} cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={2} dataKey="value" nameKey="name" label>
-                      {data.traffic_sources.map((entry: any, index: number) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <RechartsTooltip />
-                  </PieChart>
-                </ResponsiveContainer>
+                {data.traffic_sources?.length > 0 ? (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie data={data.traffic_sources} cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={2} dataKey="value" nameKey="name" label>
+                        {data.traffic_sources.map((entry: any, index: number) => (
+                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                        ))}
+                      </Pie>
+                      <RechartsTooltip />
+                    </PieChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="flex items-center justify-center h-full text-gray-400">Sin datos aún</div>
+                )}
               </div>
             </div>
 
@@ -228,16 +240,20 @@ export default function AnalyticsDashboard() {
                 <h3 className="text-lg font-semibold leading-none tracking-tight">¿Con qué dispositivo entraron?</h3>
               </div>
               <div className="p-6 pt-0 h-[250px] pb-6">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie data={data.devices} cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={2} dataKey="value" nameKey="name" label>
-                      {data.devices.map((entry: any, index: number) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <RechartsTooltip />
-                  </PieChart>
-                </ResponsiveContainer>
+                {data.devices?.length > 0 ? (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie data={data.devices} cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={2} dataKey="value" nameKey="name" label>
+                        {data.devices.map((entry: any, index: number) => (
+                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                        ))}
+                      </Pie>
+                      <RechartsTooltip />
+                    </PieChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="flex items-center justify-center h-full text-gray-400">Sin datos aún</div>
+                )}
               </div>
             </div>
           </div>
@@ -250,22 +266,26 @@ export default function AnalyticsDashboard() {
                 <p className="text-sm text-gray-500 mt-1">Cómo avanzan los visitantes hacia la compra</p>
               </div>
               <div className="p-6 pt-0 h-[300px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={data.conversion_funnel} layout="vertical" margin={{ left: 40, right: 20 }}>
-                    <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-                    <XAxis type="number" axisLine={false} tickLine={false} />
-                    <YAxis dataKey="step" type="category" axisLine={false} tickLine={false} width={120} tick={{ fontSize: 13 }} />
-                    <RechartsTooltip cursor={{fill: 'transparent'}} formatter={(val) => [val, 'Usuarios']} />
-                    <Bar dataKey="count" radius={[0, 4, 4, 0]} barSize={32}>
-                      {
-                        data.conversion_funnel?.map((entry: any, index: number) => {
-                          const colors = ['#3b82f6', '#0ea5e9', '#10b981', '#059669'];
-                          return <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />;
-                        })
-                      }
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
+                {data.conversion_funnel?.length > 0 ? (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={data.conversion_funnel} layout="vertical" margin={{ left: 40, right: 20 }}>
+                      <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+                      <XAxis type="number" axisLine={false} tickLine={false} />
+                      <YAxis dataKey="step" type="category" axisLine={false} tickLine={false} width={120} tick={{ fontSize: 13 }} />
+                      <RechartsTooltip cursor={{fill: 'transparent'}} formatter={(val) => [val, 'Usuarios']} />
+                      <Bar dataKey="count" radius={[0, 4, 4, 0]} barSize={32}>
+                        {
+                          data.conversion_funnel?.map((entry: any, index: number) => {
+                            const colors = ['#3b82f6', '#0ea5e9', '#10b981', '#059669'];
+                            return <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />;
+                          })
+                        }
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="flex items-center justify-center h-full text-gray-400">Sin datos aún</div>
+                )}
               </div>
             </div>
 
