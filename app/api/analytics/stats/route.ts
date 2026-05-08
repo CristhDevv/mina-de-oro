@@ -6,6 +6,8 @@ export async function GET(request: Request) {
   const slug = searchParams.get('slug')
   const from = searchParams.get('from')
   const to = searchParams.get('to')
+  const page = parseInt(searchParams.get('page') || '0', 10)
+  const limit = Math.min(parseInt(searchParams.get('limit') || '20', 10), 100)
 
   const supabase = await createClient()
 
@@ -111,9 +113,9 @@ export async function GET(request: Request) {
   }))
 
   // Eventos Recientes
-  const recent_events = events
-    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-    .slice(0, 50)
+  const sorted_events = [...events].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+  const recent_events = sorted_events.slice(page * limit, (page + 1) * limit)
+  const total_recent_events = sorted_events.length
 
   // 1. Embudo de conversión
   const usersReached50 = Object.values(maxScrollPerSession).filter(max => max >= 50).length
@@ -222,7 +224,6 @@ export async function GET(request: Request) {
   // 7. Sesiones individuales
   const recent_sessions = [...sessions]
     .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-    .slice(0, 20)
     
   const individual_sessions = recent_sessions.map(s => {
     const sEvents = eventsBySession[s.session_id] || []
@@ -276,6 +277,7 @@ export async function GET(request: Request) {
     traffic_sources,
     devices,
     recent_events,
+    total_recent_events,
     conversion_funnel,
     click_map,
     exit_intent,

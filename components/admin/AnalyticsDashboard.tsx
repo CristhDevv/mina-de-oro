@@ -29,6 +29,9 @@ export default function AnalyticsDashboard() {
   const [selectedSlug, setSelectedSlug] = useState<string>('')
   const [dateFrom, setDateFrom] = useState<string>('')
   const [dateTo, setDateTo] = useState<string>('')
+  
+  const [eventsPage, setEventsPage] = useState(0)
+  const [sessionsPage, setSessionsPage] = useState(0)
 
   // Primer render: cargar lista de landing pages disponibles
   useEffect(() => {
@@ -53,6 +56,7 @@ export default function AnalyticsDashboard() {
     let url = `/api/analytics/stats?slug=${selectedSlug}`
     if (dateFrom) url += `&from=${dateFrom}`
     if (dateTo) url += `&to=${dateTo}`
+    url += `&page=${eventsPage}&limit=20`
 
     fetch(url)
       .then(res => res.json())
@@ -64,7 +68,7 @@ export default function AnalyticsDashboard() {
         console.error(err)
         setLoading(false)
       })
-  }, [selectedSlug, dateFrom, dateTo])
+  }, [selectedSlug, dateFrom, dateTo, eventsPage])
 
   if (!selectedSlug && !loading) {
     return (
@@ -87,7 +91,11 @@ export default function AnalyticsDashboard() {
         <div className="flex flex-wrap items-center gap-3">
           <select 
             value={selectedSlug} 
-            onChange={(e) => setSelectedSlug(e.target.value)}
+            onChange={(e) => {
+              setSelectedSlug(e.target.value)
+              setEventsPage(0)
+              setSessionsPage(0)
+            }}
             className="w-[220px] bg-white border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#1B2B5E]/50"
           >
             <option value="" disabled>Seleccionar landing...</option>
@@ -379,12 +387,33 @@ export default function AnalyticsDashboard() {
 
             {/* Individual Sessions */}
             <div className="bg-white border shadow-sm rounded-xl flex flex-col md:col-span-2 overflow-hidden">
-              <div className="p-6 border-b">
-                <h3 className="text-lg font-semibold leading-none tracking-tight">Sesiones Individuales</h3>
-                <p className="text-sm text-gray-500 mt-1">Últimas 20 visitas</p>
+              <div className="p-6 border-b flex justify-between items-center">
+                <div>
+                  <h3 className="text-lg font-semibold leading-none tracking-tight">Sesiones Individuales</h3>
+                  <p className="text-sm text-gray-500 mt-1">Últimas visitas</p>
+                </div>
+                {data.individual_sessions && data.individual_sessions.length > 20 && (
+                  <div className="flex items-center gap-2">
+                    <button 
+                      onClick={() => setSessionsPage(p => Math.max(0, p - 1))}
+                      disabled={sessionsPage === 0}
+                      className="p-1 px-2 border rounded disabled:opacity-50 hover:bg-gray-50 transition-colors"
+                    >
+                      ←
+                    </button>
+                    <span className="text-sm text-gray-500">Página {sessionsPage + 1} de {Math.ceil(data.individual_sessions.length / 20)}</span>
+                    <button 
+                      onClick={() => setSessionsPage(p => Math.min(Math.ceil(data.individual_sessions.length / 20) - 1, p + 1))}
+                      disabled={sessionsPage >= Math.ceil(data.individual_sessions.length / 20) - 1}
+                      className="p-1 px-2 border rounded disabled:opacity-50 hover:bg-gray-50 transition-colors"
+                    >
+                      →
+                    </button>
+                  </div>
+                )}
               </div>
               <div className="divide-y max-h-[500px] overflow-y-auto">
-                {data.individual_sessions && data.individual_sessions.length > 0 ? data.individual_sessions.map((session: any) => (
+                {data.individual_sessions && data.individual_sessions.length > 0 ? data.individual_sessions.slice(sessionsPage * 20, (sessionsPage + 1) * 20).map((session: any) => (
                   <details key={session.id} className="group">
                     <summary className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50 list-none outline-none">
                       <div className="flex items-center gap-4">
@@ -451,8 +480,27 @@ export default function AnalyticsDashboard() {
 
           {/* Recent Events Log */}
           <div className="bg-white border shadow-sm rounded-xl flex flex-col overflow-hidden">
-            <div className="p-6 border-b">
+            <div className="p-6 border-b flex justify-between items-center flex-wrap gap-4">
               <h3 className="text-lg font-semibold leading-none tracking-tight">Lo que hicieron los últimos visitantes</h3>
+              {data.total_recent_events > 20 && (
+                <div className="flex items-center gap-2">
+                  <button 
+                    onClick={() => setEventsPage(p => Math.max(0, p - 1))}
+                    disabled={eventsPage === 0}
+                    className="p-1 px-2 border rounded disabled:opacity-50 hover:bg-gray-50 transition-colors"
+                  >
+                    ←
+                  </button>
+                  <span className="text-sm text-gray-500">Página {eventsPage + 1} de {Math.ceil(data.total_recent_events / 20)}</span>
+                  <button 
+                    onClick={() => setEventsPage(p => Math.min(Math.ceil(data.total_recent_events / 20) - 1, p + 1))}
+                    disabled={eventsPage >= Math.ceil(data.total_recent_events / 20) - 1}
+                    className="p-1 px-2 border rounded disabled:opacity-50 hover:bg-gray-50 transition-colors"
+                  >
+                    →
+                  </button>
+                </div>
+              )}
             </div>
             <div>
               <div className="overflow-x-auto">
