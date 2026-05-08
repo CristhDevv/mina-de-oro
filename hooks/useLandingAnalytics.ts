@@ -157,8 +157,8 @@ export function useLandingAnalytics({ slug }: { slug: string }) {
 
       trackEvent('click', {
         element: elementStr.substring(0, 100), // Resumido
-        x: e.clientX,
-        y: e.clientY,
+        x: Math.round((e.clientX / window.innerWidth) * 100),
+        y: Math.round((e.pageY / document.documentElement.scrollHeight) * 100),
         section: sectionEl ? sectionEl.getAttribute('data-section') : null,
       })
     }
