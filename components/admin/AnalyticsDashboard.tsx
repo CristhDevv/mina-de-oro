@@ -276,7 +276,7 @@ export default function AnalyticsDashboard() {
                 <p className="text-sm text-gray-500 mt-1">Últimos 500 clicks (proporción móvil)</p>
               </div>
               <div className="p-6 pt-0 flex justify-center">
-                <div className="relative border-4 border-gray-800 rounded-[2.5rem] overflow-hidden bg-gray-50 shadow-inner" style={{ width: '300px', height: '534px' }}>
+                <div className="relative border-4 border-gray-800 rounded-[2.5rem] overflow-hidden bg-gray-50 shadow-inner" style={{ width: '375px', height: '667px' }}>
                   {data.click_map?.map((click: any, i: number) => {
                     const sections = ['hero', 'problema', 'specs', 'testimonios', 'pricing', 'faq'];
                     const colorIndex = click.section ? sections.indexOf(click.section) : -1;
