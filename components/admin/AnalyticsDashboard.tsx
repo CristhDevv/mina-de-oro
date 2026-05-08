@@ -158,7 +158,7 @@ export default function AnalyticsDashboard() {
                     <XAxis dataKey="scroll" axisLine={false} tickLine={false} />
                     <YAxis tickFormatter={(val: number | string) => `${val}%`} axisLine={false} tickLine={false} />
                     <RechartsTooltip 
-                      formatter={(val: number) => [`${val}%`, 'Usuarios llegaron aquí']} 
+                      formatter={(val) => [`${val}%`, 'Usuarios llegaron aquí']} 
                       labelFormatter={(label: any) => `Nivel de scroll: ${label}`}
                     />
                     <Area type="monotone" dataKey="percentage" stroke="#2C3E50" strokeWidth={3} fill="#A0856A" fillOpacity={0.2} />
@@ -179,7 +179,7 @@ export default function AnalyticsDashboard() {
                     <CartesianGrid strokeDasharray="3 3" horizontal={false} />
                     <XAxis type="number" axisLine={false} tickLine={false} />
                     <YAxis dataKey="section" type="category" axisLine={false} tickLine={false} width={100} tick={{ fontSize: 12 }} />
-                    <RechartsTooltip formatter={(val: number) => [`${val}s`, 'Tiempo promedio']} />
+                    <RechartsTooltip formatter={(val) => [`${val}s`, 'Tiempo promedio']} />
                     <Bar dataKey="avgTime" fill="#2C3E50" radius={[0, 4, 4, 0]} barSize={24} />
                   </BarChart>
                 </ResponsiveContainer>
