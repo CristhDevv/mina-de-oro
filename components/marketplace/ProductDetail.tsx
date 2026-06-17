@@ -1,0 +1,463 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import { Plus, Minus, Truck, ShieldCheck, RefreshCcw, Lock, CheckCircle2 } from 'lucide-react'
+import { useCartStore } from '@/store/cart'
+import { useRouter } from 'next/navigation'
+import Image from 'next/image'
+import { Product } from '@/types'
+
+interface ProductDetailProps {
+  product: Product
+}
+
+export default function ProductDetail({ product }: ProductDetailProps) {
+  const [quantity, setQuantity] = useState(1)
+  const [activeImage, setActiveImage] = useState(0)
+  const addItem = useCartStore((state) => state.addItem)
+  const router = useRouter()
+
+  // 1. Extraer configuraciones de la landing o asignar valores por defecto (Retrocompatibilidad)
+  const landingConfig = product.landing_config || {}
+  const colors = landingConfig.colors || {}
+  const sections = landingConfig.sections || {}
+
+  const primaryColor = colors.primary || '#2C3E50'
+  const accentColor = colors.accent || '#A0856A'
+  const ctaColor = colors.cta || '#D4691E'
+  const redColor = colors.red || '#7B2020'
+  const bgColor = colors.bg || '#F5F5F0'
+
+  const showHero = sections.hero?.active !== false
+  const heroSubtitle = sections.hero?.subtitle || product.description
+  const showUrgency = sections.urgency?.active !== false
+  const urgencyDuration = sections.urgency?.duration_hours || 24
+  const showProblem = sections.problem?.active !== false
+  const problemTitle = sections.problem?.title || '¿Te identificas con esto?'
+  const problemCopy = sections.problem?.copy || '"Cada mañana buscas un zapato, encuentras el otro, llegas tarde. Y encima tropiezas con ellos."'
+  const problemImage = sections.problem?.image_url || (product.images && product.images.length > 1 ? product.images[1] : null)
+  const showBenefits = sections.benefits?.active !== false
+  const benefitsTitle = sections.benefits?.title || 'Todo lo que necesitas. Nada que no necesitas.'
+  const showSpecs = sections.specs?.active !== false
+  const showTestimonials = sections.testimonials?.active !== false
+  const testimonialsTitle = sections.testimonials?.title || 'Lo que dicen quienes ya lo tienen'
+  const showPricing = sections.pricing?.active !== false
+
+  const images = product.images && product.images.length > 0 
+    ? product.images 
+    : ['/images/placeholder.svg']
+
+  // 2. Cronómetro Regresivo por Sesión (localStorage)
+  const [timeLeft, setTimeLeft] = useState('00h 00m 00s')
+  useEffect(() => {
+    if (!showUrgency) return
+    const timerKey = `countdown_timer_${product.id}`
+    let durationSeconds = urgencyDuration * 3600
+    
+    const savedTime = localStorage.getItem(timerKey)
+    if (savedTime) {
+      const parsed = parseInt(savedTime, 10)
+      if (!isNaN(parsed) && parsed > 0) {
+        durationSeconds = parsed
+      }
+    }
+
+    const interval = setInterval(() => {
+      durationSeconds--
+      if (durationSeconds <= 0) {
+        durationSeconds = urgencyDuration * 3600 // Reiniciar
+      }
+      localStorage.setItem(timerKey, durationSeconds.toString())
+
+      const hours = Math.floor(durationSeconds / 3600)
+      const minutes = Math.floor((durationSeconds % 3600) / 60)
+      const seconds = durationSeconds % 60
+
+      const pad = (num: number) => String(num).padStart(2, '0')
+      setTimeLeft(`${pad(hours)}h ${pad(minutes)}m ${pad(seconds)}s`)
+    }, 1000)
+
+    return () => clearInterval(interval)
+  }, [product.id, urgencyDuration, showUrgency])
+
+  // 3. Popup de Actividad Simulada (ciudades colombianas)
+  const [popupText, setPopupText] = useState('')
+  const [showPopup, setShowPopup] = useState(false)
+  useEffect(() => {
+    const ciudades = ['Bogotá', 'Medellín', 'Cali', 'Barranquilla', 'Bucaramanga', 'Pereira', 'Manizales', 'Cartagena', 'Cúcuta', 'Ibagué', 'Pasto', 'Villavicencio']
+    const mensajes = [
+      'acaba de hacer su pedido',
+      'pidió la opción más popular',
+      'dejó sus datos para recibir el suyo',
+      'está mirando esta página ahora mismo',
+      'acaba de apartar el suyo'
+    ]
+
+    const mostrarPopup = () => {
+      const ciudad = ciudades[Math.floor(Math.random() * ciudades.length)]
+      const msg = mensajes[Math.floor(Math.random() * mensajes.length)]
+      setPopupText(`Alguien de ${ciudad} ${msg}`)
+      setShowPopup(true)
+      setTimeout(() => { setShowPopup(false) }, 5000)
+    }
+
+    const timer = setTimeout(() => {
+      mostrarPopup()
+      const interval = setInterval(mostrarPopup, Math.random() * 20000 + 25000)
+      return () => clearInterval(interval)
+    }, 8000)
+
+    return () => clearTimeout(timer)
+  }, [])
+
+  const handleBuyNow = () => {
+    addItem(product, quantity)
+    router.push('/carrito')
+  }
+
+  return (
+    <div 
+      className="pb-8 min-h-screen font-sans" 
+      style={{ 
+        '--primary': primaryColor, 
+        '--accent': accentColor, 
+        '--cta': ctaColor, 
+        '--red': redColor, 
+        '--bg': bgColor,
+        backgroundColor: 'var(--bg)' 
+      } as React.CSSProperties}
+    >
+      {/* Barra superior de anuncios */}
+      <div className="w-full text-center py-2.5 px-4 text-xs font-bold text-white uppercase tracking-wider" style={{ backgroundColor: 'var(--primary)' }}>
+        🚚 ENVÍO A TODO COLOMBIA · Pagas al recibir en casa · Sin riesgos 🏠
+      </div>
+
+      {/* 1. Hero Section (Imagen + Datos principales) */}
+      {showHero && (
+        <section className="bg-white pb-6 rounded-b-[2.5rem] shadow-sm">
+          {/* Galería de Imágenes */}
+          <div className="w-full max-w-lg mx-auto pt-2 bg-white">
+            <div className="relative aspect-square w-full">
+              <Image
+                src={images[activeImage]}
+                alt={product.name}
+                fill
+                className="object-contain p-4"
+                priority
+              />
+            </div>
+            
+            {images.length > 1 && (
+              <div className="flex gap-2 justify-center px-4 mt-1">
+                {images.map((img, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setActiveImage(idx)}
+                    className="relative w-14 h-14 rounded-xl overflow-hidden border-2 transition-all bg-white"
+                    style={{ borderColor: idx === activeImage ? 'var(--accent)' : '#eee' }}
+                  >
+                    <Image src={img} alt="" fill className="object-contain p-1" />
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Información principal */}
+          <div className="max-w-lg mx-auto px-5 pt-6 space-y-4">
+            <div className="space-y-2">
+              <div className="inline-block bg-amber-50 text-amber-700 px-3 py-1 rounded-full text-xs font-bold" style={{ color: 'var(--accent)', backgroundColor: 'rgba(232, 98, 26, 0.1)' }}>
+                ⭐ Más de 2.300 hogares ya lo tienen
+              </div>
+              <h1 className="text-2xl font-black leading-tight" style={{ color: 'var(--primary)' }}>
+                {product.name}
+              </h1>
+              <p className="text-sm text-gray-500 font-medium leading-relaxed">
+                {heroSubtitle}
+              </p>
+            </div>
+
+            {/* Precios */}
+            <div className="flex items-baseline gap-3 pt-2">
+              <span className="text-3xl font-black" style={{ color: 'var(--cta)' }}>
+                ${product.price.toLocaleString('es-CO')}
+              </span>
+              {product.originalPrice && (
+                <span className="text-base text-gray-400 line-through">
+                  ${product.originalPrice.toLocaleString('es-CO')}
+                </span>
+              )}
+            </div>
+
+            {/* Selector de cantidad */}
+            <div className="flex items-center justify-between p-3 border border-gray-100 rounded-2xl bg-gray-50/50">
+              <span className="text-xs font-bold uppercase tracking-wider text-gray-400">Cantidad</span>
+              <div className="flex items-center gap-4 bg-white rounded-xl p-1 shadow-sm">
+                <button 
+                  onClick={() => setQuantity(prev => Math.max(1, prev - 1))}
+                  className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center active:scale-90 transition-all font-bold"
+                  style={{ color: 'var(--primary)' }}
+                >
+                  <Minus size={14} />
+                </button>
+                <span className="font-bold w-4 text-center text-sm" style={{ color: 'var(--primary)' }}>
+                  {quantity}
+                </span>
+                <button 
+                  onClick={() => setQuantity(prev => Math.min(product.stock, prev + 1))}
+                  className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center active:scale-90 transition-all font-bold"
+                  style={{ color: 'var(--primary)' }}
+                  disabled={quantity >= product.stock}
+                >
+                  <Plus size={14} />
+                </button>
+              </div>
+            </div>
+
+            {/* CTAs de acción */}
+            <div className="flex flex-col gap-3 pt-2">
+              <button
+                onClick={handleBuyNow}
+                disabled={product.stock <= 0}
+                className="w-full h-14 text-white rounded-2xl font-black text-base flex items-center justify-center gap-2 shadow-lg active:scale-[0.98] transition-all disabled:opacity-50 disabled:grayscale uppercase tracking-wide"
+                style={{ backgroundColor: 'var(--cta)' }}
+              >
+                {product.stock > 0 ? '⚡ HACER PEDIDO - PAGO AL RECIBIR' : 'Agotado'}
+              </button>
+              
+              <a
+                href={`https://wa.me/57${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '3117284178'}?text=Hola,%20quiero%20información%20sobre%20*${encodeURIComponent(product.name)}*`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full h-12 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 border-2 transition-all active:scale-[0.98] bg-white"
+                style={{ borderColor: 'var(--accent)', color: 'var(--accent)' }}
+              >
+                💬 Preguntar por WhatsApp
+              </a>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* 2. Barra de Urgencia */}
+      {showUrgency && (
+        <section className="my-5 p-4 text-center rounded-2xl max-w-lg mx-auto shadow-sm text-white" style={{ backgroundColor: 'var(--red)' }}>
+          <div className="text-xs uppercase tracking-widest font-black opacity-90">🔥 Oferta por tiempo limitado</div>
+          <div className="text-lg font-bold my-1">
+            Solo quedan <span className="underline decoration-2 font-black">{product.stock} unidades</span> en promoción
+          </div>
+          <div className="text-2xl font-mono font-bold tracking-wider my-2 text-yellow-300">
+            {timeLeft}
+          </div>
+          <div className="text-xs opacity-75">El precio regresará a su valor regular al finalizar la cuenta regresiva.</div>
+        </section>
+      )}
+
+      {/* 3. Antes vs Después */}
+      {showProblem && problemImage && (
+        <section className="bg-white py-8 my-5 rounded-3xl max-w-lg mx-auto px-5 shadow-sm space-y-5">
+          <h2 className="text-xl font-bold text-center leading-tight" style={{ color: 'var(--primary)' }}>
+            {problemTitle}
+          </h2>
+          <div className="relative aspect-video w-full rounded-2xl overflow-hidden shadow-md">
+            <span className="absolute top-3 left-3 z-10 bg-red-600 text-white font-bold text-xs px-2.5 py-1 rounded-lg">❌ Antes</span>
+            <span className="absolute top-3 right-3 z-10 bg-green-600 text-white font-bold text-xs px-2.5 py-1 rounded-lg">✅ Después</span>
+            <Image
+              src={problemImage}
+              alt="Comparativa de producto"
+              fill
+              className="object-cover"
+            />
+          </div>
+          <p className="text-sm text-gray-600 text-center font-medium italic px-2">
+            {problemCopy}
+          </p>
+        </section>
+      )}
+
+      {/* 4. Grid de Beneficios */}
+      {showBenefits && product.features && product.features.length > 0 && (
+        <section className="bg-white py-8 my-5 rounded-3xl max-w-lg mx-auto px-5 shadow-sm space-y-6">
+          <h2 className="text-xl font-black text-center" style={{ color: 'var(--primary)' }}>
+            {benefitsTitle}
+          </h2>
+          <div className="grid grid-cols-2 gap-4">
+            {product.features.map((feature, i) => (
+              <div key={i} className="p-4 rounded-2xl bg-gray-50 border border-gray-100 flex flex-col gap-2 shadow-sm">
+                <span className="text-2xl">⚡</span>
+                <span className="text-sm font-bold text-gray-800 leading-snug">{feature}</span>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* 5. Especificaciones Técnicas */}
+      {showSpecs && product.specifications && product.specifications.length > 0 && (
+        <section className="bg-white py-8 my-5 rounded-3xl max-w-lg mx-auto px-5 shadow-sm space-y-5">
+          <h2 className="text-xl font-black" style={{ color: 'var(--primary)' }}>
+            Especificaciones técnicas
+          </h2>
+          <dl className="divide-y divide-gray-100">
+            {product.specifications.map((spec, i) => (
+              <div key={i} className="flex items-center justify-between py-3 text-sm">
+                <dt className="text-gray-400 font-medium">{spec.label}</dt>
+                <dd className="text-gray-800 font-bold">{spec.value}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+      )}
+
+      {/* 6. Testimonios */}
+      {showTestimonials && product.reviews && product.reviews.length > 0 && (
+        <section className="bg-white py-8 my-5 rounded-3xl max-w-lg mx-auto px-5 shadow-sm space-y-5">
+          <h2 className="text-xl font-black text-center" style={{ color: 'var(--primary)' }}>
+            {testimonialsTitle} ⭐⭐⭐⭐⭐
+          </h2>
+          <div className="space-y-4">
+            {product.reviews.map((review, i) => (
+              <div key={i} className="bg-gray-50 rounded-2xl p-4 border border-gray-100 shadow-sm flex flex-col gap-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-base shadow-inner" style={{ backgroundColor: 'var(--accent)' }}>
+                      {review.author.charAt(0).toUpperCase()}
+                    </div>
+                    <div>
+                      <div className="text-sm font-bold text-gray-800">{review.author}</div>
+                      <div className="text-[10px] text-gray-400">Compra verificada</div>
+                    </div>
+                  </div>
+                  <div className="flex text-yellow-400 text-sm">
+                    {'★'.repeat(review.rating)}
+                  </div>
+                </div>
+                <p className="text-xs text-gray-600 italic leading-relaxed">
+                  "{review.comment}"
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* 7. Sección de Pricing */}
+      {showPricing && (
+        <section className="my-5 p-6 rounded-3xl max-w-lg mx-auto text-center shadow-sm text-white" style={{ backgroundColor: 'var(--primary)' }}>
+          <h2 className="text-xl font-black mb-6 text-white">Elige tu modelo</h2>
+          
+          <div className="flex flex-col gap-4 mb-6">
+            <div className="bg-white/10 border-2 border-white/20 p-5 rounded-2xl cursor-pointer text-left relative transition-all hover:bg-white/15">
+              <h3 className="font-black text-lg text-white">Modelo Regular</h3>
+              <div className="text-sm opacity-85 my-1">Unidad individual</div>
+              <div className="text-2xl font-black text-yellow-300 mt-2">
+                ${product.price.toLocaleString('es-CO')}
+              </div>
+            </div>
+
+            {product.originalPrice && (
+              <div className="bg-white/10 border-2 border-dashed border-amber-400/50 p-5 rounded-2xl cursor-pointer text-left relative transition-all hover:bg-white/15">
+                <div className="absolute -top-3 right-5 bg-amber-500 text-white font-bold text-[10px] px-2.5 py-0.5 rounded-full">
+                  MÁS POPULAR
+                </div>
+                <h3 className="font-black text-lg text-white">Modelo Promocional</h3>
+                <div className="text-sm opacity-85 my-1">Precio especial de lanzamiento</div>
+                <div className="text-2xl font-black text-yellow-300 mt-2">
+                  ${product.price.toLocaleString('es-CO')}
+                  <span className="text-sm text-white/60 line-through ml-2 font-normal">
+                    ${product.originalPrice.toLocaleString('es-CO')}
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Garantías y Confianza */}
+          <div className="bg-green-900/40 border border-green-800/50 rounded-2xl p-4 text-left space-y-3 mb-6">
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">🏠</span>
+              <div>
+                <h4 className="font-bold text-sm text-white">Pago Contra Entrega</h4>
+                <p className="text-xs text-white/80 leading-relaxed">Pagas al mensajero cuando entregue el paquete en la puerta de tu casa.</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-2 text-[10px] pt-2 border-t border-white/10">
+              <span className="flex items-center gap-1.5 text-white/95 font-semibold">✅ Cero riesgos</span>
+              <span className="flex items-center gap-1.5 text-white/95 font-semibold">🔒 Transacción segura</span>
+            </div>
+          </div>
+
+          <button
+            onClick={handleBuyNow}
+            disabled={product.stock <= 0}
+            className="w-full h-14 text-white rounded-2xl font-black text-base flex items-center justify-center gap-2 shadow-lg active:scale-[0.98] transition-all disabled:opacity-50 uppercase tracking-wide"
+            style={{ backgroundColor: 'var(--cta)' }}
+          >
+            📦 HACER PEDIDO - PAGO AL RECIBIR
+          </button>
+          
+          <div className="flex justify-center gap-4 text-[10px] opacity-75 mt-4">
+            <span className="flex items-center gap-1"><Truck size={12} /> Envío gratis</span>
+            <span className="flex items-center gap-1"><ShieldCheck size={12} /> Garantía 12m</span>
+            <span className="flex items-center gap-1"><Lock size={12} /> Pago Seguro</span>
+          </div>
+        </section>
+      )}
+
+      {/* Badges de confianza Colombia fijos en el layout */}
+      <section className="bg-white py-6 my-5 rounded-3xl max-w-lg mx-auto px-5 shadow-sm">
+        <div className="grid grid-cols-2 gap-3">
+          {[
+            { icon: <Truck size={15} />, text: 'Envío a todo Colombia' },
+            { icon: <ShieldCheck size={15} />, text: 'Garantía 12 meses' },
+            { icon: <RefreshCcw size={15} />, text: '30 días devolución' },
+            { icon: <Lock size={15} />, text: 'Pago seguro Wompi' },
+          ].map(({ icon, text }) => (
+            <div key={text} className="flex items-center gap-2 bg-gray-50 rounded-xl px-3 py-2">
+              <span className="text-gray-500">{icon}</span>
+              <span className="text-[11px] font-semibold text-gray-600">{text}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* CTA Flotante Mobile */}
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-gray-100 shadow-2xl z-50 md:hidden">
+        <button
+          onClick={handleBuyNow}
+          disabled={product.stock <= 0}
+          className="w-full h-14 text-white rounded-2xl font-black text-base flex items-center justify-center gap-2 shadow-lg active:scale-[0.98] transition-all disabled:opacity-50 uppercase tracking-wide"
+          style={{ backgroundColor: 'var(--cta)' }}
+        >
+          {product.stock > 0 ? `⚡ Comprar ahora · $${product.price.toLocaleString('es-CO')}` : 'Agotado'}
+        </button>
+      </div>
+
+      {/* Popup de Actividad en tiempo real */}
+      <div 
+        id="activity-popup" 
+        className="fixed bottom-24 left-4 z-50 bg-white rounded-2xl p-4 shadow-2xl max-w-[280px] border-l-4 border-gray-900 transition-all duration-500 ease-out flex items-center gap-3"
+        style={{ 
+          display: showPopup ? 'flex' : 'none', 
+          borderColor: 'var(--primary)',
+          transform: showPopup ? 'translateX(0)' : 'translateX(-100%)',
+          opacity: showPopup ? 1 : 0
+        }}
+      >
+        <span className="text-2xl">🛒</span>
+        <div>
+          <div className="font-bold text-xs text-gray-800 leading-snug" id="popup-text">
+            {popupText}
+          </div>
+          <div className="text-[9px] text-gray-400 mt-0.5">Hace 2 minutos</div>
+        </div>
+        <button 
+          onClick={() => setShowPopup(false)}
+          className="text-gray-400 hover:text-gray-600 text-sm font-bold ml-auto"
+        >
+          ×
+        </button>
+      </div>
+    </div>
+  )
+}

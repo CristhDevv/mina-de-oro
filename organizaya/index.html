@@ -1,0 +1,1276 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organizador de Zapatos - Tu Casa Ordenada</title>
+    <meta name="description"
+        content="Organiza hasta 24 pares de zapatos sin taladro y en menos de 5 minutos con nuestro organizador de acero inoxidable.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Playfair+Display:wght@600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2C3E50;
+            /* Gris carbón elegante */
+            --accent: #A0856A;
+            /* Bronce cálido — evoca el cromo */
+            --bg: #F5F5F0;
+            /* Blanco roto cálido */
+            --text: #1A1A1A;
+            --cta: #D4691E;
+            /* Naranja tostado — más hogareño */
+            --red: #7B2020;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            color: var(--text);
+            background-color: var(--bg);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-family: 'Playfair Display', serif;
+            color: var(--primary);
+            line-height: 1.2;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: var(--cta);
+            color: white;
+            text-decoration: none;
+            padding: 18px 36px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(232, 98, 26, 0.4);
+            text-align: center;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(232, 98, 26, 0.5);
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(232, 98, 26, 0.7);
+            }
+
+            70% {
+                transform: scale(1.05);
+                box-shadow: 0 0 0 15px rgba(232, 98, 26, 0);
+            }
+
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(232, 98, 26, 0);
+            }
+        }
+
+        .btn-pulse {
+            animation: pulse 2s infinite;
+        }
+
+        .top-bar {
+            background-color: var(--primary);
+            color: white;
+            text-align: center;
+            padding: 10px;
+            font-size: 0.9rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .hero {
+            padding: 60px 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .hero-content {
+            flex: 0 0 60%;
+            padding-right: 40px;
+        }
+
+        .hero-image {
+            flex: 0 0 40%;
+            position: relative;
+        }
+
+        .hero-image img {
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 100%;
+        }
+
+        .hero .badge {
+            display: inline-block;
+            background-color: #F8F1E3;
+            color: var(--accent);
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+        }
+
+        .hero h1 span {
+            color: var(--cta);
+        }
+
+        .hero p.subtitle {
+            font-size: 1.2rem;
+            color: #555;
+            margin-bottom: 30px;
+        }
+
+        .hero .trust-icons {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .hero .trust-icons span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .urgency {
+            background-color: var(--cta);
+            color: white;
+            text-align: center;
+            padding: 20px;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .urgency .timer {
+            font-size: 2rem;
+            margin: 10px 0;
+            display: block;
+            font-family: monospace;
+        }
+
+        .urgency .price-strike {
+            text-decoration: line-through;
+            opacity: 0.7;
+            font-size: 1rem;
+        }
+
+        .problem {
+            padding: 80px 0;
+            text-align: center;
+        }
+
+        .problem h2 {
+            font-size: 2.5rem;
+            margin-bottom: 40px;
+        }
+
+        .problem-img-container {
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .problem-img-container .label {
+            position: absolute;
+            top: 20px;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: bold;
+            color: white;
+            font-size: 1.1rem;
+        }
+
+        .problem-img-container .label.antes {
+            left: 20px;
+            background-color: #D32F2F;
+        }
+
+        .problem-img-container .label.despues {
+            right: 20px;
+            background-color: #2E7D32;
+        }
+
+        .problem p {
+            font-style: italic;
+            font-size: 1.2rem;
+            margin-top: 30px;
+            color: #555;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .benefits {
+            padding: 80px 0;
+            background-color: white;
+        }
+
+        .benefits h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 50px;
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .benefits-grid .card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            border-top: 3px solid var(--accent);
+            text-align: center;
+        }
+
+        .benefits-grid .card .icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .benefits-grid .card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+
+        .benefits-grid .card p {
+            color: #666;
+            font-size: 0.95rem;
+        }
+
+        .benefits-img {
+            max-width: 800px;
+            margin: 0 auto;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .capacity {
+            position: relative;
+            height: 500px;
+            background-image: url('/sneakers.jpg.jpeg');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: flex-end;
+        }
+
+        .capacity-overlay {
+            width: 100%;
+            padding: 60px 20px;
+            background: linear-gradient(to top, var(--primary) 0%, transparent 100%);
+            color: white;
+            text-align: center;
+        }
+
+        .capacity h2 {
+            color: white;
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        .capacity p {
+            font-size: 1.3rem;
+            opacity: 0.9;
+        }
+
+        .specs {
+            padding: 80px 0;
+            display: flex;
+            align-items: center;
+            gap: 50px;
+        }
+
+        .specs-img {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .specs-img img {
+            border-radius: 12px;
+        }
+
+        .specs-table {
+            flex: 1;
+        }
+
+        .specs-table h2 {
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+        }
+
+        .table-row {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            padding: 15px 0;
+        }
+
+        .table-row .label {
+            font-weight: 700;
+            flex: 0 0 150px;
+            color: var(--primary);
+        }
+
+        .table-row .value {
+            color: #555;
+        }
+
+        .social {
+            padding: 80px 0;
+            position: relative;
+            background-image: url('/sneakers.jpg.jpeg');
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
+        }
+
+        .social-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(27, 47, 94, 0.85);
+        }
+
+        .social .container {
+            position: relative;
+            z-index: 1;
+        }
+
+        .social h2 {
+            text-align: center;
+            color: white;
+            font-size: 2.5rem;
+            margin-bottom: 50px;
+        }
+
+        .testimonials {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+
+        .testimonial-card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+        }
+
+        .testimonial-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--accent);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .stars {
+            color: var(--accent);
+            margin-bottom: 15px;
+            letter-spacing: 2px;
+        }
+
+        .testimonial-text {
+            font-style: italic;
+            color: #444;
+        }
+
+        .quality {
+            padding: 80px 0;
+            display: flex;
+            align-items: center;
+            gap: 50px;
+        }
+
+        .quality-img {
+            flex: 1;
+        }
+
+        .quality-img img {
+            border-radius: 12px;
+        }
+
+        .quality-text {
+            flex: 1;
+        }
+
+        .quality h2 {
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+        }
+
+        .quality ul {
+            list-style: none;
+        }
+
+        .quality li {
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .quality li::before {
+            content: '✓';
+            color: var(--accent);
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        .pricing {
+            background-color: var(--primary);
+            color: white;
+            padding: 80px 0;
+            text-align: center;
+        }
+
+        .pricing h2 {
+            color: white;
+            font-size: 2.5rem;
+            margin-bottom: 40px;
+        }
+
+        .pricing-options {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .pricing-card {
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            padding: 30px;
+            border-radius: 12px;
+            cursor: pointer;
+            width: 300px;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .pricing-card:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .pricing-card.selected {
+            border-color: var(--accent);
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .popular-badge {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--accent);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .pricing-card h3 {
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        .price-old {
+            text-decoration: line-through;
+            opacity: 0.6;
+            font-size: 1.1rem;
+        }
+
+        .price-new {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--accent);
+            margin: 10px 0;
+        }
+
+        .pricing-card p {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .pricing-cta {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .pricing-cta .btn {
+            width: 100%;
+            font-size: 1.4rem;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        .guarantees {
+            font-size: 0.85rem;
+            opacity: 0.8;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .payment-methods {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            opacity: 0.8;
+        }
+
+        .scarcity {
+            background-color: var(--red);
+            color: white;
+            text-align: center;
+            padding: 15px;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .faq {
+            padding: 80px 0;
+            background-color: white;
+        }
+
+        .faq h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 40px;
+        }
+
+        .faq-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .faq-item {
+            border-bottom: 1px solid #ddd;
+            padding: 20px 0;
+            cursor: pointer;
+        }
+
+        .faq-question {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: var(--text);
+        }
+
+        .faq-answer {
+            display: none;
+            padding-top: 15px;
+            color: #555;
+        }
+
+        .faq-item.active .faq-answer {
+            display: block;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        .faq-item.active .icon {
+            transform: rotate(45deg);
+            display: inline-block;
+        }
+
+        .faq-question .icon {
+            transition: transform 0.3s;
+            font-size: 1.5rem;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .final-cta {
+            padding: 100px 0;
+            background: linear-gradient(135deg, var(--primary) 0%, #0a1128 100%);
+            color: white;
+            text-align: center;
+        }
+
+        .final-cta h2 {
+            color: white;
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+        }
+
+        .final-cta p {
+            font-size: 1.2rem;
+            opacity: 0.8;
+            margin-bottom: 40px;
+        }
+
+        .final-cta .timer-container {
+            margin-top: 30px;
+            font-family: monospace;
+            font-size: 1.5rem;
+            color: var(--accent);
+        }
+
+        .footer {
+            background-color: #111;
+            color: #888;
+            text-align: center;
+            padding: 40px 20px;
+            font-size: 0.9rem;
+        }
+
+        .footer p {
+            margin-bottom: 15px;
+        }
+
+        .footer-links {
+            margin-bottom: 15px;
+        }
+
+        .footer-links a {
+            color: #888;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        .mobile-sticky-cta {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: var(--primary);
+            padding: 15px;
+            z-index: 1000;
+            box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        .mobile-sticky-cta .btn {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.2rem;
+            margin: 0;
+        }
+
+        @media (max-width: 768px) {
+            .hero {
+                flex-direction: column;
+                text-align: center;
+                padding: 40px 0;
+            }
+
+            .hero-content {
+                padding-right: 0;
+                margin-bottom: 30px;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero .trust-icons {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .specs,
+            .quality {
+                flex-direction: column;
+            }
+
+            .benefits-grid,
+            .testimonials {
+                grid-template-columns: 1fr;
+            }
+
+            .pricing-options {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            body {
+                padding-bottom: 80px;
+            }
+
+            .capacity h2 {
+                font-size: 2rem;
+            }
+
+            .problem h2,
+            .benefits h2,
+            .specs-table h2,
+            .social h2,
+            .quality h2,
+            .pricing h2,
+            .faq h2,
+            .final-cta h2 {
+                font-size: 2rem;
+            }
+
+            .mobile-sticky-cta {
+                display: block;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="top-bar">
+        🚚 ENVÍO A TODO COLOMBIA · Pagas cuando recibes el producto en casa · Sin riesgos 🏠
+    </div>
+
+    <section class="hero container fade-in">
+        <div class="hero-content">
+            <div class="badge">⭐ Más de 2.300 hogares ya lo tienen</div>
+            <h1>¿Tu entrada parece un <span>caos</span> de zapatos?</h1>
+            <p class="subtitle">Organiza hasta 24 pares sin taladro, sin obras y en menos de 5 minutos.</p>
+            <a href="#comprar" class="btn btn-pulse">📦 LO QUIERO — Pago al recibir en casa</a>
+            <div class="trust-icons">
+                <span>🚚 Envío gratis</span>
+                <span>🔄 30 días devolución</span>
+                <span>🔒 Pago seguro</span>
+            </div>
+        </div>
+        <div class="hero-image">
+            <img src="/dormitorio.jpg.jpeg" alt="Organizador en dormitorio principal">
+            <img src="/producto.jpg.jpeg" alt="Organizador limpio detalle" style="margin-top: 20px;">
+        </div>
+    </section>
+
+    <section style="background:#fff; padding:20px 0; border-top:1px solid #eee; border-bottom:1px solid #eee;">
+        <div class="container text-center">
+            <p style="font-size:0.85rem; color:#999; margin-bottom:15px; letter-spacing:1px; text-transform:uppercase;">
+                Destacado en</p>
+            <div
+                style="display:flex; justify-content:center; align-items:center; gap:40px; flex-wrap:wrap; opacity:0.5; filter:grayscale(1);">
+                <span style="font-family:'Playfair Display',serif; font-size:1.3rem; font-weight:700;">Forbes</span>
+                <span style="font-family:sans-serif; font-size:1.1rem; font-weight:700; letter-spacing:-1px;">El
+                    País</span>
+                <span style="font-family:sans-serif; font-size:1.1rem; font-weight:700;">Hogar Hoy</span>
+                <span style="font-family:'Playfair Display',serif; font-size:1.2rem;">Casa &amp; Jardín</span>
+                <span
+                    style="font-family:sans-serif; font-size:1.1rem; font-weight:900; letter-spacing:2px;">DECOR</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="urgency">
+        🔥 OFERTA LIMITADA — Solo <strong>7 unidades</strong> disponibles al precio de hoy · Precio sube en:
+        <span class="timer" id="timer1">00:00:00:00</span>
+        <span class="price-strike">$95.000</span> → Solo $60.000
+    </section>
+
+    <section class="problem container fade-in">
+        <h2>¿Te identificas con esto?</h2>
+        <div class="problem-img-container">
+            <span class="label antes">❌ Antes</span>
+            <span class="label despues">✅ Después</span>
+            <img src="/antes_despues.jpg.jpeg" alt="Antes y después de organizar tus zapatos">
+        </div>
+        <p>"Cada mañana buscas un zapato, encuentras el otro, llegas tarde. Y encima tropiezas con ellos."</p>
+    </section>
+
+    <section class="benefits fade-in">
+        <div class="container">
+            <h2>Todo lo que necesitas. Nada que no necesitas.</h2>
+            <div class="benefits-grid">
+                <div class="card">
+                    <span class="icon">⚡</span>
+                    <h3>5 minutos</h3>
+                    <p>Montaje sin herramientas</p>
+                </div>
+                <div class="card">
+                    <span class="icon">📦</span>
+                    <h3>Hasta 24 pares</h3>
+                    <p>6 niveles independientes</p>
+                </div>
+                <div class="card">
+                    <span class="icon">💪</span>
+                    <h3>Acero inoxidable</h3>
+                    <p>Resistente y duradero</p>
+                </div>
+                <div class="card">
+                    <span class="icon">🏠</span>
+                    <h3>Cabe en cualquier rincón</h3>
+                    <p>Diseño compacto y vertical</p>
+                </div>
+                <div class="card">
+                    <span class="icon">🔄</span>
+                    <h3>Desmontable</h3>
+                    <p>Guárdalo cuando no lo uses</p>
+                </div>
+            </div>
+            <div class="benefits-img">
+                <img src="/24pares.jpg.jpeg" alt="Organizador para 24 pares de zapatos">
+            </div>
+        </div>
+    </section>
+
+    <section class="capacity fade-in">
+        <div class="capacity-overlay">
+            <h2>Organiza hasta 24 pares</h2>
+            <p>Tallas, temporadas, tipos — todo tiene su sitio</p>
+        </div>
+    </section>
+
+    <section class="specs container fade-in">
+        <div class="specs-img">
+            <img src="/specs.jpg.jpeg" alt="Especificaciones de producto">
+            <img src="/infografia.jpg.jpeg" alt="Infografía de características">
+        </div>
+        <div class="specs-table">
+            <h2>Especificaciones</h2>
+            <div class="table-row"><span class="label">Material</span><span class="value">Acero inoxidable
+                    cromado</span></div>
+            <div class="table-row"><span class="label">Niveles</span><span class="value">6 (ampliable a 8)</span></div>
+            <div class="table-row"><span class="label">Capacidad</span><span class="value">24-32 pares</span></div>
+            <div class="table-row"><span class="label">Montaje</span><span class="value">Sin herramientas</span></div>
+            <div class="table-row"><span class="label">Patas</span><span class="value">Antideslizantes</span></div>
+            <div class="table-row"><span class="label">Conectores</span><span class="value">ABS de alta
+                    resistencia</span></div>
+            <div class="table-row"><span class="label">Peso soportado</span><span class="value">15 kg por nivel</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="social fade-in">
+        <div class="social-overlay"></div>
+        <div class="container">
+            <h2>Lo que dicen quienes ya lo tienen ⭐⭐⭐⭐⭐</h2>
+            <div class="testimonials">
+                <div class="testimonial-card">
+                    <div class="testimonial-header">
+                        <div class="avatar">M</div>
+                        <div>
+                            <strong>María G.</strong><br>
+                            <small>Madrid</small>
+                        </div>
+                    </div>
+                    <div class="stars">⭐⭐⭐⭐⭐</div>
+                    <p class="testimonial-text">"Lo monté en 5 minutos y mi entrada parece otra. ¡Por fin tengo todo
+                        ordenado!"</p>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-header">
+                        <div class="avatar" style="background-color: var(--primary);">C</div>
+                        <div>
+                            <strong>Carlos R.</strong><br>
+                            <small>Valencia</small>
+                        </div>
+                    </div>
+                    <div class="stars">⭐⭐⭐⭐⭐</div>
+                    <p class="testimonial-text">"Compré el de 8 niveles para toda la familia. Muy sólido, aguanta
+                        perfectamente."</p>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-header">
+                        <div class="avatar" style="background-color: #2E7D32;">L</div>
+                        <div>
+                            <strong>Laura M.</strong><br>
+                            <small>Barcelona</small>
+                        </div>
+                    </div>
+                    <div class="stars">⭐⭐⭐⭐⭐</div>
+                    <p class="testimonial-text">"Tenía los zapatos por toda la habitación. Ahora tengo espacio y todo a
+                        la vista."</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="quality container fade-in">
+        <div class="quality-img">
+            <img src="/acero.jpg.jpeg" alt="Detalle de acero inoxidable de alta calidad">
+        </div>
+        <div class="quality-text">
+            <h2>Construido para durar</h2>
+            <ul>
+                <li>Acero inoxidable que no se oxida</li>
+                <li>Conectores ABS que no se rompen</li>
+                <li>Patas antideslizantes para cualquier suelo</li>
+            </ul>
+        </div>
+    </section>
+
+    <section id="comprar" class="pricing fade-in">
+        <div class="container">
+            <h2>Elige tu modelo</h2>
+            <div class="pricing-options">
+                <div class="pricing-card">
+                    <h3>Opción A — 6 Niveles</h3>
+                    <div class="price-old">$85.000</div>
+                    <div class="price-new">$55.000</div>
+                    <p>Organiza hasta 24 pares</p>
+                </div>
+                <div class="pricing-card selected">
+                    <div class="popular-badge">MÁS POPULAR</div>
+                    <h3>Opción B — 8 Niveles</h3>
+                    <div class="price-old">$95.000</div>
+                    <div class="price-new">$60.000</div>
+                    <p>Organiza hasta 32 pares</p>
+                </div>
+            </div>
+            <div class="pricing-cta">
+                <div
+                    style="background:linear-gradient(135deg,#1a4a1a,#2d7a2d);border-radius:12px;padding:25px;margin-bottom:25px;text-align:center;">
+                    <div style="font-size:3rem;margin-bottom:10px;">🏠</div>
+                    <div
+                        style="color:white;font-size:1.4rem;font-weight:700;font-family:'Playfair Display',serif;margin-bottom:8px;">
+                        Pago Contra Entrega
+                    </div>
+                    <div style="color:rgba(255,255,255,0.9);font-size:1rem;margin-bottom:15px;">
+                        No pagas nada hoy. El mensajero llega a tu puerta,<br>
+                        revisas el producto y <strong>solo entonces pagas.</strong>
+                    </div>
+                    <div style="display:flex;justify-content:center;gap:20px;flex-wrap:wrap;">
+                        <span
+                            style="background:rgba(255,255,255,0.15);color:white;padding:6px 14px;border-radius:20px;font-size:0.85rem;">✅
+                            Cero riesgo</span>
+                        <span
+                            style="background:rgba(255,255,255,0.15);color:white;padding:6px 14px;border-radius:20px;font-size:0.85rem;">✅
+                            Sin tarjeta</span>
+                        <span
+                            style="background:rgba(255,255,255,0.15);color:white;padding:6px 14px;border-radius:20px;font-size:0.85rem;">✅
+                            Envío a todo Colombia</span>
+                    </div>
+                </div>
+                <div style="display:flex; justify-content:center; gap:15px; flex-wrap:wrap; margin-bottom:25px;">
+
+                    <div
+                        style="display:flex;align-items:center;gap:8px;background:#f0f7f0;border:1px solid #c3e6c3;border-radius:8px;padding:10px 16px;">
+                        <span style="font-size:1.4rem;">✅</span>
+                        <div>
+                            <div style="font-weight:700;font-size:0.85rem;color:#1a6b1a;">TIENDA VERIFICADA</div>
+                            <div style="font-size:0.75rem;color:#555;">Vendedor de confianza</div>
+                        </div>
+                    </div>
+
+                    <div
+                        style="display:flex;align-items:center;gap:8px;background:#f0f4ff;border:1px solid #c3d0f5;border-radius:8px;padding:10px 16px;">
+                        <span style="font-size:1.4rem;">🔒</span>
+                        <div>
+                            <div style="font-weight:700;font-size:0.85rem;color:#1a3a8b;">PAGO SSL SEGURO</div>
+                            <div style="font-size:0.75rem;color:#555;">256-bit encriptado</div>
+                        </div>
+                    </div>
+
+                    <div
+                        style="display:flex;align-items:center;gap:8px;background:#fff8ec;border:1px solid #f5dcaa;border-radius:8px;padding:10px 16px;">
+                        <span style="font-size:1.4rem;">🏆</span>
+                        <div>
+                            <div style="font-weight:700;font-size:0.85rem;color:#8a5a00;">TOP VENTAS 2025</div>
+                            <div style="font-size:0.75rem;color:#555;">+2.300 unidades vendidas</div>
+                        </div>
+                    </div>
+
+                    <div
+                        style="display:flex;align-items:center;gap:8px;background:#fff0f0;border:1px solid #f5c3c3;border-radius:8px;padding:10px 16px;">
+                        <span style="font-size:1.4rem;">↩️</span>
+                        <div>
+                            <div style="font-weight:700;font-size:0.85rem;color:#8b1a1a;">DEVOLUCIÓN GRATIS</div>
+                            <div style="font-size:0.75rem;color:#555;">30 días sin preguntas</div>
+                        </div>
+                    </div>
+
+                </div>
+                <button class="btn btn-pulse" style="display: block; width: 100%; margin-bottom: 15px;">📦 HACER PEDIDO
+                    — Pago al recibir en casa</button>
+                <div class="guarantees">
+                    <span>🏠 Pagas cuando lo recibes en tu puerta</span>
+                    <span>📦 Envío a todo Colombia</span>
+                    <span>↩️ Garantía 30 días</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="scarcity">
+        ⚠️ ¡ATENCIÓN! Solo quedan 7 unidades al precio de hoy. El precio sube en cuanto se agote el stock de
+        lanzamiento.
+    </section>
+
+    <section class="faq fade-in">
+        <div class="container faq-container">
+            <h2>Preguntas frecuentes</h2>
+            <div class="faq-item">
+                <div class="faq-question">¿Necesito herramientas para montarlo? <span class="icon">+</span></div>
+                <div class="faq-answer">No, se ensambla a presión en 5 minutos.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">¿Cuántos zapatos caben? <span class="icon">+</span></div>
+                <div class="faq-answer">3-4 pares por nivel: 24 pares en el de 6 niveles, 32 en el de 8.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">¿Es resistente? <span class="icon">+</span></div>
+                <div class="faq-answer">Sí, acero inoxidable cromado, soporta 15 kg por nivel.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">¿Puedo devolver si no me gusta? <span class="icon">+</span></div>
+                <div class="faq-answer">Sí, 30 días de devolución gratuita sin preguntas.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">¿Cuándo llega? <span class="icon">+</span></div>
+                <div class="faq-answer">Envío en 24-48 horas laborables.</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="final-cta fade-in">
+        <div class="container">
+            <h2>Tu casa ordenada.<br>Esta semana.</h2>
+            <p>Más de 2.300 familias ya dieron el paso.</p>
+            <a href="#comprar" class="btn btn-pulse">📦 LO QUIERO — Pago al recibir en casa</a>
+            <div class="timer-container" id="timer2">00:00:00:00</div>
+            <div
+                style="display:inline-flex;align-items:center;gap:15px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:12px;padding:15px 25px;margin-top:30px;">
+                <div style="font-size:3rem;">🛡️</div>
+                <div style="text-align:left;">
+                    <div style="font-weight:700;font-size:1rem;color:white;">Garantía Total 30 días</div>
+                    <div style="font-size:0.85rem;color:rgba(255,255,255,0.7);">Si no te convence, te devolvemos cada
+                        céntimo.<br>Sin formularios. Sin esperas.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="footer-links">
+            <a href="#">Política de privacidad</a> |
+            <a href="#">Aviso legal</a> |
+            <a href="#">Contacto</a>
+        </div>
+        <p>🔒 Compra 100% segura mediante encriptación SSL</p>
+        <p>© 2025 OrganizaYa · Todos los derechos reservados</p>
+    </footer>
+
+    <div class="mobile-sticky-cta">
+        <a href="#comprar" class="btn btn-pulse">📦 LO QUIERO — Pago al recibir en casa</a>
+    </div>
+
+    <script>
+        function startTimer(duration, display, display2) {
+            let timer = duration, days, hours, minutes, seconds;
+            setInterval(function () {
+                days = parseInt(timer / (3600 * 24), 10);
+                hours = parseInt((timer % (3600 * 24)) / 3600, 10);
+                minutes = parseInt((timer % 3600) / 60, 10);
+                seconds = parseInt(timer % 60, 10);
+
+                days = days < 10 ? "0" + days : days;
+                hours = hours < 10 ? "0" + hours : hours;
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                seconds = seconds < 10 ? "0" + seconds : seconds;
+
+                const timeString = days + "d " + hours + "h " + minutes + "m " + seconds + "s";
+                if (display) display.textContent = timeString;
+                if (display2) display2.textContent = timeString;
+
+                if (--timer < 0) {
+                    timer = duration;
+                }
+                localStorage.setItem('countdownTime', timer);
+            }, 1000);
+        }
+
+        window.onload = function () {
+            let countdownTime = localStorage.getItem('countdownTime');
+            if (!countdownTime) {
+                countdownTime = 24 * 60 * 60;
+            }
+            const display = document.querySelector('#timer1');
+            const display2 = document.querySelector('#timer2');
+            startTimer(parseInt(countdownTime), display, display2);
+
+            const faqs = document.querySelectorAll('.faq-item');
+            faqs.forEach(faq => {
+                faq.addEventListener('click', () => {
+                    faq.classList.toggle('active');
+                    const icon = faq.querySelector('.icon');
+                    if (faq.classList.contains('active')) {
+                        icon.textContent = '×';
+                    } else {
+                        icon.textContent = '+';
+                    }
+                });
+            });
+
+            const cards = document.querySelectorAll('.pricing-card');
+            cards.forEach(card => {
+                card.addEventListener('click', () => {
+                    cards.forEach(c => c.classList.remove('selected'));
+                    card.classList.add('selected');
+                });
+            });
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+        };
+    </script>
+    <!-- Popup de actividad en tiempo real -->
+    <div id="activity-popup" style="
+  position:fixed; bottom:90px; left:20px; z-index:9999;
+  background:white; border-radius:12px; padding:14px 18px;
+  box-shadow:0 8px 30px rgba(0,0,0,0.15); max-width:280px;
+  display:none; align-items:center; gap:12px;
+  border-left:4px solid #2C3E50; animation: slideInLeft 0.4s ease;">
+        <span style="font-size:2rem;">🛒</span>
+        <div>
+            <div style="font-weight:700;font-size:0.9rem;" id="popup-text">Alguien de Bogotá acaba de hacer su pedido
+            </div>
+            <div style="font-size:0.75rem;color:#999;">Hace 2 minutos</div>
+        </div>
+        <button onclick="document.getElementById('activity-popup').style.display='none'"
+            style="background:none;border:none;cursor:pointer;color:#999;font-size:1.2rem;margin-left:auto;">×</button>
+    </div>
+
+    <style>
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+    </style>
+
+    <script>
+        const ciudades = ['Bogotá', 'Medellín', 'Cali', 'Barranquilla', 'Bucaramanga', 'Pereira', 'Manizales', 'Cartagena', 'Cúcuta', 'Ibagué', 'Pasto', 'Villavicencio'];
+        const mensajes = [
+            'acaba de hacer su pedido',
+            'pidió el de 8 niveles',
+            'dejó sus datos para recibir el suyo',
+            'está mirando esta página ahora mismo',
+            'acaba de apartar el suyo'
+        ];
+        function mostrarPopup() {
+            const ciudad = ciudades[Math.floor(Math.random() * ciudades.length)];
+            const msg = mensajes[Math.floor(Math.random() * mensajes.length)];
+            const popup = document.getElementById('activity-popup');
+            const textEl = document.getElementById('popup-text');
+            if (textEl) textEl.textContent = 'Alguien de ' + ciudad + ' ' + msg;
+            popup.style.display = 'flex';
+            setTimeout(() => { popup.style.display = 'none'; }, 5000);
+        }
+        // Aparece a los 8 segundos y luego cada 25-45 segundos
+        setTimeout(() => {
+            mostrarPopup();
+            setInterval(mostrarPopup, Math.random() * 20000 + 25000);
+        }, 8000);
+    </script>
+</body>
+
+</html>
