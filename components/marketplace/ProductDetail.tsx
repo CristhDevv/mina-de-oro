@@ -310,26 +310,42 @@ export default function ProductDetail({ product }: ProductDetailProps) {
       )}
 
       {/* 6. Testimonios */}
-      {showTestimonials && product.reviews && product.reviews.length > 0 && (
+      {showTestimonials && ((sections.testimonials as any)?.items || (product.reviews && product.reviews.length > 0)) && (
         <section className="bg-white py-8 my-5 rounded-3xl max-w-lg mx-auto px-5 shadow-sm space-y-5">
           <h2 className="text-xl font-black text-center" style={{ color: 'var(--primary)' }}>
             {testimonialsTitle} ⭐⭐⭐⭐⭐
           </h2>
           <div className="space-y-4">
-            {product.reviews.map((review, i) => (
+            {(((sections.testimonials as any)?.items && (sections.testimonials as any).items.length > 0)
+              ? (sections.testimonials as any).items
+              : (product.reviews || [])
+            ).map((review: any, i: number) => (
               <div key={i} className="bg-gray-50 rounded-2xl p-4 border border-gray-100 shadow-sm flex flex-col gap-2">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-base shadow-inner" style={{ backgroundColor: 'var(--accent)' }}>
-                      {review.author.charAt(0).toUpperCase()}
-                    </div>
+                    {review.avatar ? (
+                      <div className="w-10 h-10 rounded-full overflow-hidden relative border border-gray-100 shadow-inner flex-shrink-0">
+                        <Image
+                          src={review.avatar}
+                          alt={review.author || 'Cliente'}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                    ) : (
+                      <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-base shadow-inner flex-shrink-0" style={{ backgroundColor: 'var(--accent)' }}>
+                        {(review.author || 'C').charAt(0).toUpperCase()}
+                      </div>
+                    )}
                     <div>
-                      <div className="text-sm font-bold text-gray-800">{review.author}</div>
-                      <div className="text-[10px] text-gray-400">Compra verificada</div>
+                      <div className="text-sm font-bold text-gray-800">{review.author || 'Cliente Satisfecho'}</div>
+                      <div className="text-[10px] text-gray-400">
+                        {review.city ? `${review.city} · ` : ''}Compra verificada
+                      </div>
                     </div>
                   </div>
                   <div className="flex text-yellow-400 text-sm">
-                    {'★'.repeat(review.rating)}
+                    {'★'.repeat(review.rating || 5)}
                   </div>
                 </div>
                 <p className="text-xs text-gray-600 italic leading-relaxed">

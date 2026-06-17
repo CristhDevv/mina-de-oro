@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { LandingConfig } from '@/types'
-import { Palette, Eye, EyeOff, Clock, MessageCircle, Zap, Star, BarChart2, ShoppingBag, ChevronDown, ChevronUp } from 'lucide-react'
+import { Palette, Eye, EyeOff, Clock, MessageCircle, Zap, Star, BarChart2, ShoppingBag, ChevronDown, ChevronUp, Trash2, Plus, Loader2, ImagePlus } from 'lucide-react'
+import { uploadProductImage } from '@/lib/api/storage'
 
 interface Props {
   value: LandingConfig
@@ -95,6 +96,9 @@ function MiniPreview({ colors, sections }: { colors: LandingConfig['colors']; se
   const red = colors?.red || '#7B2020'
   const bg = colors?.bg || '#F5F5F0'
 
+  const testimonialsPreviewItems = (sections?.testimonials as any)?.items || []
+  const testimonialsTitle = (sections?.testimonials as any)?.title || 'Reseñas ⭐⭐⭐⭐⭐'
+
   return (
     <div
       className="w-full rounded-3xl overflow-hidden shadow-xl border border-gray-100 select-none"
@@ -150,13 +154,41 @@ function MiniPreview({ colors, sections }: { colors: LandingConfig['colors']; se
 
       {/* Testimonials */}
       {sections?.testimonials?.active !== false && (
-        <div className="mx-3 my-2 bg-white rounded-xl p-3 shadow-sm">
-          <div className="text-[9px] font-black mb-1.5 text-center" style={{ color: primary }}>Reseñas ⭐⭐⭐⭐⭐</div>
-          <div className="bg-gray-50 rounded-lg p-2">
-            <div className="text-[7px] text-yellow-500 mb-0.5">★★★★★</div>
-            <div className="text-[7px] text-gray-600">«Producto excelente, llegó rápido y en perfectas condiciones...»</div>
-            <div className="text-[7px] text-gray-400 mt-0.5 font-bold">— Cliente satisfecho</div>
+        <div className="mx-3 my-2 bg-white rounded-xl p-3 shadow-sm space-y-2">
+          <div className="text-[9px] font-black mb-1.5 text-center" style={{ color: primary }}>
+            {testimonialsTitle}
           </div>
+          {testimonialsPreviewItems.length > 0 ? (
+            testimonialsPreviewItems.slice(0, 3).map((item: any, idx: number) => (
+              <div key={idx} className="bg-gray-50 rounded-lg p-2 flex flex-col gap-1">
+                <div className="flex items-center gap-1.5">
+                  {item.avatar ? (
+                    <div className="w-4 h-4 rounded-full overflow-hidden relative border border-gray-100 flex-shrink-0">
+                      <img src={item.avatar} alt="" className="object-cover w-full h-full" />
+                    </div>
+                  ) : (
+                    <div className="w-4 h-4 rounded-full flex items-center justify-center text-[6px] text-white font-bold tracking-tight bg-gray-400 flex-shrink-0" style={{ backgroundColor: accent }}>
+                      {(item.author || 'C').charAt(0).toUpperCase()}
+                    </div>
+                  )}
+                  <div className="flex flex-col">
+                    <span className="text-[7px] font-bold text-gray-700 leading-none">{item.author || 'Cliente'}</span>
+                    <span className="text-[5px] text-gray-400 leading-none">{item.city || ''}</span>
+                  </div>
+                  <div className="text-[6px] text-yellow-500 ml-auto leading-none">
+                    {'★'.repeat(item.rating || 5)}
+                  </div>
+                </div>
+                <p className="text-[7px] text-gray-600 italic">«{item.comment || 'Sin comentario'}»</p>
+              </div>
+            ))
+          ) : (
+            <div className="bg-gray-50 rounded-lg p-2">
+              <div className="text-[7px] text-yellow-500 mb-0.5">★★★★★</div>
+              <div className="text-[7px] text-gray-600">«Producto excelente, llegó rápido y en perfectas condiciones...»</div>
+              <div className="text-[7px] text-gray-400 mt-0.5 font-bold">— Cliente satisfecho</div>
+            </div>
+          )}
         </div>
       )}
 
@@ -182,9 +214,53 @@ function MiniPreview({ colors, sections }: { colors: LandingConfig['colors']; se
 // ─── Main Component ─────────────────────────────────────────────────────────
 export default function LandingConfigEditor({ value, onChange }: Props) {
   const [tab, setTab] = useState<'colors' | 'sections'>('colors')
+  const [uploadingIdx, setUploadingIdx] = useState<number | null>(null)
+  const fileInputsRef = useRef<Record<number, HTMLInputElement | null>>({})
 
   const colors = value?.colors || {}
   const sections = value?.sections || {}
+
+  const testimonialsItems = (sections.testimonials as { items?: any[] } | undefined)?.items || []
+
+  function updateTestimonials(newItems: any[]) {
+    onChange({
+      ...value,
+      colors,
+      sections: {
+        ...sections,
+        testimonials: {
+          ...(sections.testimonials as object || {}),
+          items: newItems,
+        },
+      },
+    })
+  }
+
+  function addTestimonial() {
+    const newItem = { author: '', city: 'Bogotá', rating: 5, comment: '', avatar: '' }
+    updateTestimonials([...testimonialsItems, newItem])
+  }
+
+  function removeTestimonial(idx: number) {
+    updateTestimonials(testimonialsItems.filter((_, i) => i !== idx))
+  }
+
+  function updateTestimonialItem(idx: number, field: string, val: any) {
+    const newItems = testimonialsItems.map((item, i) => i === idx ? { ...item, [field]: val } : item)
+    updateTestimonials(newItems)
+  }
+
+  async function handleAvatarUpload(idx: number, file: File) {
+    setUploadingIdx(idx)
+    try {
+      const url = await uploadProductImage(file, 'testimonial-avatar')
+      updateTestimonialItem(idx, 'avatar', url)
+    } catch (err) {
+      alert('Error al subir el avatar')
+    } finally {
+      setUploadingIdx(null)
+    }
+  }
 
   function setColor(key: keyof NonNullable<LandingConfig['colors']>, val: string) {
     onChange({
@@ -339,16 +415,144 @@ export default function LandingConfigEditor({ value, onChange }: Props) {
                 active={(sections.testimonials as { active?: boolean } | undefined)?.active !== false}
                 onToggle={() => toggleSection('testimonials')}
               >
-                <div className="flex flex-col gap-1">
-                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Título de la sección</label>
-                  <input
-                    type="text"
-                    placeholder="Lo que dicen quienes ya lo tienen"
-                    value={(sections.testimonials as { title?: string } | undefined)?.title || ''}
-                    onChange={(e) => setSection('testimonials', { title: e.target.value })}
-                    className="h-9 px-3 rounded-xl border border-gray-100 text-[11px] font-medium outline-none focus:border-[#1B2B5E] bg-white"
-                  />
+                <div className="space-y-4">
+                  <div className="flex flex-col gap-1">
+                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Título de la sección</label>
+                    <input
+                      type="text"
+                      placeholder="Lo que dicen quienes ya lo tienen"
+                      value={(sections.testimonials as { title?: string } | undefined)?.title || ''}
+                      onChange={(e) => setSection('testimonials', { title: e.target.value })}
+                      className="h-9 px-3 rounded-xl border border-gray-100 text-[11px] font-medium outline-none focus:border-[#1B2B5E] bg-white"
+                    />
+                  </div>
+
+                  <div className="space-y-3">
+                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Lista de Testimonios ({testimonialsItems.length})</label>
+                    
+                    {testimonialsItems.map((item, idx) => (
+                      <div key={idx} className="group flex flex-col gap-3 p-4 bg-gray-50 rounded-2xl border border-gray-100 hover:border-gray-200 transition-all relative">
+                        {/* Remove button */}
+                        <button 
+                          onClick={() => removeTestimonial(idx)} 
+                          className="absolute top-3 right-3 p-1 text-gray-300 hover:text-red-500 transition-all"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+
+                        <div className="grid grid-cols-2 gap-2.5">
+                          {/* Author Name */}
+                          <div className="flex flex-col gap-1">
+                            <label className="text-[9px] font-black text-gray-400 uppercase tracking-wider">Nombre del Cliente</label>
+                            <input
+                              type="text"
+                              value={item.author || ''}
+                              onChange={(e) => updateTestimonialItem(idx, 'author', e.target.value)}
+                              placeholder="Ej. María G."
+                              className="h-8 px-2.5 rounded-lg border border-gray-200/60 text-[11px] font-medium outline-none focus:border-[#1B2B5E] bg-white"
+                            />
+                          </div>
+
+                          {/* City */}
+                          <div className="flex flex-col gap-1">
+                            <label className="text-[9px] font-black text-gray-400 uppercase tracking-wider">Ciudad (Colombia)</label>
+                            <input
+                              type="text"
+                              list="colombian-cities"
+                              value={item.city || ''}
+                              onChange={(e) => updateTestimonialItem(idx, 'city', e.target.value)}
+                              placeholder="Ej. Bogotá"
+                              className="h-8 px-2.5 rounded-lg border border-gray-200/60 text-[11px] font-medium outline-none focus:border-[#1B2B5E] bg-white"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-2.5">
+                          {/* Rating */}
+                          <div className="flex flex-col gap-1">
+                            <label className="text-[9px] font-black text-gray-400 uppercase tracking-wider">Calificación (Estrellas)</label>
+                            <select
+                              value={item.rating || 5}
+                              onChange={(e) => updateTestimonialItem(idx, 'rating', parseInt(e.target.value))}
+                              className="h-8 px-2 rounded-lg border border-gray-200/60 text-[11px] font-bold outline-none focus:border-[#1B2B5E] bg-white"
+                            >
+                              <option value={5}>⭐⭐⭐⭐⭐ (5)</option>
+                              <option value={4}>⭐⭐⭐⭐ (4)</option>
+                              <option value={3}>⭐⭐⭐ (3)</option>
+                              <option value={2}>⭐⭐ (2)</option>
+                              <option value={1}>⭐ (1)</option>
+                            </select>
+                          </div>
+
+                          {/* Avatar upload / url */}
+                          <div className="flex flex-col gap-1">
+                            <label className="text-[9px] font-black text-gray-400 uppercase tracking-wider">Avatar / Foto</label>
+                            <div className="flex gap-1.5">
+                              <input
+                                type="text"
+                                value={item.avatar || ''}
+                                onChange={(e) => updateTestimonialItem(idx, 'avatar', e.target.value)}
+                                placeholder="URL o sube foto"
+                                className="h-8 px-2.5 rounded-lg border border-gray-200/60 text-[10px] font-medium outline-none focus:border-[#1B2B5E] bg-white flex-1"
+                              />
+                              <input
+                                type="file"
+                                accept="image/*"
+                                ref={el => { fileInputsRef.current[idx] = el }}
+                                className="hidden"
+                                onChange={(e) => {
+                                  const file = e.target.files?.[0];
+                                  if (file) handleAvatarUpload(idx, file);
+                                }}
+                              />
+                              <button
+                                onClick={() => fileInputsRef.current[idx]?.click()}
+                                disabled={uploadingIdx === idx}
+                                className="h-8 px-2 bg-white border border-gray-200 rounded-lg flex items-center justify-center text-gray-500 hover:text-[#1B2B5E] active:scale-95 transition-all disabled:opacity-50"
+                              >
+                                {uploadingIdx === idx ? <Loader2 size={12} className="animate-spin" /> : <ImagePlus size={12} />}
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Comment */}
+                        <div className="flex flex-col gap-1">
+                          <label className="text-[9px] font-black text-gray-400 uppercase tracking-wider">Comentario</label>
+                          <textarea
+                            value={item.comment || ''}
+                            onChange={(e) => updateTestimonialItem(idx, 'comment', e.target.value)}
+                            placeholder="Comentario libre del cliente..."
+                            rows={2}
+                            className="px-2.5 py-1.5 rounded-lg border border-gray-200/60 text-[11px] font-medium outline-none focus:border-[#1B2B5E] bg-white resize-none"
+                          />
+                        </div>
+                      </div>
+                    ))}
+
+                    <button
+                      onClick={addTestimonial}
+                      className="w-full h-9 rounded-xl border-2 border-dashed border-gray-200 text-[9px] font-black text-gray-400 uppercase tracking-widest hover:border-[#1B2B5E] hover:text-[#1B2B5E] transition-all flex items-center justify-center gap-1"
+                    >
+                      <Plus size={12} /> Agregar Testimonio
+                    </button>
+                  </div>
                 </div>
+
+                <datalist id="colombian-cities">
+                  <option value="Bogotá" />
+                  <option value="Medellín" />
+                  <option value="Cali" />
+                  <option value="Barranquilla" />
+                  <option value="Bucaramanga" />
+                  <option value="Cartagena" />
+                  <option value="Cúcuta" />
+                  <option value="Pereira" />
+                  <option value="Manizales" />
+                  <option value="Ibagué" />
+                  <option value="Villavicencio" />
+                  <option value="Pasto" />
+                </datalist>
               </SectionToggle>
 
               <SectionToggle

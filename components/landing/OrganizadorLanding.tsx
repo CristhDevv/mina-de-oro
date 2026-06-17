@@ -35,6 +35,12 @@ export default function OrganizadorLanding({ product }: Props) {
   const [showPopup, setShowPopup] = useState(false)
   const [popupData, setPopupData] = useState({ ciudad: '', msg: '' })
 
+  const landingConfig = product.landing_config || {}
+  const sections = landingConfig.sections || {}
+  const showTestimonials = sections.testimonials?.active !== false
+  const testimonialsTitle = sections.testimonials?.title || 'Lo que dicen los que ya lo tienen'
+  const testimonialsItems = (sections.testimonials as any)?.items || []
+
   // Timer sin localStorage
   useEffect(() => {
     const timer = setInterval(() => setTimeLeft(prev => (prev > 0 ? prev - 1 : 24 * 60 * 60)), 1000)
@@ -294,70 +300,105 @@ export default function OrganizadorLanding({ product }: Props) {
       </section>
 
       {/* Testimonials */}
-      <section data-section="testimonios" className="relative py-16 md:py-20 fade-in-section opacity-0 translate-y-8 transition-all duration-700 ease-out">
-        <Image src={IMAGES.sneakers} alt="Fondo" fill className="object-cover" />
-        <div className="absolute inset-0 bg-[#1B2F5E]/90"></div>
-        <div className="container mx-auto px-5 relative z-10">
-          <h2 className="text-3xl md:text-4xl font-serif text-white text-center mb-12">Lo que dicen los que ya lo tienen ⭐⭐⭐⭐⭐</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {showTestimonials && (
+        <section data-section="testimonios" className="relative py-16 md:py-20 fade-in-section opacity-0 translate-y-8 transition-all duration-700 ease-out">
+          <Image src={IMAGES.sneakers} alt="Fondo" fill className="object-cover" />
+          <div className="absolute inset-0 bg-[#1B2F5E]/90"></div>
+          <div className="container mx-auto px-5 relative z-10">
+            <h2 className="text-3xl md:text-4xl font-serif text-white text-center mb-12">{testimonialsTitle} ⭐⭐⭐⭐⭐</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
-            {/* Testimonio 1 — Mujer con rack */}
-            <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-              <div className="relative w-full h-64">
-                <Image src={IMAGES.ugc_mujer} alt="María G. con su organizador" fill className="object-cover object-top" />
-              </div>
-              <div className="p-5">
-                <div className="text-[#A0856A] mb-2 tracking-widest text-sm">⭐⭐⭐⭐⭐</div>
-                <p className="italic text-gray-700 text-sm mb-4">"En serio, lo armé sola en 5 minutos. Mi entrada quedó como nueva. No puedo creer que antes vivía en ese desorden."</p>
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-full bg-[#A0856A] flex items-center justify-center text-white font-bold text-sm">M</div>
-                  <div>
-                    <strong className="block text-[#1A1A1A] text-sm">María G.</strong>
-                    <small className="text-gray-500 text-xs">Bogotá · Comprador verificado ✅</small>
+              {testimonialsItems.length > 0 ? (
+                testimonialsItems.map((review: any, i: number) => (
+                  <div key={i} className="bg-white rounded-xl shadow-lg overflow-hidden flex flex-col justify-between">
+                    {review.avatar && (
+                      <div className="relative w-full h-64">
+                        <Image src={review.avatar} alt={review.author || 'Cliente'} fill className="object-cover" />
+                      </div>
+                    )}
+                    <div className="p-5 flex-1 flex flex-col justify-between">
+                      <div>
+                        <div className="text-[#A0856A] mb-2 tracking-widest text-sm">
+                          {'★'.repeat(review.rating || 5)}
+                        </div>
+                        <p className="italic text-gray-700 text-sm mb-4">"{review.comment}"</p>
+                      </div>
+                      <div className="flex items-center gap-3 mt-auto pt-2">
+                        <div className="w-9 h-9 rounded-full bg-[#A0856A] flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                          {(review.author || 'M').charAt(0).toUpperCase()}
+                        </div>
+                        <div>
+                          <strong className="block text-[#1A1A1A] text-sm">{review.author || 'Cliente Satisfecho'}</strong>
+                          <small className="text-gray-500 text-xs font-semibold">
+                            {review.city ? `${review.city} · ` : ''}Comprador verificado ✅
+                          </small>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Testimonio 2 — Unboxing */}
-            <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-              <div className="relative w-full h-64">
-                <Image src={IMAGES.ugc_caja} alt="Carlos R. unboxing" fill className="object-cover" />
-              </div>
-              <div className="p-5">
-                <div className="text-[#A0856A] mb-2 tracking-widest text-sm">⭐⭐⭐⭐⭐</div>
-                <p className="italic text-gray-700 text-sm mb-4">"Llegó rápido, bien empacado y el armado fue pan comido. Sólido, no se mueve ni se dobla."</p>
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-full bg-[#2C3E50] flex items-center justify-center text-white font-bold text-sm">C</div>
-                  <div>
-                    <strong className="block text-[#1A1A1A] text-sm">Carlos R.</strong>
-                    <small className="text-gray-500 text-xs">Medellín · Comprador verificado ✅</small>
+                ))
+              ) : (
+                <>
+                  {/* Testimonio 1 — Mujer con rack */}
+                  <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+                    <div className="relative w-full h-64">
+                      <Image src={IMAGES.ugc_mujer} alt="María G. con su organizador" fill className="object-cover object-top" />
+                    </div>
+                    <div className="p-5">
+                      <div className="text-[#A0856A] mb-2 tracking-widest text-sm">⭐⭐⭐⭐⭐</div>
+                      <p className="italic text-gray-700 text-sm mb-4">"En serio, lo armé sola en 5 minutos. Mi entrada quedó como nueva. No puedo creer que antes vivía en ese desorden."</p>
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-full bg-[#A0856A] flex items-center justify-center text-white font-bold text-sm">M</div>
+                        <div>
+                          <strong className="block text-[#1A1A1A] text-sm">María G.</strong>
+                          <small className="text-gray-500 text-xs">Bogotá · Comprador verificado ✅</small>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-            </div>
 
-            {/* Testimonio 3 — Rack armado */}
-            <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-              <div className="relative w-full h-64">
-                <Image src={IMAGES.ugc_rack} alt="Laura M. rack organizado" fill className="object-cover" />
-              </div>
-              <div className="p-5">
-                <div className="text-[#A0856A] mb-2 tracking-widest text-sm">⭐⭐⭐⭐⭐</div>
-                <p className="italic text-gray-700 text-sm mb-4">"Tenía los zapatos por toda la pieza. Ahora los veo todos de una mirada y escojo sin estrés."</p>
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-full bg-[#2E7D32] flex items-center justify-center text-white font-bold text-sm">L</div>
-                  <div>
-                    <strong className="block text-[#1A1A1A] text-sm">Laura M.</strong>
-                    <small className="text-gray-500 text-xs">Cali · Comprador verificado ✅</small>
+                  {/* Testimonio 2 — Unboxing */}
+                  <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+                    <div className="relative w-full h-64">
+                      <Image src={IMAGES.ugc_caja} alt="Carlos R. unboxing" fill className="object-cover" />
+                    </div>
+                    <div className="p-5">
+                      <div className="text-[#A0856A] mb-2 tracking-widest text-sm">⭐⭐⭐⭐⭐</div>
+                      <p className="italic text-gray-700 text-sm mb-4">"Llegó rápido, bien empacado y el armado fue pan comido. Sólido, no se mueve ni se dobla."</p>
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-full bg-[#2C3E50] flex items-center justify-center text-white font-bold text-sm">C</div>
+                        <div>
+                          <strong className="block text-[#1A1A1A] text-sm">Carlos R.</strong>
+                          <small className="text-gray-500 text-xs">Medellín · Comprador verificado ✅</small>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-            </div>
 
+                  {/* Testimonio 3 — Rack armado */}
+                  <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+                    <div className="relative w-full h-64">
+                      <Image src={IMAGES.ugc_rack} alt="Laura M. rack organizado" fill className="object-cover" />
+                    </div>
+                    <div className="p-5">
+                      <div className="text-[#A0856A] mb-2 tracking-widest text-sm">⭐⭐⭐⭐⭐</div>
+                      <p className="italic text-gray-700 text-sm mb-4">"Tenía los zapatos por toda la pieza. Ahora los veo todos de una mirada y escojo sin estrés."</p>
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-full bg-[#2E7D32] flex items-center justify-center text-white font-bold text-sm">L</div>
+                        <div>
+                          <strong className="block text-[#1A1A1A] text-sm">Laura M.</strong>
+                          <small className="text-gray-500 text-xs">Cali · Comprador verificado ✅</small>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
+
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Quality */}
       <section data-section="calidad" className="container mx-auto px-5 py-16 md:py-20 flex flex-col md:flex-row items-center gap-10 md:gap-12 fade-in-section opacity-0 translate-y-8 transition-all duration-700 ease-out">

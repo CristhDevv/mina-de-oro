@@ -30,7 +30,17 @@ export const landingConfigSchema = z.object({
     problem: z.object({ active: z.boolean().optional(), title: z.string().optional(), copy: z.string().optional(), image_url: z.string().optional() }).optional(),
     benefits: z.object({ active: z.boolean().optional(), title: z.string().optional() }).optional(),
     specs: z.object({ active: z.boolean().optional() }).optional(),
-    testimonials: z.object({ active: z.boolean().optional(), title: z.string().optional() }).optional(),
+    testimonials: z.object({
+      active: z.boolean().optional(),
+      title: z.string().optional(),
+      items: z.array(z.object({
+        author: z.string().optional(),
+        city: z.string().optional(),
+        rating: z.number().optional(),
+        comment: z.string().optional(),
+        avatar: z.string().optional(),
+      })).optional(),
+    }).optional(),
     pricing: z.object({ active: z.boolean().optional() }).optional(),
   }).optional(),
 }).optional().nullable().transform(val => val ?? {} as {
@@ -41,7 +51,17 @@ export const landingConfigSchema = z.object({
     problem?: { active?: boolean; title?: string; copy?: string; image_url?: string };
     benefits?: { active?: boolean; title?: string };
     specs?: { active?: boolean };
-    testimonials?: { active?: boolean; title?: string };
+    testimonials?: {
+      active?: boolean;
+      title?: string;
+      items?: Array<{
+        author?: string;
+        city?: string;
+        rating?: number;
+        comment?: string;
+        avatar?: string;
+      }>;
+    };
     pricing?: { active?: boolean };
   };
 })
