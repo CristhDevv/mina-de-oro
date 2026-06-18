@@ -1,13 +1,14 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useRef } from 'react'
 import { LandingConfig } from '@/types'
-import { Palette, Eye, EyeOff, Clock, MessageCircle, Zap, Star, BarChart2, ShoppingBag, ChevronDown, ChevronUp, Trash2, Plus, Loader2, ImagePlus } from 'lucide-react'
+import { Palette, Eye, Clock, Zap, Star, BarChart2, ShoppingBag, ChevronDown, ChevronUp, Trash2, Plus, Loader2, ImagePlus, MessageCircle } from 'lucide-react'
 import { uploadProductImage } from '@/lib/api/storage'
 
 interface Props {
   value: LandingConfig
   onChange: (config: LandingConfig) => void
+  step: number
 }
 
 // ─── Color Swatch Picker ────────────────────────────────────────────────────
@@ -35,9 +36,10 @@ function ColorPicker({ label, value, onChange }: { label: string; value: string;
         {PRESETS.map((c) => (
           <button
             key={c}
+            type="button"
             onClick={() => onChange(c)}
             title={c}
-            className="w-6 h-6 rounded-lg border-2 transition-all hover:scale-110 active:scale-95"
+            className="w-6 h-6 rounded-lg border-2 transition-all hover:scale-110 active:scale-95 cursor-pointer"
             style={{
               backgroundColor: c,
               borderColor: value === c ? '#1B2B5E' : 'transparent',
@@ -56,9 +58,9 @@ function SectionToggle({
 }: {
   icon: any; label: string; active: boolean; onToggle: () => void; children?: React.ReactNode
 }) {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(true)
   return (
-    <div className={`rounded-2xl border transition-all ${active ? 'border-gray-200 bg-white' : 'border-dashed border-gray-100 bg-gray-50 opacity-60'}`}>
+    <div className={`rounded-2xl border transition-all ${active ? 'border-gray-200 bg-white' : 'border-dashed border-gray-100 bg-gray-50/50 opacity-60'}`}>
       <div className="flex items-center gap-3 px-4 py-3">
         <div className={`w-7 h-7 rounded-xl flex items-center justify-center transition-colors ${active ? 'bg-[#1B2B5E] text-white' : 'bg-gray-100 text-gray-400'}`}>
           <Icon size={13} />
@@ -66,15 +68,17 @@ function SectionToggle({
         <span className={`text-xs font-black uppercase tracking-wide flex-1 ${active ? 'text-gray-800' : 'text-gray-400'}`}>{label}</span>
         {children && active && (
           <button
+            type="button"
             onClick={() => setOpen(!open)}
-            className="w-6 h-6 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-gray-100 transition-colors"
+            className="w-6 h-6 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-gray-100 transition-colors cursor-pointer"
           >
             {open ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
           </button>
         )}
         <button
+          type="button"
           onClick={onToggle}
-          className={`w-10 h-5 rounded-full transition-colors relative flex-shrink-0 ${active ? 'bg-[#C9A84C]' : 'bg-gray-200'}`}
+          className={`w-10 h-5 rounded-full transition-colors relative flex-shrink-0 cursor-pointer ${active ? 'bg-[#C9A84C]' : 'bg-gray-200'}`}
         >
           <div className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow-sm transition-all ${active ? 'right-0.5' : 'left-0.5'}`} />
         </button>
@@ -88,132 +92,8 @@ function SectionToggle({
   )
 }
 
-// ─── Mini Preview ──────────────────────────────────────────────────────────
-function MiniPreview({ colors, sections }: { colors: LandingConfig['colors']; sections: LandingConfig['sections'] }) {
-  const primary = colors?.primary || '#2C3E50'
-  const accent = colors?.accent || '#A0856A'
-  const cta = colors?.cta || '#D4691E'
-  const red = colors?.red || '#7B2020'
-  const bg = colors?.bg || '#F5F5F0'
-
-  const testimonialsPreviewItems = (sections?.testimonials as any)?.items || []
-  const testimonialsTitle = (sections?.testimonials as any)?.title || 'Reseñas ⭐⭐⭐⭐⭐'
-
-  return (
-    <div
-      className="w-full rounded-3xl overflow-hidden shadow-xl border border-gray-100 select-none"
-      style={{ backgroundColor: bg, fontFamily: 'sans-serif' }}
-    >
-      {/* Announcement bar */}
-      <div className="py-1.5 px-3 text-center text-[8px] font-black text-white uppercase tracking-wider" style={{ backgroundColor: primary }}>
-        🚚 ENVÍO A TODO COLOMBIA · Sin riesgos
-      </div>
-
-      {/* Hero */}
-      {sections?.hero?.active !== false && (
-        <div className="bg-white px-4 py-3 rounded-b-2xl shadow-sm">
-          <div className="aspect-square rounded-xl bg-gray-100 mb-3 flex items-center justify-center">
-            <ShoppingBag size={32} style={{ color: accent }} />
-          </div>
-          <div className="text-[9px] font-black px-2 py-0.5 rounded-full inline-block mb-1"
-            style={{ color: accent, backgroundColor: `${accent}18` }}>
-            ⭐ Más de 2.300 hogares ya lo tienen
-          </div>
-          <div className="text-[11px] font-black leading-snug mb-0.5" style={{ color: primary }}>
-            Nombre del Producto
-          </div>
-          <div className="text-[7px] text-gray-400 mb-2">Subtítulo o descripción corta del producto.</div>
-          <div className="text-base font-black" style={{ color: cta }}>$129.900</div>
-        </div>
-      )}
-
-      {/* Urgency */}
-      {sections?.urgency?.active !== false && (
-        <div className="mx-3 my-2 rounded-xl px-3 py-2 flex items-center gap-2" style={{ backgroundColor: `${red}15`, borderLeft: `3px solid ${red}` }}>
-          <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: red }} />
-          <div>
-            <div className="text-[8px] font-black uppercase" style={{ color: red }}>¡Quedan pocas unidades!</div>
-            <div className="text-[7px] font-bold" style={{ color: red }}>⏱ 23h 59m 00s</div>
-          </div>
-        </div>
-      )}
-
-      {/* Benefits */}
-      {sections?.benefits?.active !== false && (
-        <div className="mx-3 my-2 bg-white rounded-xl p-3 shadow-sm">
-          <div className="text-[9px] font-black mb-2 text-center" style={{ color: primary }}>Todo lo que necesitas ✅</div>
-          <div className="grid grid-cols-2 gap-1.5">
-            {['Beneficio 1', 'Beneficio 2', 'Beneficio 3', 'Beneficio 4'].map((b) => (
-              <div key={b} className="bg-gray-50 rounded-lg p-1.5">
-                <div className="text-[7px] font-bold text-gray-600">⚡ {b}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Testimonials */}
-      {sections?.testimonials?.active !== false && (
-        <div className="mx-3 my-2 bg-white rounded-xl p-3 shadow-sm space-y-2">
-          <div className="text-[9px] font-black mb-1.5 text-center" style={{ color: primary }}>
-            {testimonialsTitle}
-          </div>
-          {testimonialsPreviewItems.length > 0 ? (
-            testimonialsPreviewItems.slice(0, 3).map((item: any, idx: number) => (
-              <div key={idx} className="bg-gray-50 rounded-lg p-2 flex flex-col gap-1">
-                <div className="flex items-center gap-1.5">
-                  {item.avatar ? (
-                    <div className="w-4 h-4 rounded-full overflow-hidden relative border border-gray-100 flex-shrink-0">
-                      <img src={item.avatar} alt="" className="object-cover w-full h-full" />
-                    </div>
-                  ) : (
-                    <div className="w-4 h-4 rounded-full flex items-center justify-center text-[6px] text-white font-bold tracking-tight bg-gray-400 flex-shrink-0" style={{ backgroundColor: accent }}>
-                      {(item.author || 'C').charAt(0).toUpperCase()}
-                    </div>
-                  )}
-                  <div className="flex flex-col">
-                    <span className="text-[7px] font-bold text-gray-700 leading-none">{item.author || 'Cliente'}</span>
-                    <span className="text-[5px] text-gray-400 leading-none">{item.city || ''}</span>
-                  </div>
-                  <div className="text-[6px] text-yellow-500 ml-auto leading-none">
-                    {'★'.repeat(item.rating || 5)}
-                  </div>
-                </div>
-                <p className="text-[7px] text-gray-600 italic">«{item.comment || 'Sin comentario'}»</p>
-              </div>
-            ))
-          ) : (
-            <div className="bg-gray-50 rounded-lg p-2">
-              <div className="text-[7px] text-yellow-500 mb-0.5">★★★★★</div>
-              <div className="text-[7px] text-gray-600">«Producto excelente, llegó rápido y en perfectas condiciones...»</div>
-              <div className="text-[7px] text-gray-400 mt-0.5 font-bold">— Cliente satisfecho</div>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* CTA */}
-      <div className="mx-3 my-3 space-y-1.5">
-        <div className="py-2 px-4 rounded-xl text-center text-[9px] font-black text-white shadow-sm" style={{ backgroundColor: cta }}>
-          Comprar ahora →
-        </div>
-        <div className="py-2 px-4 rounded-xl text-center text-[9px] font-black flex items-center justify-center gap-1" style={{ backgroundColor: `${primary}15`, color: primary }}>
-          <span>💬</span> Pedir por WhatsApp
-        </div>
-      </div>
-
-      {/* Floating button hint */}
-      <div className="m-3 py-2 px-3 rounded-xl flex items-center justify-between shadow-sm" style={{ backgroundColor: cta }}>
-        <span className="text-[8px] font-black text-white">$129.900</span>
-        <span className="text-[8px] font-black text-white">🛒 Comprar</span>
-      </div>
-    </div>
-  )
-}
-
 // ─── Main Component ─────────────────────────────────────────────────────────
-export default function LandingConfigEditor({ value, onChange }: Props) {
-  const [tab, setTab] = useState<'colors' | 'sections'>('colors')
+export default function LandingConfigEditor({ value, onChange, step }: Props) {
   const [uploadingIdx, setUploadingIdx] = useState<number | null>(null)
   const fileInputsRef = useRef<Record<number, HTMLInputElement | null>>({})
 
@@ -270,6 +150,7 @@ export default function LandingConfigEditor({ value, onChange }: Props) {
     })
   }
 
+  // Helper to safely cast keyof LandingConfig['sections'] to allow string keys
   function setSection(
     key: keyof NonNullable<LandingConfig['sections']>,
     patch: Record<string, unknown>
@@ -289,296 +170,279 @@ export default function LandingConfigEditor({ value, onChange }: Props) {
     setSection(key, { active: !current })
   }
 
-  return (
-    <div className="flex flex-col gap-6">
-      {/* Tab switcher */}
-      <div className="flex gap-2 bg-gray-50 p-1 rounded-2xl">
-        <button
-          onClick={() => setTab('colors')}
-          className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-wide transition-all ${tab === 'colors' ? 'bg-white text-[#1B2B5E] shadow-sm' : 'text-gray-400 hover:text-gray-600'}`}
-        >
-          <Palette size={13} /> Colores
-        </button>
-        <button
-          onClick={() => setTab('sections')}
-          className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-wide transition-all ${tab === 'sections' ? 'bg-white text-[#1B2B5E] shadow-sm' : 'text-gray-400 hover:text-gray-600'}`}
-        >
-          <Eye size={13} /> Secciones
-        </button>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* LEFT — editor */}
-        <div className="space-y-6">
-          {tab === 'colors' && (
-            <>
-              <ColorPicker label="Color Principal (títulos, navbar)" value={colors.primary || '#2C3E50'} onChange={(v) => setColor('primary', v)} />
-              <ColorPicker label="Color Acento (precios, badges)" value={colors.accent || '#A0856A'} onChange={(v) => setColor('accent', v)} />
-              <ColorPicker label="Color CTA (botón Comprar)" value={colors.cta || '#D4691E'} onChange={(v) => setColor('cta', v)} />
-              <ColorPicker label="Color Urgencia (stock bajo, timer)" value={colors.red || '#7B2020'} onChange={(v) => setColor('red', v)} />
-              <ColorPicker label="Color de Fondo" value={colors.bg || '#F5F5F0'} onChange={(v) => setColor('bg', v)} />
-            </>
-          )}
-
-          {tab === 'sections' && (
-            <div className="space-y-3">
-              <SectionToggle
-                icon={ShoppingBag} label="Hero (imagen + precio + CTA)"
-                active={(sections.hero as { active?: boolean } | undefined)?.active !== false}
-                onToggle={() => toggleSection('hero')}
-              >
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Subtítulo personalizado</label>
-                  <input
-                    type="text"
-                    placeholder="Usa la descripción del producto por defecto"
-                    value={(sections.hero as { subtitle?: string } | undefined)?.subtitle || ''}
-                    onChange={(e) => setSection('hero', { subtitle: e.target.value })}
-                    className="h-9 px-3 rounded-xl border border-gray-100 text-[11px] font-medium outline-none focus:border-[#1B2B5E] bg-white"
-                  />
-                </div>
-              </SectionToggle>
-
-              <SectionToggle
-                icon={Clock} label="Barra de Urgencia (cronómetro + stock)"
-                active={(sections.urgency as { active?: boolean } | undefined)?.active !== false}
-                onToggle={() => toggleSection('urgency')}
-              >
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Duración del timer (horas)</label>
-                  <input
-                    type="number"
-                    min={1}
-                    max={72}
-                    value={(sections.urgency as { duration_hours?: number } | undefined)?.duration_hours || 24}
-                    onChange={(e) => setSection('urgency', { duration_hours: parseInt(e.target.value) || 24 })}
-                    className="h-9 px-3 rounded-xl border border-gray-100 text-[11px] font-black outline-none focus:border-[#1B2B5E] bg-white w-24"
-                  />
-                  <p className="text-[9px] text-gray-400">El cronómetro se reinicia por sesión (localStorage). Siempre genera urgencia real.</p>
-                </div>
-              </SectionToggle>
-
-              <SectionToggle
-                icon={Zap} label="Sección Problema / Antes & Después"
-                active={(sections.problem as { active?: boolean } | undefined)?.active !== false}
-                onToggle={() => toggleSection('problem')}
-              >
-                <div className="space-y-2">
-                  <div className="flex flex-col gap-1">
-                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Título</label>
-                    <input
-                      type="text"
-                      placeholder="¿Te identificas con esto?"
-                      value={(sections.problem as { title?: string } | undefined)?.title || ''}
-                      onChange={(e) => setSection('problem', { title: e.target.value })}
-                      className="h-9 px-3 rounded-xl border border-gray-100 text-[11px] font-medium outline-none focus:border-[#1B2B5E] bg-white"
-                    />
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Texto del problema</label>
-                    <textarea
-                      placeholder='"Cada mañana buscas el zapato..."'
-                      rows={2}
-                      value={(sections.problem as { copy?: string } | undefined)?.copy || ''}
-                      onChange={(e) => setSection('problem', { copy: e.target.value })}
-                      className="px-3 py-2 rounded-xl border border-gray-100 text-[11px] font-medium outline-none focus:border-[#1B2B5E] bg-white resize-none"
-                    />
-                  </div>
-                </div>
-              </SectionToggle>
-
-              <SectionToggle
-                icon={BarChart2} label="Grid de Beneficios"
-                active={(sections.benefits as { active?: boolean } | undefined)?.active !== false}
-                onToggle={() => toggleSection('benefits')}
-              >
-                <div className="flex flex-col gap-1">
-                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Título de la sección</label>
-                  <input
-                    type="text"
-                    placeholder="Todo lo que necesitas. Nada que no necesitas."
-                    value={(sections.benefits as { title?: string } | undefined)?.title || ''}
-                    onChange={(e) => setSection('benefits', { title: e.target.value })}
-                    className="h-9 px-3 rounded-xl border border-gray-100 text-[11px] font-medium outline-none focus:border-[#1B2B5E] bg-white"
-                  />
-                </div>
-              </SectionToggle>
-
-              <SectionToggle
-                icon={Eye} label="Especificaciones Técnicas"
-                active={(sections.specs as { active?: boolean } | undefined)?.active !== false}
-                onToggle={() => toggleSection('specs')}
-              />
-
-              <SectionToggle
-                icon={Star} label="Reseñas / Testimonios"
-                active={(sections.testimonials as { active?: boolean } | undefined)?.active !== false}
-                onToggle={() => toggleSection('testimonials')}
-              >
-                <div className="space-y-4">
-                  <div className="flex flex-col gap-1">
-                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Título de la sección</label>
-                    <input
-                      type="text"
-                      placeholder="Lo que dicen quienes ya lo tienen"
-                      value={(sections.testimonials as { title?: string } | undefined)?.title || ''}
-                      onChange={(e) => setSection('testimonials', { title: e.target.value })}
-                      className="h-9 px-3 rounded-xl border border-gray-100 text-[11px] font-medium outline-none focus:border-[#1B2B5E] bg-white"
-                    />
-                  </div>
-
-                  <div className="space-y-3">
-                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Lista de Testimonios ({testimonialsItems.length})</label>
-                    
-                    {testimonialsItems.map((item, idx) => (
-                      <div key={idx} className="group flex flex-col gap-3 p-4 bg-gray-50 rounded-2xl border border-gray-100 hover:border-gray-200 transition-all relative">
-                        {/* Remove button */}
-                        <button 
-                          onClick={() => removeTestimonial(idx)} 
-                          className="absolute top-3 right-3 p-1 text-gray-300 hover:text-red-500 transition-all"
-                        >
-                          <Trash2 size={14} />
-                        </button>
-
-                        <div className="grid grid-cols-2 gap-2.5">
-                          {/* Author Name */}
-                          <div className="flex flex-col gap-1">
-                            <label className="text-[9px] font-black text-gray-400 uppercase tracking-wider">Nombre del Cliente</label>
-                            <input
-                              type="text"
-                              value={item.author || ''}
-                              onChange={(e) => updateTestimonialItem(idx, 'author', e.target.value)}
-                              placeholder="Ej. María G."
-                              className="h-8 px-2.5 rounded-lg border border-gray-200/60 text-[11px] font-medium outline-none focus:border-[#1B2B5E] bg-white"
-                            />
-                          </div>
-
-                          {/* City */}
-                          <div className="flex flex-col gap-1">
-                            <label className="text-[9px] font-black text-gray-400 uppercase tracking-wider">Ciudad (Colombia)</label>
-                            <input
-                              type="text"
-                              list="colombian-cities"
-                              value={item.city || ''}
-                              onChange={(e) => updateTestimonialItem(idx, 'city', e.target.value)}
-                              placeholder="Ej. Bogotá"
-                              className="h-8 px-2.5 rounded-lg border border-gray-200/60 text-[11px] font-medium outline-none focus:border-[#1B2B5E] bg-white"
-                            />
-                          </div>
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-2.5">
-                          {/* Rating */}
-                          <div className="flex flex-col gap-1">
-                            <label className="text-[9px] font-black text-gray-400 uppercase tracking-wider">Calificación (Estrellas)</label>
-                            <select
-                              value={item.rating || 5}
-                              onChange={(e) => updateTestimonialItem(idx, 'rating', parseInt(e.target.value))}
-                              className="h-8 px-2 rounded-lg border border-gray-200/60 text-[11px] font-bold outline-none focus:border-[#1B2B5E] bg-white"
-                            >
-                              <option value={5}>⭐⭐⭐⭐⭐ (5)</option>
-                              <option value={4}>⭐⭐⭐⭐ (4)</option>
-                              <option value={3}>⭐⭐⭐ (3)</option>
-                              <option value={2}>⭐⭐ (2)</option>
-                              <option value={1}>⭐ (1)</option>
-                            </select>
-                          </div>
-
-                          {/* Avatar upload / url */}
-                          <div className="flex flex-col gap-1">
-                            <label className="text-[9px] font-black text-gray-400 uppercase tracking-wider">Avatar / Foto</label>
-                            <div className="flex gap-1.5">
-                              <input
-                                type="text"
-                                value={item.avatar || ''}
-                                onChange={(e) => updateTestimonialItem(idx, 'avatar', e.target.value)}
-                                placeholder="URL o sube foto"
-                                className="h-8 px-2.5 rounded-lg border border-gray-200/60 text-[10px] font-medium outline-none focus:border-[#1B2B5E] bg-white flex-1"
-                              />
-                              <input
-                                type="file"
-                                accept="image/*"
-                                ref={el => { fileInputsRef.current[idx] = el }}
-                                className="hidden"
-                                onChange={(e) => {
-                                  const file = e.target.files?.[0];
-                                  if (file) handleAvatarUpload(idx, file);
-                                }}
-                              />
-                              <button
-                                onClick={() => fileInputsRef.current[idx]?.click()}
-                                disabled={uploadingIdx === idx}
-                                className="h-8 px-2 bg-white border border-gray-200 rounded-lg flex items-center justify-center text-gray-500 hover:text-[#1B2B5E] active:scale-95 transition-all disabled:opacity-50"
-                              >
-                                {uploadingIdx === idx ? <Loader2 size={12} className="animate-spin" /> : <ImagePlus size={12} />}
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Comment */}
-                        <div className="flex flex-col gap-1">
-                          <label className="text-[9px] font-black text-gray-400 uppercase tracking-wider">Comentario</label>
-                          <textarea
-                            value={item.comment || ''}
-                            onChange={(e) => updateTestimonialItem(idx, 'comment', e.target.value)}
-                            placeholder="Comentario libre del cliente..."
-                            rows={2}
-                            className="px-2.5 py-1.5 rounded-lg border border-gray-200/60 text-[11px] font-medium outline-none focus:border-[#1B2B5E] bg-white resize-none"
-                          />
-                        </div>
-                      </div>
-                    ))}
-
-                    <button
-                      onClick={addTestimonial}
-                      className="w-full h-9 rounded-xl border-2 border-dashed border-gray-200 text-[9px] font-black text-gray-400 uppercase tracking-widest hover:border-[#1B2B5E] hover:text-[#1B2B5E] transition-all flex items-center justify-center gap-1"
-                    >
-                      <Plus size={12} /> Agregar Testimonio
-                    </button>
-                  </div>
-                </div>
-
-                <datalist id="colombian-cities">
-                  <option value="Bogotá" />
-                  <option value="Medellín" />
-                  <option value="Cali" />
-                  <option value="Barranquilla" />
-                  <option value="Bucaramanga" />
-                  <option value="Cartagena" />
-                  <option value="Cúcuta" />
-                  <option value="Pereira" />
-                  <option value="Manizales" />
-                  <option value="Ibagué" />
-                  <option value="Villavicencio" />
-                  <option value="Pasto" />
-                </datalist>
-              </SectionToggle>
-
-              <SectionToggle
-                icon={MessageCircle} label="Sección de Pricing / Opciones"
-                active={(sections.pricing as { active?: boolean } | undefined)?.active !== false}
-                onToggle={() => toggleSection('pricing')}
-              />
-            </div>
-          )}
+  if (step === 3) {
+    return (
+      <div className="space-y-6">
+        {/* Colors Palette Section */}
+        <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm space-y-6">
+          <div className="flex items-center gap-2 mb-2">
+            <Palette size={16} className="text-[#1B2B5E]" />
+            <h4 className="text-xs font-black uppercase text-gray-700 tracking-wider">Paleta de Colores</h4>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <ColorPicker label="Color Principal (títulos, navbar)" value={colors.primary || '#2C3E50'} onChange={(v) => setColor('primary', v)} />
+            <ColorPicker label="Color Acento (precios, badges)" value={colors.accent || '#A0856A'} onChange={(v) => setColor('accent', v)} />
+            <ColorPicker label="Color CTA (botón Comprar)" value={colors.cta || '#D4691E'} onChange={(v) => setColor('cta', v)} />
+            <ColorPicker label="Color Urgencia (stock bajo, timer)" value={colors.red || '#7B2020'} onChange={(v) => setColor('red', v)} />
+            <ColorPicker label="Color de Fondo" value={colors.bg || '#F5F5F0'} onChange={(v) => setColor('bg', v)} />
+          </div>
         </div>
 
-        {/* RIGHT — live preview */}
-        <div className="sticky top-24 self-start">
-          <div className="flex items-center gap-2 mb-3">
-            <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Vista previa en tiempo real</span>
+        {/* Sections Activation Section */}
+        <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm space-y-4">
+          <div className="flex items-center gap-2 mb-2">
+            <Eye size={16} className="text-[#1B2B5E]" />
+            <h4 className="text-xs font-black uppercase text-gray-700 tracking-wider">Estructura de la Landing</h4>
           </div>
-          <div className="overflow-auto max-h-[640px] rounded-3xl border border-gray-100 shadow-lg">
-            <MiniPreview
-              colors={value?.colors || {}}
-              sections={value?.sections || {}}
+
+          <div className="space-y-3">
+            <SectionToggle
+              icon={ShoppingBag} label="Sección Hero (Imagen, Título y Precio)"
+              active={(sections.hero as { active?: boolean } | undefined)?.active !== false}
+              onToggle={() => toggleSection('hero')}
+            >
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Subtítulo o Frase Llamativa</label>
+                <input
+                  type="text"
+                  placeholder="Usa la descripción del producto por defecto"
+                  value={(sections.hero as { subtitle?: string } | undefined)?.subtitle || ''}
+                  onChange={(e) => setSection('hero', { subtitle: e.target.value })}
+                  className="h-10 px-4 rounded-xl border border-gray-100 text-xs font-medium outline-none focus:border-[#1B2B5E] bg-gray-50/30"
+                />
+              </div>
+            </SectionToggle>
+
+            <SectionToggle
+              icon={Clock} label="Barra de Urgencia (Cronómetro de Unidades)"
+              active={(sections.urgency as { active?: boolean } | undefined)?.active !== false}
+              onToggle={() => toggleSection('urgency')}
+            >
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Duración del cronómetro (horas)</label>
+                <input
+                  type="number"
+                  min={1}
+                  max={72}
+                  value={(sections.urgency as { duration_hours?: number } | undefined)?.duration_hours || 24}
+                  onChange={(e) => setSection('urgency', { duration_hours: parseInt(e.target.value) || 24 })}
+                  className="h-10 px-4 rounded-xl border border-gray-100 text-xs font-black outline-none focus:border-[#1B2B5E] bg-gray-50/30 w-28"
+                />
+              </div>
+            </SectionToggle>
+
+            <SectionToggle
+              icon={Zap} label="Sección del Problema / Antes y Después"
+              active={(sections.problem as { active?: boolean } | undefined)?.active !== false}
+              onToggle={() => toggleSection('problem')}
+            >
+              <div className="space-y-3">
+                <div className="flex flex-col gap-1">
+                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Título del Problema</label>
+                  <input
+                    type="text"
+                    placeholder="¿Cansado de lo mismo?"
+                    value={(sections.problem as { title?: string } | undefined)?.title || ''}
+                    onChange={(e) => setSection('problem', { title: e.target.value })}
+                    className="h-10 px-4 rounded-xl border border-gray-100 text-xs font-medium outline-none focus:border-[#1B2B5E] bg-gray-50/30"
+                  />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Texto Descriptivo</label>
+                  <textarea
+                    placeholder="Describe el dolor o problema que soluciona tu producto..."
+                    rows={3}
+                    value={(sections.problem as { copy?: string } | undefined)?.copy || ''}
+                    onChange={(e) => setSection('problem', { copy: e.target.value })}
+                    className="px-4 py-3 rounded-xl border border-gray-100 text-xs font-medium outline-none focus:border-[#1B2B5E] bg-gray-50/30 resize-none"
+                  />
+                </div>
+              </div>
+            </SectionToggle>
+
+            <SectionToggle
+              icon={BarChart2} label="Sección de Beneficios (Grid de Características)"
+              active={(sections.benefits as { active?: boolean } | undefined)?.active !== false}
+              onToggle={() => toggleSection('benefits')}
+            >
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Título de la Sección</label>
+                <input
+                  type="text"
+                  placeholder="¿Por qué elegir nuestro producto?"
+                  value={(sections.benefits as { title?: string } | undefined)?.title || ''}
+                  onChange={(e) => setSection('benefits', { title: e.target.value })}
+                  className="h-10 px-4 rounded-xl border border-gray-100 text-xs font-medium outline-none focus:border-[#1B2B5E] bg-gray-50/30"
+                />
+              </div>
+            </SectionToggle>
+
+            <SectionToggle
+              icon={Eye} label="Especificaciones Técnicas"
+              active={(sections.specs as { active?: boolean } | undefined)?.active !== false}
+              onToggle={() => toggleSection('specs')}
+            />
+
+            <SectionToggle
+              icon={MessageCircle} label="Sección de Precios / Pricing"
+              active={(sections.pricing as { active?: boolean } | undefined)?.active !== false}
+              onToggle={() => toggleSection('pricing')}
             />
           </div>
-          <p className="text-[9px] text-gray-300 text-center mt-2">El preview refleja exactamente los colores de la landing real</p>
         </div>
       </div>
-    </div>
-  )
+    )
+  }
+
+  if (step === 4) {
+    return (
+      <div className="space-y-6">
+        <SectionToggle
+          icon={Star} label="Activar Reseñas / Testimonios de Clientes"
+          active={(sections.testimonials as { active?: boolean } | undefined)?.active !== false}
+          onToggle={() => toggleSection('testimonials')}
+        >
+          <div className="space-y-4">
+            <div className="flex flex-col gap-1.5">
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Título de la Sección</label>
+              <input
+                type="text"
+                placeholder="Lo que dicen nuestros clientes"
+                value={(sections.testimonials as { title?: string } | undefined)?.title || ''}
+                onChange={(e) => setSection('testimonials', { title: e.target.value })}
+                className="h-10 px-4 rounded-xl border border-gray-100 text-xs font-medium outline-none focus:border-[#1B2B5E] bg-gray-50/30"
+              />
+            </div>
+
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Lista de Testimonios ({testimonialsItems.length})</label>
+              </div>
+              
+              {testimonialsItems.map((item, idx) => (
+                <div key={idx} className="group flex flex-col gap-3.5 p-5 bg-gray-50/50 rounded-2xl border border-gray-150 relative">
+                  <button 
+                    type="button"
+                    onClick={() => removeTestimonial(idx)} 
+                    className="absolute top-3 right-3 w-7 h-7 bg-white shadow-sm hover:shadow border border-gray-100 rounded-full flex items-center justify-center text-gray-400 hover:text-red-500 transition-all cursor-pointer"
+                  >
+                    <Trash2 size={13} />
+                  </button>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="flex flex-col gap-1">
+                      <label className="text-[9px] font-black text-gray-400 uppercase tracking-wider">Nombre del Cliente</label>
+                      <input
+                        type="text"
+                        value={item.author || ''}
+                        onChange={(e) => updateTestimonialItem(idx, 'author', e.target.value)}
+                        placeholder="Ej. María G."
+                        className="h-9 px-3 rounded-lg border border-gray-200 text-xs font-medium outline-none focus:border-[#1B2B5E] bg-white"
+                      />
+                    </div>
+
+                    <div className="flex flex-col gap-1">
+                      <label className="text-[9px] font-black text-gray-400 uppercase tracking-wider">Ciudad</label>
+                      <input
+                        type="text"
+                        list="colombian-cities"
+                        value={item.city || ''}
+                        onChange={(e) => updateTestimonialItem(idx, 'city', e.target.value)}
+                        placeholder="Ej. Bogotá"
+                        className="h-9 px-3 rounded-lg border border-gray-200 text-xs font-medium outline-none focus:border-[#1B2B5E] bg-white"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="flex flex-col gap-1">
+                      <label className="text-[9px] font-black text-gray-400 uppercase tracking-wider">Calificación</label>
+                      <select
+                        value={item.rating || 5}
+                        onChange={(e) => updateTestimonialItem(idx, 'rating', parseInt(e.target.value))}
+                        className="h-9 px-3 rounded-lg border border-gray-200 text-xs font-bold outline-none focus:border-[#1B2B5E] bg-white cursor-pointer"
+                      >
+                        <option value={5}>⭐⭐⭐⭐⭐ (5 estrellas)</option>
+                        <option value={4}>⭐⭐⭐⭐ (4 estrellas)</option>
+                        <option value={3}>⭐⭐⭐ (3 estrellas)</option>
+                        <option value={2}>⭐⭐ (2 estrellas)</option>
+                        <option value={1}>⭐ (1 estrella)</option>
+                      </select>
+                    </div>
+
+                    <div className="flex flex-col gap-1">
+                      <label className="text-[9px] font-black text-gray-400 uppercase tracking-wider">Foto de Perfil / Avatar</label>
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          value={item.avatar || ''}
+                          onChange={(e) => updateTestimonialItem(idx, 'avatar', e.target.value)}
+                          placeholder="Sube foto o escribe URL"
+                          className="h-9 px-3 rounded-lg border border-gray-200 text-[10px] font-medium outline-none focus:border-[#1B2B5E] bg-white flex-1"
+                        />
+                        <input
+                          type="file"
+                          accept="image/*"
+                          ref={el => { fileInputsRef.current[idx] = el }}
+                          className="hidden"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) handleAvatarUpload(idx, file);
+                          }}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => fileInputsRef.current[idx]?.click()}
+                          disabled={uploadingIdx === idx}
+                          className="h-9 px-3 bg-white border border-gray-200 rounded-lg flex items-center justify-center text-gray-505 hover:text-[#1B2B5E] hover:border-[#1B2B5E] active:scale-95 transition-all disabled:opacity-50 cursor-pointer"
+                        >
+                          {uploadingIdx === idx ? <Loader2 size={13} className="animate-spin" /> : <ImagePlus size={13} />}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col gap-1">
+                    <label className="text-[9px] font-black text-gray-400 uppercase tracking-wider">Comentario del Cliente</label>
+                    <textarea
+                      value={item.comment || ''}
+                      onChange={(e) => updateTestimonialItem(idx, 'comment', e.target.value)}
+                      placeholder="Escribe el comentario del cliente..."
+                      rows={2}
+                      className="px-3 py-2 rounded-lg border border-gray-200 text-xs font-medium outline-none focus:border-[#1B2B5E] bg-white resize-none"
+                    />
+                  </div>
+                </div>
+              ))}
+
+              <button
+                type="button"
+                onClick={addTestimonial}
+                className="w-full h-11 rounded-2xl border-2 border-dashed border-gray-200 text-[10px] font-black text-gray-400 uppercase tracking-widest hover:border-[#1B2B5E] hover:text-[#1B2B5E] transition-all flex items-center justify-center gap-1.5 cursor-pointer bg-white"
+              >
+                <Plus size={14} /> Agregar Testimonio
+              </button>
+            </div>
+          </div>
+
+          <datalist id="colombian-cities">
+            <option value="Bogotá" />
+            <option value="Medellín" />
+            <option value="Cali" />
+            <option value="Barranquilla" />
+            <option value="Bucaramanga" />
+            <option value="Cartagena" />
+            <option value="Cúcuta" />
+            <option value="Pereira" />
+            <option value="Manizales" />
+            <option value="Ibagué" />
+            <option value="Villavicencio" />
+            <option value="Pasto" />
+          </datalist>
+        </SectionToggle>
+      </div>
+    )
+  }
+
+  return null
 }
