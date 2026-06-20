@@ -91,7 +91,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
       'pidió la opción más popular',
       'dejó sus datos para recibir el suyo',
       'está mirando esta página ahora mismo',
-      'acaba de apartar el suyo'
+      'acaba de pedir el suyo'
     ]
 
     const mostrarPopup = () => {
@@ -211,8 +211,13 @@ export default function ProductDetail({ product }: ProductDetailProps) {
           {/* Información principal */}
           <div className="max-w-lg mx-auto px-5 pt-6 space-y-4">
             <div className="space-y-2">
-              <div className="inline-block bg-amber-50 text-amber-700 px-3 py-1 rounded-full text-xs font-bold" style={{ color: 'var(--accent)', backgroundColor: 'rgba(232, 98, 26, 0.1)' }}>
-                ⭐ Más de 2.300 hogares ya lo tienen
+              <div className="flex flex-wrap items-center gap-2">
+                <div className="flex text-amber-400 text-sm">
+                  <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+                </div>
+                <div className="inline-block bg-amber-50 text-amber-700 px-3 py-1 rounded-full text-xs font-bold" style={{ color: 'var(--accent)', backgroundColor: 'rgba(232, 98, 26, 0.1)' }}>
+                  Más de 2.300 hogares ya lo tienen
+                </div>
               </div>
               <h1 className="text-2xl font-black leading-tight" style={{ color: 'var(--primary)' }}>
                 {product.name}
@@ -267,7 +272,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
                 className="w-full h-14 text-white rounded-2xl font-black text-base flex items-center justify-center gap-2 shadow-lg active:scale-[0.98] transition-all disabled:opacity-50 disabled:grayscale uppercase tracking-wide"
                 style={{ backgroundColor: 'var(--cta)' }}
               >
-                {product.stock > 0 ? '⚡ HACER PEDIDO - PAGO AL RECIBIR' : 'Agotado'}
+                {product.stock > 0 ? '⚡ Pedir Ahora - Pago Contraentrega' : 'Agotado'}
               </button>
               
               <a
@@ -405,34 +410,6 @@ export default function ProductDetail({ product }: ProductDetailProps) {
       {/* 7. Sección de Pricing */}
       {showPricing && (
         <section className="my-5 p-6 rounded-3xl max-w-lg mx-auto text-center shadow-sm text-white" style={{ backgroundColor: 'var(--primary)' }}>
-          <h2 className="text-xl font-black mb-6 text-white">Elige tu modelo</h2>
-          
-          <div className="flex flex-col gap-4 mb-6">
-            <div className="bg-white/10 border-2 border-white/20 p-5 rounded-2xl cursor-pointer text-left relative transition-all hover:bg-white/15">
-              <h3 className="font-black text-lg text-white">Modelo Regular</h3>
-              <div className="text-sm opacity-85 my-1">Unidad individual</div>
-              <div className="text-2xl font-black text-yellow-300 mt-2">
-                ${product.price.toLocaleString('es-CO')}
-              </div>
-            </div>
-
-            {product.originalPrice && (
-              <div className="bg-white/10 border-2 border-dashed border-amber-400/50 p-5 rounded-2xl cursor-pointer text-left relative transition-all hover:bg-white/15">
-                <div className="absolute -top-3 right-5 bg-amber-500 text-white font-bold text-[10px] px-2.5 py-0.5 rounded-full">
-                  MÁS POPULAR
-                </div>
-                <h3 className="font-black text-lg text-white">Modelo Promocional</h3>
-                <div className="text-sm opacity-85 my-1">Precio especial de lanzamiento</div>
-                <div className="text-2xl font-black text-yellow-300 mt-2">
-                  ${product.price.toLocaleString('es-CO')}
-                  <span className="text-sm text-white/60 line-through ml-2 font-normal">
-                    ${product.originalPrice.toLocaleString('es-CO')}
-                  </span>
-                </div>
-              </div>
-            )}
-          </div>
-
           {/* Garantías y Confianza */}
           <div className="bg-green-900/40 border border-green-800/50 rounded-2xl p-4 text-left space-y-3 mb-6">
             <div className="flex items-center gap-3">
@@ -454,7 +431,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
             className="w-full h-14 text-white rounded-2xl font-black text-base flex items-center justify-center gap-2 shadow-lg active:scale-[0.98] transition-all disabled:opacity-50 uppercase tracking-wide"
             style={{ backgroundColor: 'var(--cta)' }}
           >
-            📦 HACER PEDIDO - PAGO AL RECIBIR
+            📦 Pedir Ahora - Pago Contraentrega
           </button>
           
           <div className="flex justify-center gap-4 text-[10px] opacity-75 mt-4">
