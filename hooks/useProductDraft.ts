@@ -18,6 +18,7 @@ export interface DraftData {
   features: string[]
   specifications: { label: string; value: string }[]
   richContent: RichContentBlock[]
+  richContentVideoUrl: string | null
   brandColor: string
   landingConfig: LandingConfig
 }

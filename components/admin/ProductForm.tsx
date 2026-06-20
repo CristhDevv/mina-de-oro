@@ -77,12 +77,14 @@ export default function ProductForm({ product, categories, draftKey, onCancel, o
   })
 
   const [videoUrl, setVideoUrl] = useState<string | null>(product?.video_url ?? null)
+  const [richContentVideoUrl, setRichContentVideoUrl] = useState<string | null>(product?.rich_content_video_url ?? null)
   const [uploading, setUploading] = useState(false)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const fileRef = useRef<HTMLInputElement>(null)
   const richFileRef = useRef<HTMLInputElement>(null)
   const videoFileRef = useRef<HTMLInputElement>(null)
+  const richVideoFileRef = useRef<HTMLInputElement>(null)
 
   // Draft autosave logic
   const { saveDraft, loadDraft, clearDraft } = useProductDraft(draftKey)
@@ -110,6 +112,7 @@ export default function ProductForm({ product, categories, draftKey, onCancel, o
       setBrandColor(draft.brandColor)
       setLandingConfig(draft.landingConfig)
       setVideoUrl(draft.videoUrl)
+      setRichContentVideoUrl(draft.richContentVideoUrl)
       setStep(draft.step)
       setRestoredFromDraft(true)
       setDraftSavedAt(draft.savedAt)
@@ -135,6 +138,7 @@ export default function ProductForm({ product, categories, draftKey, onCancel, o
       stock,
       images,
       videoUrl,
+      richContentVideoUrl,
       faq,
       options,
       featured,
@@ -155,6 +159,9 @@ export default function ProductForm({ product, categories, draftKey, onCancel, o
     originalPrice,
     categorySlug,
     stock,
+    images,
+    videoUrl,
+    richContentVideoUrl,
     faq,
     options,
     featured,
@@ -166,7 +173,7 @@ export default function ProductForm({ product, categories, draftKey, onCancel, o
     saveDraft
   ])
 
-  // Save draft immediately when images/videoUrl change
+  // Save draft immediately when images/videoUrl/richContentVideoUrl change
   useEffect(() => {
     if (isInitializing.current) return
     if (!draftKey) return
@@ -181,6 +188,7 @@ export default function ProductForm({ product, categories, draftKey, onCancel, o
       stock,
       images,
       videoUrl,
+      richContentVideoUrl,
       faq,
       options,
       featured,
@@ -192,7 +200,7 @@ export default function ProductForm({ product, categories, draftKey, onCancel, o
     }
 
     saveDraft(draftData, true)
-  }, [draftKey, images, videoUrl, saveDraft])
+  }, [draftKey, images, videoUrl, richContentVideoUrl, saveDraft])
 
   const handleDiscardDraft = useCallback(() => {
     const confirmDiscard = window.confirm(
@@ -240,6 +248,7 @@ export default function ProductForm({ product, categories, draftKey, onCancel, o
       }
     })
     setVideoUrl(product?.video_url ?? null)
+    setRichContentVideoUrl(product?.rich_content_video_url ?? null)
 
     setRestoredFromDraft(false)
     setDraftSavedAt(null)
@@ -353,6 +362,49 @@ export default function ProductForm({ product, categories, draftKey, onCancel, o
     }
   }
 
+  async function handleRichContentVideoUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    
+    if (file.type !== 'video/mp4' && !file.name.endsWith('.mp4')) {
+      setError('El video debe ser en formato MP4')
+      return
+    }
+    
+    const maxSize = 50 * 1024 * 1024 // 50MB
+    if (file.size > maxSize) {
+      setError('El video no debe superar los 50MB')
+      return
+    }
+
+    setUploading(true)
+    setError('')
+    try {
+      const slug = product?.slug ?? generateSlug(name || 'producto')
+      const url = await uploadProductVideo(file, slug)
+      setRichContentVideoUrl(url)
+    } catch {
+      setError('Error al subir video del contenido. Intenta de nuevo.')
+    } finally {
+      setUploading(false)
+      if (richVideoFileRef.current) richVideoFileRef.current.value = ''
+    }
+  }
+
+  async function handleRemoveRichContentVideo() {
+    if (!richContentVideoUrl) return
+    setUploading(true)
+    setError('')
+    try {
+      await deleteProductVideo(richContentVideoUrl)
+      setRichContentVideoUrl(null)
+    } catch {
+      setError('Error al eliminar video del contenido.')
+    } finally {
+      setUploading(false)
+    }
+  }
+
   function handleMakePrimary(index: number) {
     if (index === 0) return
     const newImages = [...images]
@@ -444,6 +496,7 @@ export default function ProductForm({ product, categories, draftKey, onCancel, o
       slug: product?.slug ?? generateSlug(name),
       images,
       video_url: videoUrl,
+      rich_content_video_url: richContentVideoUrl,
       active: true,
       faq,
       options,
@@ -837,6 +890,52 @@ export default function ProductForm({ product, categories, draftKey, onCancel, o
                   </button>
                   {activeAccordion === 'rich' && (
                     <div className="p-5 border-t border-gray-100 bg-white space-y-4 animate-in fade-in slide-in-from-top-2 duration-200">
+                      {/* Video de Rich Content (Fijo al inicio) */}
+                      <div className="border-b border-gray-150 pb-5 mb-4">
+                        <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 mb-3">Video de Cabecera del Contenido Detallado (Opcional - Loop)</h4>
+                        {richContentVideoUrl ? (
+                          <div className="max-w-[200px] rounded-2xl overflow-hidden border border-gray-150 shadow-sm relative group bg-black aspect-[9/16]">
+                            <video 
+                              src={richContentVideoUrl} 
+                              autoPlay 
+                              loop 
+                              muted 
+                              playsInline 
+                              className="w-full h-full object-cover"
+                            />
+                            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2.5 p-4 text-center">
+                              <button 
+                                type="button"
+                                onClick={() => richVideoFileRef.current?.click()}
+                                disabled={uploading}
+                                className="text-[9px] font-black uppercase px-3 py-2 bg-white text-[#1B2B5E] rounded-xl hover:bg-gray-100 transition-colors cursor-pointer"
+                              >
+                                Reemplazar Video
+                              </button>
+                              <button 
+                                type="button"
+                                onClick={handleRemoveRichContentVideo} 
+                                disabled={uploading}
+                                className="w-9 h-9 bg-white/20 hover:bg-rose-600 rounded-xl flex items-center justify-center text-white transition-colors cursor-pointer"
+                              >
+                                <Trash2 size={15} />
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <button 
+                            type="button"
+                            onClick={() => richVideoFileRef.current?.click()} 
+                            disabled={uploading}
+                            className="w-full max-w-sm h-28 rounded-2xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center gap-2 text-gray-400 hover:border-[#C9A84C] hover:text-[#C9A84C] hover:bg-blue-50/10 transition-all cursor-pointer active:scale-95 disabled:opacity-50"
+                          >
+                            {uploading ? <Loader2 size={22} className="animate-spin" /> : <Plus size={22} />}
+                            <span className="text-[9px] font-black uppercase tracking-wider">{uploading ? 'Subiendo' : 'Subir Video de Cabecera (MP4, máx 50MB)'}</span>
+                          </button>
+                        )}
+                        <input ref={richVideoFileRef} type="file" accept="video/mp4" className="hidden" onChange={handleRichContentVideoUpload} />
+                      </div>
+
                       <div className="flex flex-wrap gap-2">
                         <button type="button" onClick={() => addRichHeading(1)} className="flex items-center gap-1.5 px-3 py-2 bg-gray-50 hover:bg-gray-100 rounded-xl text-[9px] font-black text-[#1B2B5E] border border-gray-150 cursor-pointer">
                           <Heading1 size={13} /> Título H1

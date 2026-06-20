@@ -86,6 +86,7 @@ export const productSchema = z.object({
   specifications: z.array(z.object({ label: z.string(), value: z.string() })).optional(),
   features: z.array(z.string()).optional(),
   rich_content: z.array(richContentBlockSchema).optional(),
+  rich_content_video_url: z.string().optional().nullable(),
   featured: z.boolean().default(false),
   brand_color: z.string().optional(),
   reviews: z.array(z.object({

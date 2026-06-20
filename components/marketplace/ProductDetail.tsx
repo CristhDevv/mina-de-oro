@@ -360,10 +360,22 @@ export default function ProductDetail({ product }: ProductDetailProps) {
       )}
 
       {/* 5.5 Contenido Detallado (Rich Content) */}
-      {product.rich_content && product.rich_content.length > 0 && (
+      {((product.rich_content && product.rich_content.length > 0) || product.rich_content_video_url) && (
         <section className="bg-white py-8 my-5 rounded-3xl max-w-lg mx-auto px-5 shadow-sm space-y-6">
           <div className="space-y-4">
-            {product.rich_content.map((block, i) => {
+            {product.rich_content_video_url && (
+              <div className="w-full rounded-2xl overflow-hidden my-4 bg-black">
+                <video
+                  src={product.rich_content_video_url}
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  className="w-full object-cover rounded-2xl"
+                />
+              </div>
+            )}
+            {product.rich_content && product.rich_content.map((block, i) => {
               if (block.type === 'text') {
                 return (
                   <p 
