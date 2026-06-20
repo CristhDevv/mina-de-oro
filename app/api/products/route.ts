@@ -32,6 +32,21 @@ export async function POST(req: NextRequest) {
 
   const payload = await req.json()
   const admin = createAdminClient()
+
+  // Si ya existe un producto con el mismo slug, lo retornamos como éxito
+  // para que el frontend redirija correctamente sin intentar duplicar.
+  if (payload.slug) {
+    const { data: existing } = await admin
+      .from('products')
+      .select('*')
+      .eq('slug', payload.slug)
+      .maybeSingle()
+
+    if (existing) {
+      return NextResponse.json({ ok: true, product: existing }, { status: 200 })
+    }
+  }
+
   const { error } = await admin.from('products').insert(payload)
   if (error) return NextResponse.json({ error: error.message }, { status: 400 })
   return NextResponse.json({ ok: true }, { status: 201 })
