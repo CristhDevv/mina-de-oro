@@ -369,9 +369,16 @@ export default function ProductDetail({ product }: ProductDetailProps) {
                   src={product.rich_content_video_url}
                   autoPlay
                   muted
+                  defaultMuted
                   loop
                   playsInline
+                  preload="auto"
                   className="w-full object-cover rounded-2xl"
+                  ref={(el) => {
+                    if (el) {
+                      el.muted = true;
+                    }
+                  }}
                 />
               </div>
             )}
