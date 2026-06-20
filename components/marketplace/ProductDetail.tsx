@@ -34,9 +34,9 @@ export default function ProductDetail({ product }: ProductDetailProps) {
   const showUrgency = sections.urgency?.active !== false
   const urgencyDuration = sections.urgency?.duration_hours || 24
   const showProblem = sections.problem?.active !== false
-  const problemTitle = sections.problem?.title || '¿Te identificas con esto?'
-  const problemCopy = sections.problem?.copy || '"Cada mañana buscas un zapato, encuentras el otro, llegas tarde. Y encima tropiezas con ellos."'
-  const problemImage = sections.problem?.image_url || (product.images && product.images.length > 1 ? product.images[1] : null)
+  const problemTitle = sections.problem?.title || ''
+  const problemCopy = sections.problem?.copy || ''
+  const problemImage = sections.problem?.image_url || null
   const showBenefits = sections.benefits?.active !== false
   const benefitsTitle = sections.benefits?.title || 'Todo lo que necesitas. Nada que no necesitas.'
   const showSpecs = sections.specs?.active !== false
@@ -304,7 +304,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
       )}
 
       {/* 3. Antes vs Después */}
-      {showProblem && problemImage && (
+      {showProblem && problemImage && (problemTitle || problemCopy) && (
         <section className="bg-white py-8 my-5 rounded-3xl max-w-lg mx-auto px-5 shadow-sm space-y-5">
           <h2 className="text-xl font-bold text-center leading-tight" style={{ color: 'var(--primary)' }}>
             {problemTitle}
