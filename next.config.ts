@@ -17,6 +17,7 @@ const securityHeaders = [
       "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://checkout.wompi.co https://www.googletagmanager.com https://www.google-analytics.com https://connect.facebook.net https://www.facebook.com",
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: blob: https://dpvobmhvsausguqwzrrm.supabase.co https://www.facebook.com https://www.google-analytics.com",
+      "media-src 'self' https://dpvobmhvsausguqwzrrm.supabase.co",
       "font-src 'self'",
       "connect-src 'self' https://*.supabase.co https://checkout.wompi.co https://www.google-analytics.com https://analytics.google.com https://stats.g.doubleclick.net https://www.facebook.com https://connect.facebook.net",
       "frame-src https://checkout.wompi.co",
