@@ -63,6 +63,7 @@ export default function EditarProductoPage() {
       <ProductForm 
         product={product} 
         categories={categories} 
+        draftKey={`product_draft__edit_${product.id}`}
         onCancel={() => router.push('/admin')}
         onSaved={() => router.push('/admin')}
       />

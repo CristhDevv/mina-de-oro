@@ -10,9 +10,18 @@ import { ArrowLeft } from 'lucide-react'
 export default function NuevoProductoPage() {
   const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(true)
+  const [draftKey, setDraftKey] = useState<string>('')
   const router = useRouter()
 
   useEffect(() => {
+    // Generate or retrieve draftId from sessionStorage
+    let id = sessionStorage.getItem('new_product_draft_id')
+    if (!id) {
+      id = crypto.randomUUID()
+      sessionStorage.setItem('new_product_draft_id', id)
+    }
+    setDraftKey(`product_draft__${id}`)
+
     getCategories().then(c => {
       setCategories(c || [])
       setLoading(false)
@@ -39,6 +48,7 @@ export default function NuevoProductoPage() {
       <ProductForm 
         product={null} 
         categories={categories} 
+        draftKey={draftKey}
         onCancel={() => router.push('/admin')}
         onSaved={() => router.push('/admin')}
       />

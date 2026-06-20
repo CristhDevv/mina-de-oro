@@ -1,5 +1,5 @@
 'use client'
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import { 
   X, ImagePlus, Trash2, Loader2, Plus, CheckCircle2, 
   ChevronUp, ChevronDown, Info, Tag, Layers, 
@@ -10,10 +10,12 @@ import { Product, Category, ProductFAQ, ProductOption, RichContentBlock, Landing
 import { uploadProductImage, deleteProductImage, uploadProductVideo, deleteProductVideo } from '@/lib/api/storage'
 import LandingConfigEditor from '@/components/admin/LandingConfigEditor'
 import ProductPreview from '@/components/admin/ProductPreview'
+import { useProductDraft } from '@/hooks/useProductDraft'
 
 interface Props {
   product: Product | null
   categories: Category[]
+  draftKey?: string
   onCancel: () => void
   onSaved: () => void
 }
@@ -26,7 +28,7 @@ const STEPS = [
   { id: 5, label: 'Revisión' },
 ]
 
-export default function ProductForm({ product, categories, onCancel, onSaved }: Props) {
+export default function ProductForm({ product, categories, draftKey, onCancel, onSaved }: Props) {
   // Stepper state
   const [step, setStep] = useState(1)
   
@@ -81,6 +83,167 @@ export default function ProductForm({ product, categories, onCancel, onSaved }: 
   const fileRef = useRef<HTMLInputElement>(null)
   const richFileRef = useRef<HTMLInputElement>(null)
   const videoFileRef = useRef<HTMLInputElement>(null)
+
+  // Draft autosave logic
+  const { saveDraft, loadDraft, clearDraft } = useProductDraft(draftKey)
+  const [restoredFromDraft, setRestoredFromDraft] = useState(false)
+  const [draftSavedAt, setDraftSavedAt] = useState<string | null>(null)
+  const isInitializing = useRef(true)
+
+  // Load draft on mount
+  useEffect(() => {
+    const draft = loadDraft()
+    if (draft) {
+      setName(draft.name)
+      setDescription(draft.description)
+      setPrice(draft.price)
+      setOriginalPrice(draft.originalPrice)
+      setCategorySlug(draft.categorySlug)
+      setStock(draft.stock)
+      setImages(draft.images)
+      setFaq(draft.faq)
+      setOptions(draft.options)
+      setFeatured(draft.featured)
+      setFeatures(draft.features)
+      setSpecifications(draft.specifications)
+      setRichContent(draft.richContent)
+      setBrandColor(draft.brandColor)
+      setLandingConfig(draft.landingConfig)
+      setVideoUrl(draft.videoUrl)
+      setStep(draft.step)
+      setRestoredFromDraft(true)
+      setDraftSavedAt(draft.savedAt)
+    }
+    const timer = setTimeout(() => {
+      isInitializing.current = false
+    }, 100)
+    return () => clearTimeout(timer)
+  }, [loadDraft])
+
+  // Save draft when state changes (debounced)
+  useEffect(() => {
+    if (isInitializing.current) return
+    if (!draftKey) return
+
+    const draftData = {
+      step,
+      name,
+      description,
+      price,
+      originalPrice,
+      categorySlug,
+      stock,
+      images,
+      videoUrl,
+      faq,
+      options,
+      featured,
+      features,
+      specifications,
+      richContent,
+      brandColor,
+      landingConfig,
+    }
+
+    saveDraft(draftData, false)
+  }, [
+    draftKey,
+    step,
+    name,
+    description,
+    price,
+    originalPrice,
+    categorySlug,
+    stock,
+    faq,
+    options,
+    featured,
+    features,
+    specifications,
+    richContent,
+    brandColor,
+    landingConfig,
+    saveDraft
+  ])
+
+  // Save draft immediately when images/videoUrl change
+  useEffect(() => {
+    if (isInitializing.current) return
+    if (!draftKey) return
+
+    const draftData = {
+      step,
+      name,
+      description,
+      price,
+      originalPrice,
+      categorySlug,
+      stock,
+      images,
+      videoUrl,
+      faq,
+      options,
+      featured,
+      features,
+      specifications,
+      richContent,
+      brandColor,
+      landingConfig,
+    }
+
+    saveDraft(draftData, true)
+  }, [draftKey, images, videoUrl, saveDraft])
+
+  const handleDiscardDraft = useCallback(() => {
+    const confirmDiscard = window.confirm(
+      '¿Estás seguro de que deseas descartar este borrador? Perderás todo el progreso no guardado.'
+    )
+    if (!confirmDiscard) return
+
+    clearDraft()
+
+    // Reset to defaults
+    setStep(1)
+    setName(product?.name ?? '')
+    setDescription(product?.description ?? '')
+    setPrice(product?.price?.toString() ?? '')
+    setOriginalPrice(product?.originalPrice?.toString() ?? '')
+    setCategorySlug(product?.category ?? categories[0]?.slug ?? '')
+    setStock(product?.stock?.toString() ?? '')
+    setImages(product?.images ?? [])
+    setFaq(product?.faq ?? [])
+    setOptions(product?.options ?? [])
+    setFeatured(product?.featured ?? false)
+    setFeatures(product?.features ?? [])
+    setNewFeature('')
+    setSpecifications(product?.specifications ?? [])
+    setRichContent(product?.rich_content ?? [])
+    setBrandColor(product?.brand_color ?? '#1B2B5E')
+    
+    const rawLandingConfig = (product?.landing_config as LandingConfig) ?? {}
+    setLandingConfig({
+      colors: rawLandingConfig.colors ?? {
+        primary: '#1B2B5E',
+        accent: '#C9A84C',
+        cta: '#D4691E',
+        red: '#7B2020',
+        bg: '#F5F5F0',
+      },
+      sections: rawLandingConfig.sections ?? {
+        hero: { active: true, subtitle: '' },
+        urgency: { active: true, duration_hours: 24 },
+        problem: { active: true, title: '¿Cansado de lo mismo?', copy: '' },
+        benefits: { active: true, title: 'Todo lo que necesitas' },
+        specs: { active: true },
+        testimonials: { active: true, title: 'Lo que dicen quienes ya lo tienen', items: [] },
+        pricing: { active: true }
+      }
+    })
+    setVideoUrl(product?.video_url ?? null)
+
+    setRestoredFromDraft(false)
+    setDraftSavedAt(null)
+  }, [clearDraft, product, categories])
 
   function generateSlug(text: string) {
     return text.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
@@ -304,6 +467,7 @@ export default function ProductForm({ product, categories, onCancel, onSaved }: 
         setSaving(false)
         return
       }
+      clearDraft()
       onSaved()
     } catch {
       setError('Error de conexión al guardar el producto')
@@ -369,6 +533,31 @@ export default function ProductForm({ product, categories, onCancel, onSaved }: 
           </div>
         </div>
       </div>
+
+      {/* Draft banner, if restored */}
+      {restoredFromDraft && draftSavedAt && (
+        <div className="bg-amber-50 border border-amber-200 text-amber-950 px-6 py-3 flex items-center justify-between text-xs font-semibold max-w-7xl mx-auto w-full mt-4 rounded-2xl shadow-sm animate-in fade-in duration-200">
+          <div className="flex items-center gap-2">
+            <span className="text-base">📋</span>
+            <span>
+              Borrador recuperado — guardado el{' '}
+              {new Date(draftSavedAt).toLocaleString('es-ES', {
+                day: '2-digit',
+                month: 'short',
+                hour: '2-digit',
+                minute: '2-digit',
+              })}
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={handleDiscardDraft}
+            className="bg-amber-100 hover:bg-amber-200 text-amber-950 font-bold px-3 py-1.5 rounded-xl transition-all cursor-pointer active:scale-95 border border-amber-300/30"
+          >
+            Descartar y comenzar
+          </button>
+        </div>
+      )}
 
       {/* Main Two-Column Layout */}
       <div className="max-w-7xl mx-auto w-full px-6 py-6 flex-1 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
