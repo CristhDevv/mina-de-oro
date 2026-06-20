@@ -369,7 +369,6 @@ export default function ProductDetail({ product }: ProductDetailProps) {
                   src={product.rich_content_video_url}
                   autoPlay
                   muted
-                  defaultMuted
                   loop
                   playsInline
                   preload="auto"
