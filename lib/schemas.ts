@@ -75,6 +75,7 @@ export const productSchema = z.object({
   price: z.number(),
   originalPrice: z.number().optional(),
   images: z.array(z.string()).default([]),
+  video_url: z.string().optional().nullable(),
   category: z.string(),
   stock: z.number(),
   rating: z.number().nullable().transform(n => n === null ? 0 : Number(n)).default(0),

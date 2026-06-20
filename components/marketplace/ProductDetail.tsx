@@ -13,7 +13,8 @@ interface ProductDetailProps {
 
 export default function ProductDetail({ product }: ProductDetailProps) {
   const [quantity, setQuantity] = useState(1)
-  const [activeImage, setActiveImage] = useState(0)
+  const [activeMedia, setActiveMedia] = useState<'video' | number>(product.video_url ? 'video' : 0)
+  const [isMuted, setIsMuted] = useState(true)
   const addItem = useCartStore((state) => state.addItem)
   const router = useRouter()
 
@@ -135,26 +136,70 @@ export default function ProductDetail({ product }: ProductDetailProps) {
       {/* 1. Hero Section (Imagen + Datos principales) */}
       {showHero && (
         <section className="bg-white pb-6 rounded-b-[2.5rem] shadow-sm">
-          {/* Galería de Imágenes */}
+          {/* Galería de Imágenes y Video */}
           <div className="w-full max-w-lg mx-auto pt-2 bg-white">
             <div className="relative aspect-square w-full">
-              <Image
-                src={images[activeImage]}
-                alt={product.name}
-                fill
-                className="object-contain p-4"
-                priority
-              />
+              {activeMedia === 'video' && product.video_url ? (
+                <div className="relative w-full h-full p-2">
+                  <video
+                    src={product.video_url}
+                    autoPlay
+                    loop
+                    muted={isMuted}
+                    playsInline
+                    className="w-full h-full object-cover rounded-2xl shadow-inner"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setIsMuted(!isMuted)}
+                    className="absolute bottom-6 right-6 z-20 bg-black/60 hover:bg-black/80 text-white p-2.5 rounded-full transition-all backdrop-blur-sm active:scale-95 flex items-center justify-center shadow-lg"
+                  >
+                    {isMuted ? (
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>
+                      </svg>
+                    ) : (
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+                      </svg>
+                    )}
+                  </button>
+                </div>
+              ) : (
+                <Image
+                  src={images[activeMedia as number]}
+                  alt={product.name}
+                  fill
+                  className="object-contain p-4"
+                  priority
+                />
+              )}
             </div>
             
-            {images.length > 1 && (
-              <div className="flex gap-2 justify-center px-4 mt-1">
+            {(images.length > 1 || product.video_url) && (
+              <div className="flex gap-2 justify-center px-4 mt-2 overflow-x-auto no-scrollbar">
+                {product.video_url && (
+                  <button
+                    onClick={() => setActiveMedia('video')}
+                    className="relative w-14 h-14 rounded-xl overflow-hidden border-2 transition-all bg-black flex items-center justify-center shrink-0 group shadow-sm"
+                    style={{ borderColor: activeMedia === 'video' ? 'var(--accent)' : '#eee' }}
+                  >
+                    {images[0] && (
+                      <Image src={images[0]} alt="" fill className="object-contain p-1 opacity-60 group-hover:opacity-40" />
+                    )}
+                    <div className="absolute inset-0 flex items-center justify-center text-white bg-black/20 group-hover:bg-black/40 transition-colors">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z"/>
+                      </svg>
+                    </div>
+                  </button>
+                )}
                 {images.map((img, idx) => (
                   <button
                     key={idx}
-                    onClick={() => setActiveImage(idx)}
-                    className="relative w-14 h-14 rounded-xl overflow-hidden border-2 transition-all bg-white"
-                    style={{ borderColor: idx === activeImage ? 'var(--accent)' : '#eee' }}
+                    onClick={() => setActiveMedia(idx)}
+                    className="relative w-14 h-14 rounded-xl overflow-hidden border-2 transition-all bg-white shrink-0 shadow-sm"
+                    style={{ borderColor: typeof activeMedia === 'number' && idx === activeMedia ? 'var(--accent)' : '#eee' }}
                   >
                     <Image src={img} alt="" fill className="object-contain p-1" />
                   </button>

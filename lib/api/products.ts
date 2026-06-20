@@ -7,6 +7,7 @@ function mapProduct(row: any): Product {
   try {
     return productSchema.parse({
       ...row,
+      video_url: row.video_url ?? undefined,
       originalPrice: row.original_price ?? undefined,
       category: row.category_slug,
       reviewCount: row.review_count ?? 0,

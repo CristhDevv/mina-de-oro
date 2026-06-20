@@ -15,6 +15,7 @@ interface ProductPreviewProps {
   specifications: { label: string; value: string }[]
   faq: ProductFAQ[]
   brandColor: string
+  videoUrl?: string | null
 }
 
 export default function ProductPreview({
@@ -28,6 +29,7 @@ export default function ProductPreview({
   specifications,
   faq,
   brandColor,
+  videoUrl,
 }: ProductPreviewProps) {
   const colors = landingConfig?.colors || {}
   const sections = landingConfig?.sections || {}
@@ -87,7 +89,16 @@ export default function ProductPreview({
           <div className="bg-white px-4 pb-4 pt-3 rounded-b-3xl shadow-sm border-b border-gray-100 shrink-0">
             {/* Gallery Image */}
             <div className="aspect-square rounded-2xl bg-gray-50 mb-3.5 relative overflow-hidden flex items-center justify-center border border-gray-100/50">
-              {coverImage ? (
+              {videoUrl ? (
+                <video 
+                  src={videoUrl} 
+                  autoPlay 
+                  loop 
+                  muted 
+                  playsInline 
+                  className="object-cover w-full h-full animate-fade-in"
+                />
+              ) : coverImage ? (
                 <img 
                   src={coverImage} 
                   alt={name} 

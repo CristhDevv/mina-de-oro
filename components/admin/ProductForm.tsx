@@ -8,7 +8,7 @@ import {
 } from 'lucide-react'
 import { Product, Category, ProductFAQ, ProductOption, RichContentBlock, LandingConfig } from '@/types'
 import { supabase } from '@/lib/supabase'
-import { uploadProductImage, deleteProductImage } from '@/lib/api/storage'
+import { uploadProductImage, deleteProductImage, uploadProductVideo, deleteProductVideo } from '@/lib/api/storage'
 import LandingConfigEditor from '@/components/admin/LandingConfigEditor'
 import ProductPreview from '@/components/admin/ProductPreview'
 
@@ -75,11 +75,13 @@ export default function ProductForm({ product, categories, onCancel, onSaved }: 
     }
   })
 
+  const [videoUrl, setVideoUrl] = useState<string | null>(product?.video_url ?? null)
   const [uploading, setUploading] = useState(false)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const fileRef = useRef<HTMLInputElement>(null)
   const richFileRef = useRef<HTMLInputElement>(null)
+  const videoFileRef = useRef<HTMLInputElement>(null)
 
   function generateSlug(text: string) {
     return text.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
@@ -144,6 +146,49 @@ export default function ProductForm({ product, categories, onCancel, onSaved }: 
   async function handleRemoveImage(url: string) {
     await deleteProductImage(url)
     setImages((prev) => prev.filter((u) => u !== url))
+  }
+
+  async function handleVideoUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    
+    if (file.type !== 'video/mp4' && !file.name.endsWith('.mp4')) {
+      setError('El video debe ser en formato MP4')
+      return
+    }
+    
+    const maxSize = 50 * 1024 * 1024 // 50MB
+    if (file.size > maxSize) {
+      setError('El video no debe superar los 50MB')
+      return
+    }
+
+    setUploading(true)
+    setError('')
+    try {
+      const slug = product?.slug ?? generateSlug(name || 'producto')
+      const url = await uploadProductVideo(file, slug)
+      setVideoUrl(url)
+    } catch {
+      setError('Error al subir video. Intenta de nuevo.')
+    } finally {
+      setUploading(false)
+      if (videoFileRef.current) videoFileRef.current.value = ''
+    }
+  }
+
+  async function handleRemoveVideo() {
+    if (!videoUrl) return
+    setUploading(true)
+    setError('')
+    try {
+      await deleteProductVideo(videoUrl)
+      setVideoUrl(null)
+    } catch {
+      setError('Error al eliminar video.')
+    } finally {
+      setUploading(false)
+    }
   }
 
   function handleMakePrimary(index: number) {
@@ -236,6 +281,7 @@ export default function ProductForm({ product, categories, onCancel, onSaved }: 
       stock: parseInt(stock),
       slug: product?.slug ?? generateSlug(name),
       images,
+      video_url: videoUrl,
       active: true,
       faq,
       options,
@@ -701,6 +747,52 @@ export default function ProductForm({ product, categories, onCancel, onSaved }: 
                 )}
               </div>
               <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp" multiple className="hidden" onChange={handleImageUpload} />
+
+              {/* Sección de Video */}
+              <div className="border-t border-gray-150 pt-6 mt-6">
+                <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 mb-3">Video de Demostración (Opcional)</h4>
+                {videoUrl ? (
+                  <div className="max-w-[200px] rounded-2xl overflow-hidden border border-gray-150 shadow-sm relative group bg-black aspect-[9/16]">
+                    <video 
+                      src={videoUrl} 
+                      autoPlay 
+                      loop 
+                      muted 
+                      playsInline 
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2.5 p-4 text-center">
+                      <button 
+                        type="button"
+                        onClick={() => videoFileRef.current?.click()}
+                        disabled={uploading}
+                        className="text-[9px] font-black uppercase px-3 py-2 bg-white text-[#1B2B5E] rounded-xl hover:bg-gray-100 transition-colors cursor-pointer"
+                      >
+                        Reemplazar Video
+                      </button>
+                      <button 
+                        type="button"
+                        onClick={handleRemoveVideo} 
+                        disabled={uploading}
+                        className="w-9 h-9 bg-white/20 hover:bg-rose-600 rounded-xl flex items-center justify-center text-white transition-colors cursor-pointer"
+                      >
+                        <Trash2 size={15} />
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <button 
+                    type="button"
+                    onClick={() => videoFileRef.current?.click()} 
+                    disabled={uploading}
+                    className="w-full max-w-sm h-28 rounded-2xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center gap-2 text-gray-400 hover:border-[#C9A84C] hover:text-[#C9A84C] hover:bg-blue-50/10 transition-all cursor-pointer active:scale-95 disabled:opacity-50"
+                  >
+                    {uploading ? <Loader2 size={22} className="animate-spin" /> : <Plus size={22} />}
+                    <span className="text-[9px] font-black uppercase tracking-wider">{uploading ? 'Subiendo' : 'Subir Video (MP4, máx 50MB)'}</span>
+                  </button>
+                )}
+                <input ref={videoFileRef} type="file" accept="video/mp4" className="hidden" onChange={handleVideoUpload} />
+              </div>
             </div>
           )}
 
@@ -836,6 +928,7 @@ export default function ProductForm({ product, categories, onCancel, onSaved }: 
               specifications={specifications}
               faq={faq}
               brandColor={brandColor}
+              videoUrl={videoUrl}
             />
           </div>
         </div>
@@ -874,6 +967,7 @@ export default function ProductForm({ product, categories, onCancel, onSaved }: 
               specifications={specifications}
               faq={faq}
               brandColor={brandColor}
+              videoUrl={videoUrl}
             />
           </div>
         </div>
