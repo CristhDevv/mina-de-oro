@@ -7,7 +7,6 @@ import {
   Heading3, Bold, ImageIcon, Eye, Settings, Layout, ArrowLeft, ArrowRight
 } from 'lucide-react'
 import { Product, Category, ProductFAQ, ProductOption, RichContentBlock, LandingConfig } from '@/types'
-import { supabase } from '@/lib/supabase'
 import { uploadProductImage, deleteProductImage, uploadProductVideo, deleteProductVideo } from '@/lib/api/storage'
 import LandingConfigEditor from '@/components/admin/LandingConfigEditor'
 import ProductPreview from '@/components/admin/ProductPreview'
@@ -292,11 +291,24 @@ export default function ProductForm({ product, categories, onCancel, onSaved }: 
       brand_color: brandColor,
       landing_config: landingConfig,
     }
-    const { error: dbError } = product
-      ? await supabase.from('products').update(payload).eq('id', product.id)
-      : await supabase.from('products').insert(payload)
-    if (dbError) { setError(dbError.message); setSaving(false); return }
-    onSaved()
+
+    try {
+      const res = await fetch('/api/products', {
+        method: product ? 'PUT' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(product ? { id: product.id, ...payload } : payload),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        setError(data.error || 'Error al guardar el producto')
+        setSaving(false)
+        return
+      }
+      onSaved()
+    } catch {
+      setError('Error de conexión al guardar el producto')
+      setSaving(false)
+    }
   }
 
   const SectionHeader = ({ icon: Icon, title, description }: { icon: any, title: string, description?: string }) => (
