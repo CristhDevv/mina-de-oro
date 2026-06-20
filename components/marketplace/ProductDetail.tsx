@@ -359,6 +359,53 @@ export default function ProductDetail({ product }: ProductDetailProps) {
         </section>
       )}
 
+      {/* 5.5 Contenido Detallado (Rich Content) */}
+      {product.rich_content && product.rich_content.length > 0 && (
+        <section className="bg-white py-8 my-5 rounded-3xl max-w-lg mx-auto px-5 shadow-sm space-y-6">
+          <div className="space-y-4">
+            {product.rich_content.map((block, i) => {
+              if (block.type === 'text') {
+                return (
+                  <p 
+                    key={i} 
+                    className={`text-sm text-gray-700 leading-relaxed ${block.bold ? 'font-black' : 'font-medium'}`}
+                  >
+                    {block.content}
+                  </p>
+                )
+              }
+              if (block.type === 'heading') {
+                const sizeClass = 
+                  block.level === 1 ? 'text-2xl font-black' : 
+                  block.level === 2 ? 'text-xl font-extrabold' : 
+                  'text-lg font-bold'
+                return (
+                  <h3 
+                    key={i} 
+                    className={`${sizeClass} leading-tight text-gray-900 mt-6 first:mt-0`}
+                    style={{ color: 'var(--primary)' }}
+                  >
+                    {block.content}
+                  </h3>
+                )
+              }
+              if (block.type === 'image') {
+                return (
+                  <div key={i} className="relative w-full rounded-2xl overflow-hidden shadow-sm my-4 bg-gray-50 flex items-center justify-center">
+                    <img
+                      src={block.url}
+                      alt={block.alt || 'Detalle del producto'}
+                      className="max-w-full max-h-full object-contain rounded-2xl"
+                    />
+                  </div>
+                )
+              }
+              return null
+            })}
+          </div>
+        </section>
+      )}
+
       {/* 6. Testimonios */}
       {showTestimonials && ((sections.testimonials as any)?.items || (product.reviews && product.reviews.length > 0)) && (
         <section className="bg-white py-8 my-5 rounded-3xl max-w-lg mx-auto px-5 shadow-sm space-y-5">
