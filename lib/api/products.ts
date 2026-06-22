@@ -14,6 +14,7 @@ function mapProduct(row: any): Product {
       category: row.category_slug,
       reviewCount: row.review_count ?? 0,
       createdAt: row.created_at,
+      active: row.active ?? true,
     })
   } catch (error) {
     console.error(`Error de validación en producto [${row.id}]:`, error)

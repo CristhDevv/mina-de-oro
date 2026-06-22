@@ -5,12 +5,12 @@ import {
   X, ImagePlus, Trash2, Loader2, Plus, CheckCircle2, 
   ArrowLeft, Info, Tag, Layers, Settings, Save
 } from 'lucide-react'
-import { Product, Category } from '@/types'
+import { EcommerceProduct, Category } from '@/types'
 import { uploadProductImage, deleteProductImage } from '@/lib/api/storage'
 import { useProductDraft } from '@/hooks/useProductDraft'
 
 interface Props {
-  product: Product | null
+  product: EcommerceProduct | null
   categories: Category[]
   draftKey?: string
   onCancel: () => void

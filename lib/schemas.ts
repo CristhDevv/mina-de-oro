@@ -88,6 +88,7 @@ export const productSchema = z.object({
   rich_content: z.array(richContentBlockSchema).optional(),
   rich_content_video_url: z.string().optional().nullable(),
   featured: z.boolean().default(false),
+  active: z.boolean().nullable().transform(v => v === null ? true : v).default(true),
   brand_color: z.string().optional(),
   reviews: z.array(z.object({
     author: z.string(),
@@ -161,6 +162,7 @@ export const ecommerceProductSchema = productSchema.pick({
   reviewCount: true,
   createdAt: true,
   featured: true,
+  active: true,
   product_type: true,
   specifications: true,
 })

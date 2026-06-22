@@ -6,7 +6,7 @@ import ProductForm from '@/components/admin/ProductForm'
 import ProductEcommerceForm from '@/components/admin/ProductEcommerceForm'
 import { getCategories } from '@/lib/api/categories'
 import { getProductById } from '@/lib/api/products'
-import { Category, Product } from '@/types'
+import { Category, Product, EcommerceProduct } from '@/types'
 import { ArrowLeft } from 'lucide-react'
 
 export default function EditarProductoPage() {
@@ -53,6 +53,27 @@ export default function EditarProductoPage() {
     )
   }
 
+  const toEcommerceProduct = (p: Product): EcommerceProduct => {
+    return {
+      id: p.id,
+      slug: p.slug,
+      name: p.name,
+      description: p.description,
+      price: p.price,
+      originalPrice: p.originalPrice,
+      images: p.images,
+      category: p.category,
+      stock: p.stock,
+      rating: p.rating,
+      reviewCount: p.reviewCount,
+      createdAt: p.createdAt,
+      featured: p.featured,
+      product_type: 'ecommerce',
+      specifications: p.specifications,
+      active: p.active,
+    }
+  }
+
   const isEcommerce = product.product_type === 'ecommerce'
 
   return (
@@ -65,7 +86,7 @@ export default function EditarProductoPage() {
       </button>
       {isEcommerce ? (
         <ProductEcommerceForm 
-          product={product} 
+          product={toEcommerceProduct(product)} 
           categories={categories} 
           draftKey={`product_ecommerce_draft__edit_${product.id}`}
           onCancel={() => router.push('/admin')}
