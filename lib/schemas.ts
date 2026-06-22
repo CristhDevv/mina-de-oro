@@ -95,6 +95,7 @@ export const productSchema = z.object({
     comment: z.string(),
   })).optional(),
   landing_config: landingConfigSchema.default(() => ({})),
+  product_type: z.enum(['landing', 'ecommerce']).default('landing'),
 })
 
 export const categorySchema = z.object({
@@ -141,4 +142,25 @@ export const orderSchema = z.object({
   created_at: z.string(),
   updated_at: z.string(),
   order_items: z.array(orderItemSchema).optional(),
+})
+
+// ─── Ecommerce Product Schema ──────────────────────────────────────────────────
+// Versión reducida de productSchema para el flujo de creación rápida.
+// Construida con .pick() para reutilizar definiciones sin duplicar.
+export const ecommerceProductSchema = productSchema.pick({
+  id: true,
+  slug: true,
+  name: true,
+  description: true,
+  price: true,
+  originalPrice: true,
+  images: true,
+  category: true,
+  stock: true,
+  rating: true,
+  reviewCount: true,
+  createdAt: true,
+  featured: true,
+  product_type: true,
+  specifications: true,
 })

@@ -18,12 +18,20 @@ export default function ProductsTab({ products }: ProductsTabProps) {
           <h2 className="text-lg font-bold text-gray-900">Catálogo de Productos</h2>
           <p className="text-xs text-gray-500">{products.length} productos publicados</p>
         </div>
-        <button
-          onClick={() => router.push('/admin/productos/nuevo')}
-          className="flex items-center gap-2 bg-[#1B2B5E] text-white text-xs font-bold h-10 px-4 rounded-2xl hover:shadow-lg hover:shadow-[#1B2B5E]/20 transition-all active:scale-95"
-        >
-          <Plus size={16} /> <span className="hidden sm:inline">Nuevo Producto</span>
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => router.push('/admin/productos/nuevo')}
+            className="flex items-center gap-1.5 bg-[#1B2B5E]/5 text-[#1B2B5E] text-xs font-bold h-10 px-4 rounded-2xl hover:bg-[#1B2B5E]/10 transition-all active:scale-95 cursor-pointer"
+          >
+            <Plus size={14} /> <span>+ Crear Landing</span>
+          </button>
+          <button
+            onClick={() => router.push('/admin/productos/nuevo-ecommerce')}
+            className="flex items-center gap-1.5 bg-[#1B2B5E] text-white text-xs font-bold h-10 px-4 rounded-2xl hover:shadow-lg hover:shadow-[#1B2B5E]/20 transition-all active:scale-95 cursor-pointer"
+          >
+            <Plus size={14} /> <span>+ Crear Producto</span>
+          </button>
+        </div>
       </div>
 
       <div className="bg-white border border-gray-100 rounded-3xl overflow-hidden shadow-sm">
@@ -32,6 +40,7 @@ export default function ProductsTab({ products }: ProductsTabProps) {
             <thead className="bg-gray-50 border-b border-gray-100 text-gray-500 font-bold uppercase tracking-wider text-[10px]">
               <tr>
                 <th className="px-6 py-4">Producto</th>
+                <th className="px-6 py-4">Tipo</th>
                 <th className="px-6 py-4">Precio</th>
                 <th className="px-6 py-4">Stock</th>
                 <th className="px-6 py-4">Color</th>
@@ -57,6 +66,17 @@ export default function ProductsTab({ products }: ProductsTabProps) {
                       </div>
                       <p className="font-bold text-gray-900 group-hover:text-[#1B2B5E] transition-colors">{product.name}</p>
                     </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    {product.product_type === 'ecommerce' ? (
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-100">
+                        Ecommerce
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-blue-50 text-[#1B2B5E] border border-blue-100">
+                        Landing
+                      </span>
+                    )}
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex flex-col">

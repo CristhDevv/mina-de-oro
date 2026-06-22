@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import ProductForm from '@/components/admin/ProductForm'
+import ProductEcommerceForm from '@/components/admin/ProductEcommerceForm'
 import { getCategories } from '@/lib/api/categories'
 import { getProductById } from '@/lib/api/products'
 import { Category, Product } from '@/types'
@@ -52,6 +53,8 @@ export default function EditarProductoPage() {
     )
   }
 
+  const isEcommerce = product.product_type === 'ecommerce'
+
   return (
     <div className="p-4 md:p-10 w-full pb-32 md:pb-10 flex-1">
       <button 
@@ -60,13 +63,23 @@ export default function EditarProductoPage() {
       >
         <ArrowLeft size={16} /> Volver al panel
       </button>
-      <ProductForm 
-        product={product} 
-        categories={categories} 
-        draftKey={`product_draft__edit_${product.id}`}
-        onCancel={() => router.push('/admin')}
-        onSaved={() => router.push('/admin')}
-      />
+      {isEcommerce ? (
+        <ProductEcommerceForm 
+          product={product} 
+          categories={categories} 
+          draftKey={`product_ecommerce_draft__edit_${product.id}`}
+          onCancel={() => router.push('/admin')}
+          onSaved={() => router.push('/admin')}
+        />
+      ) : (
+        <ProductForm 
+          product={product} 
+          categories={categories} 
+          draftKey={`product_draft__edit_${product.id}`}
+          onCancel={() => router.push('/admin')}
+          onSaved={() => router.push('/admin')}
+        />
+      )}
     </div>
   )
 }

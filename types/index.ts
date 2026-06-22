@@ -4,6 +4,7 @@ import {
   productOptionSchema,
   richContentBlockSchema,
   productSchema,
+  ecommerceProductSchema,
   categorySchema,
   userSchema,
   shippingAddressSchema,
@@ -16,6 +17,7 @@ export type ProductFAQ = z.infer<typeof productFAQSchema>
 export type ProductOption = z.infer<typeof productOptionSchema>
 export type RichContentBlock = z.infer<typeof richContentBlockSchema>
 export type Product = z.infer<typeof productSchema>
+export type EcommerceProduct = z.infer<typeof ecommerceProductSchema>
 export type LandingConfig = z.infer<typeof landingConfigSchema>
 export type Category = z.infer<typeof categorySchema>
 
