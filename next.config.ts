@@ -19,7 +19,7 @@ const securityHeaders = [
       "img-src 'self' data: blob: https://dpvobmhvsausguqwzrrm.supabase.co https://www.facebook.com https://www.google-analytics.com",
       "media-src 'self' https://dpvobmhvsausguqwzrrm.supabase.co",
       "font-src 'self'",
-      "connect-src 'self' https://*.supabase.co https://checkout.wompi.co https://www.google-analytics.com https://analytics.google.com https://stats.g.doubleclick.net https://www.facebook.com https://connect.facebook.net",
+      "connect-src 'self' https://*.supabase.co https://checkout.wompi.co https://www.google-analytics.com https://analytics.google.com https://stats.g.doubleclick.net https://www.facebook.com https://connect.facebook.net https://api.alegra.com",
       "frame-src https://checkout.wompi.co",
     ].join('; ')
   }

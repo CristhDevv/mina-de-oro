@@ -1,8 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { ChevronRight, ChevronDown, Package, MapPin, CreditCard, Truck, Calendar, ShoppingBag } from 'lucide-react'
+import { ChevronRight, ChevronDown, Package, MapPin, CreditCard, Truck, Calendar, ShoppingBag, CheckCircle, AlertCircle, Loader2, RefreshCw } from 'lucide-react'
 import { formatCurrency } from '@/lib/utils'
+import { confirmDeliveryAndDeductStock } from '@/lib/api/alegra'
+import type { DeliveryConfirmResult } from '@/lib/api/alegra'
 
 interface OrdersTabProps {
   orders: any[]
@@ -30,8 +32,41 @@ const PAYMENT_LABELS: Record<string, string> = {
   contraentrega: 'Contraentrega',
 }
 
+interface SyncState {
+  status: 'idle' | 'loading' | 'success' | 'partial' | 'error'
+  result?: DeliveryConfirmResult['result']
+  message?: string
+}
+
 export default function OrdersTab({ orders, onStatusChange }: OrdersTabProps) {
   const [expandedId, setExpandedId] = useState<string | null>(null)
+  const [syncStates, setSyncStates] = useState<Record<string, SyncState>>({})
+
+  async function handleConfirmDelivery(orderId: string, retryOnly = false) {
+    setSyncStates(prev => ({ ...prev, [orderId]: { status: 'loading' } }))
+    try {
+      const data = await confirmDeliveryAndDeductStock(orderId, retryOnly)
+      const { success, failed, pending_unresolved } = data.result
+      const hasFailures = failed.length > 0 || pending_unresolved.length > 0
+      const allFailed = success.length === 0 && hasFailures
+
+      setSyncStates(prev => ({
+        ...prev,
+        [orderId]: {
+          status: allFailed ? 'error' : hasFailures ? 'partial' : 'success',
+          result: data.result,
+        },
+      }))
+    } catch (err) {
+      setSyncStates(prev => ({
+        ...prev,
+        [orderId]: {
+          status: 'error',
+          message: err instanceof Error ? err.message : 'Error desconocido',
+        },
+      }))
+    }
+  }
 
   return (
     <div className="flex flex-col gap-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -173,6 +208,76 @@ export default function OrdersTab({ orders, onStatusChange }: OrdersTabProps) {
                             </div>
                           </div>
                         )}
+
+                        {/* ── Confirmación de entrega Alegra ── */}
+                        {order.status === 'delivered' && (() => {
+                          const sync = syncStates[order.id]
+                          const isLoading = sync?.status === 'loading'
+                          const hasResult = sync?.result
+
+                          return (
+                            <div className="mt-2 flex flex-col gap-2">
+                              <div className="h-px bg-gray-100" />
+                              <label className="text-[10px] font-bold text-gray-400 uppercase ml-1">
+                                Inventario Alegra
+                              </label>
+
+                              {/* Resultado previo */}
+                              {hasResult && (
+                                <div className={`rounded-2xl p-3 text-xs ${
+                                  sync.status === 'success' ? 'bg-emerald-50 text-emerald-700' :
+                                  sync.status === 'partial' ? 'bg-amber-50 text-amber-700' :
+                                  'bg-rose-50 text-rose-700'
+                                }`}>
+                                  <div className="flex items-center gap-1.5 font-bold mb-1">
+                                    {sync.status === 'success'
+                                      ? <CheckCircle size={13} />
+                                      : <AlertCircle size={13} />}
+                                    {sync.status === 'success' ? 'Stock descontado correctamente' :
+                                     sync.status === 'partial' ? 'Descuento parcial' :
+                                     'Falló el descuento'}
+                                  </div>
+                                  <p>✓ {hasResult.success.length} éxitos · ✗ {hasResult.failed.length} fallos · ⊘ {hasResult.omitted.length} omitidos</p>
+                                  {hasResult.pending_unresolved.length > 0 && (
+                                    <p className="mt-0.5">⏳ {hasResult.pending_unresolved.length} pendiente(s) sin resolver</p>
+                                  )}
+                                </div>
+                              )}
+
+                              {/* Mensaje de error sin result */}
+                              {sync?.status === 'error' && sync.message && (
+                                <div className="rounded-2xl p-3 text-xs bg-rose-50 text-rose-700">
+                                  <div className="flex items-center gap-1.5 font-bold"><AlertCircle size={13} /> Error</div>
+                                  <p className="mt-0.5">{sync.message}</p>
+                                </div>
+                              )}
+
+                              {/* Botón principal */}
+                              {(!sync || sync.status === 'idle' || sync.status === 'error') && (
+                                <button
+                                  onClick={() => handleConfirmDelivery(order.id)}
+                                  disabled={isLoading}
+                                  className="h-10 flex items-center justify-center gap-2 px-4 rounded-2xl bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700 disabled:opacity-50 transition-colors"
+                                >
+                                  {isLoading ? <Loader2 size={14} className="animate-spin" /> : <CheckCircle size={14} />}
+                                  {isLoading ? 'Descontando...' : 'Descontar stock en Alegra'}
+                                </button>
+                              )}
+
+                              {/* Botón de reintento para parciales */}
+                              {sync?.status === 'partial' && (
+                                <button
+                                  onClick={() => handleConfirmDelivery(order.id, true)}
+                                  disabled={isLoading}
+                                  className="h-10 flex items-center justify-center gap-2 px-4 rounded-2xl border border-amber-400 text-amber-700 text-xs font-bold hover:bg-amber-50 disabled:opacity-50 transition-colors"
+                                >
+                                  {isLoading ? <Loader2 size={14} className="animate-spin" /> : <RefreshCw size={14} />}
+                                  {isLoading ? 'Reintentando...' : 'Reintentar fallidos'}
+                                </button>
+                              )}
+                            </div>
+                          )
+                        })()}
                       </div>
                     </div>
                   </div>
