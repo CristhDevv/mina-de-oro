@@ -24,6 +24,7 @@ export default function ProductEcommerceForm({ product, categories, draftKey, on
   const [description, setDescription] = useState(product?.description ?? '')
   const [price, setPrice] = useState(product?.price?.toString() ?? '')
   const [originalPrice, setOriginalPrice] = useState(product?.originalPrice?.toString() ?? '')
+  const [precioVentaPunto, setPrecioVentaPunto] = useState(product?.precio_venta_punto?.toString() ?? '')
   const [categorySlug, setCategorySlug] = useState(product?.category ?? categories[0]?.slug ?? '')
   const [stock, setStock] = useState(product?.stock?.toString() ?? '10')
   const [images, setImages] = useState<string[]>(product?.images ?? [])
@@ -51,6 +52,7 @@ export default function ProductEcommerceForm({ product, categories, draftKey, on
       setDescription(draft.description)
       setPrice(draft.price)
       setOriginalPrice(draft.originalPrice)
+      setPrecioVentaPunto(draft.precioVentaPunto ?? '')
       setCategorySlug(draft.categorySlug)
       setStock(draft.stock)
       setImages(draft.images)
@@ -75,6 +77,7 @@ export default function ProductEcommerceForm({ product, categories, draftKey, on
         description,
         price,
         originalPrice,
+        precioVentaPunto,
         categorySlug,
         stock,
         images,
@@ -94,7 +97,7 @@ export default function ProductEcommerceForm({ product, categories, draftKey, on
     }, 1000)
 
     return () => clearTimeout(timer)
-  }, [name, slug, description, price, originalPrice, categorySlug, stock, images, featured, specifications, product, saveDraft])
+  }, [name, slug, description, price, originalPrice, precioVentaPunto, categorySlug, stock, images, featured, specifications, product, saveDraft])
 
   function generateSlug(text: string) {
     return text
@@ -190,6 +193,7 @@ export default function ProductEcommerceForm({ product, categories, draftKey, on
       description,
       price: parseInt(price),
       original_price: originalPrice ? parseInt(originalPrice) : null,
+      precio_venta_punto: precioVentaPunto ? parseFloat(precioVentaPunto) : null,
       category_slug: categorySlug,
       stock: parseInt(stock),
       images,
@@ -265,7 +269,7 @@ export default function ProductEcommerceForm({ product, categories, draftKey, on
             <CheckCircle2 size={16} className="text-emerald-600 shrink-0" />
             <span>Se restauró un borrador guardado localmente ({draftSavedAt})</span>
             <button 
-              onClick={() => { clearDraft(); setName(''); setSlug(''); setPrice(''); setOriginalPrice(''); setImages([]); setSpecifications([]); setRestoredFromDraft(false); }}
+              onClick={() => { clearDraft(); setName(''); setSlug(''); setPrice(''); setOriginalPrice(''); setPrecioVentaPunto(''); setImages([]); setSpecifications([]); setRestoredFromDraft(false); }}
               className="ml-auto text-[10px] font-black uppercase text-emerald-700 hover:underline"
             >
               Descartar
@@ -344,7 +348,7 @@ export default function ProductEcommerceForm({ product, categories, draftKey, on
                 <h3 className="text-xs font-black text-gray-800 uppercase tracking-wider">Inventario & Precios</h3>
               </div>
 
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 <div className="flex flex-col gap-1.5">
                   <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Precio ($) *</label>
                   <input 
@@ -362,6 +366,16 @@ export default function ProductEcommerceForm({ product, categories, draftKey, on
                     value={originalPrice} 
                     onChange={(e) => setOriginalPrice(e.target.value)} 
                     placeholder="320000"
+                    className="h-11 px-4 rounded-2xl border border-gray-200 text-xs font-bold outline-none focus:border-[#1B2B5E] focus:ring-4 focus:ring-blue-50/50 transition-all bg-gray-50/30" 
+                  />
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Precio Venta en Punto ($)</label>
+                  <input 
+                    type="number" 
+                    value={precioVentaPunto} 
+                    onChange={(e) => setPrecioVentaPunto(e.target.value)} 
+                    placeholder="250000"
                     className="h-11 px-4 rounded-2xl border border-gray-200 text-xs font-bold outline-none focus:border-[#1B2B5E] focus:ring-4 focus:ring-blue-50/50 transition-all bg-gray-50/30" 
                   />
                 </div>

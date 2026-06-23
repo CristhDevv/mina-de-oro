@@ -13,11 +13,11 @@ export default async function LandingPage({ params }: Props) {
 
   const { data: product } = await supabase
     .from('products')
-    .select('*')
+    .select('id, slug, name, description, price, original_price, images, category_slug, stock, rating, review_count, active, created_at, faq, options, specifications, features, rich_content, featured, brand_color, video_url, landing_config, rich_content_video_url, product_type, alegra_item_id, alegra_reference')
     .eq('slug', slug)
     .single()
 
   if (!product) notFound()
 
-  return <OrganizadorLanding product={product as Product} />
+  return <OrganizadorLanding product={product as unknown as Product} />
 }

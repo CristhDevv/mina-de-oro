@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import {
-  Package, ShoppingBag, Users, DollarSign,
-  Clock, ChevronRight, Plus, ArrowLeft, Tag,
-  BarChart2, Settings, LogOut
+  Package, ShoppingBag, Users,
+  ChevronRight, Plus, ArrowLeft, Tag,
+  BarChart2, Settings, LogOut, Link
 } from 'lucide-react'
 import { getAdminStats, getAllOrders, updateOrderStatus, getAllUsers, updateUserRole } from '@/lib/api/admin'
 import { getProducts } from '@/lib/api/products'
@@ -22,8 +22,9 @@ import ProductsTab from './ProductsTab'
 import UsersTab from './UsersTab'
 import CategoriesTab from './CategoriesTab'
 import AnalyticsDashboard from './AnalyticsDashboard'
+import AlegraTab from './AlegraTab'
 
-type Tab = 'dashboard' | 'orders' | 'products' | 'inventory' | 'users' | 'categories' | 'settings' | 'analytics'
+type Tab = 'dashboard' | 'orders' | 'products' | 'inventory' | 'users' | 'categories' | 'settings' | 'analytics' | 'alegra'
 
 export default function AdminDashboard() {
   const [tab, setTab] = useState<Tab>('dashboard')
@@ -43,7 +44,7 @@ export default function AdminDashboard() {
     setLoading(true)
     try {
       const [s, o, u, p, c] = await Promise.all([
-        getAdminStats(), getAllOrders(), getAllUsers(), getProducts(), getCategories()
+        getAdminStats(), getAllOrders(), getAllUsers(), getProducts(true), getCategories()
       ])
       setStats(s); setOrders(o ?? []); setUsers(u ?? [])
       setProducts(p ?? []); setCategories(c ?? [])
@@ -88,6 +89,7 @@ export default function AdminDashboard() {
     { id: 'inventory' as Tab, label: 'Stock', icon: Tag },
     { id: 'users' as Tab, label: 'Usuarios', icon: Users },
     { id: 'categories' as Tab, label: 'Categorías', icon: Settings },
+    { id: 'alegra' as Tab, label: 'Alegra', icon: Link },
     { id: 'settings' as Tab, label: 'Ajustes', icon: Settings },
   ]
 
@@ -186,6 +188,15 @@ export default function AdminDashboard() {
               )}
               {tab === 'settings' && <SettingsView />}
               {tab === 'analytics' && <AnalyticsDashboard />}
+              {tab === 'alegra' && (
+                <AlegraTab
+                  products={products.map(p => ({
+                    id: p.id,
+                    name: p.name,
+                    alegra_item_id: (p as any).alegra_item_id ?? null,
+                  }))}
+                />
+              )}
             </div>
           )}
         </div>

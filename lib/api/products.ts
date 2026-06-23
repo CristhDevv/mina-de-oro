@@ -3,6 +3,8 @@ const supabase = createClient()
 import { Product } from '@/types'
 import { productSchema } from '@/lib/schemas'
 
+const PUBLIC_SELECT = 'id, slug, name, description, price, original_price, images, category_slug, stock, rating, review_count, active, created_at, faq, options, specifications, features, rich_content, featured, brand_color, video_url, landing_config, rich_content_video_url, product_type, alegra_item_id, alegra_reference'
+
 function mapProduct(row: any): Product {
   try {
     return productSchema.parse({
@@ -11,6 +13,7 @@ function mapProduct(row: any): Product {
       video_url: row.video_url ?? undefined,
       rich_content_video_url: row.rich_content_video_url ?? undefined,
       originalPrice: row.original_price ?? undefined,
+      precio_venta_punto: row.precio_venta_punto ?? undefined,
       category: row.category_slug,
       reviewCount: row.review_count ?? 0,
       createdAt: row.created_at,
@@ -22,10 +25,10 @@ function mapProduct(row: any): Product {
   }
 }
 
-export async function getProducts(): Promise<Product[]> {
+export async function getProducts(includePrivateFields = false): Promise<Product[]> {
   const { data, error } = await supabase
     .from('products')
-    .select('*')
+    .select(includePrivateFields ? '*' : PUBLIC_SELECT)
     .eq('active', true)
     .order('created_at', { ascending: false })
 
@@ -36,7 +39,7 @@ export async function getProducts(): Promise<Product[]> {
 export async function getFeaturedProducts(): Promise<Product[]> {
   const { data, error } = await supabase
     .from('products')
-    .select('*')
+    .select(PUBLIC_SELECT)
     .eq('active', true)
     .eq('featured', true)
     .order('created_at', { ascending: false })
@@ -48,7 +51,7 @@ export async function getFeaturedProducts(): Promise<Product[]> {
 export async function getProductBySlug(slug: string): Promise<Product | null> {
   const { data, error } = await supabase
     .from('products')
-    .select('*')
+    .select(PUBLIC_SELECT)
     .eq('slug', slug)
     .eq('active', true)
     .single()
@@ -71,7 +74,7 @@ export async function getProductById(id: string): Promise<Product | null> {
 export async function getProductsByCategory(categorySlug: string): Promise<Product[]> {
   const { data, error } = await supabase
     .from('products')
-    .select('*')
+    .select(PUBLIC_SELECT)
     .eq('category_slug', categorySlug)
     .eq('active', true)
     .order('created_at', { ascending: false })
@@ -92,7 +95,7 @@ export async function searchProducts(
 ): Promise<Product[]> {
   let q = supabase
     .from('products')
-    .select('*')
+    .select(PUBLIC_SELECT)
     .eq('active', true)
 
   if (query.trim()) {
@@ -117,7 +120,7 @@ export async function searchProducts(
 export async function getRelatedProducts(categorySlug: string, excludeId: string, limit = 6): Promise<Product[]> {
   const { data, error } = await supabase
     .from('products')
-    .select('*')
+    .select(PUBLIC_SELECT)
     .eq('active', true)
     .eq('category_slug', categorySlug)
     .neq('id', excludeId)

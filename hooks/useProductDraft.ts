@@ -9,6 +9,7 @@ export interface DraftData {
   description: string
   price: string
   originalPrice: string
+  precioVentaPunto?: string
   categorySlug: string
   stock: string
   images: string[]

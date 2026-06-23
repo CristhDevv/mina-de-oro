@@ -43,6 +43,7 @@ export default function ProductForm({ product, categories, draftKey, onCancel, o
   const [description, setDescription] = useState(product?.description ?? '')
   const [price, setPrice] = useState(product?.price?.toString() ?? '')
   const [originalPrice, setOriginalPrice] = useState(product?.originalPrice?.toString() ?? '')
+  const [precioVentaPunto, setPrecioVentaPunto] = useState(product?.precio_venta_punto?.toString() ?? '')
   const [categorySlug, setCategorySlug] = useState(product?.category ?? categories[0]?.slug ?? '')
   const [stock, setStock] = useState(product?.stock?.toString() ?? '')
   const [images, setImages] = useState<string[]>(product?.images ?? [])
@@ -100,6 +101,7 @@ export default function ProductForm({ product, categories, draftKey, onCancel, o
       setDescription(draft.description)
       setPrice(draft.price)
       setOriginalPrice(draft.originalPrice)
+      setPrecioVentaPunto(draft.precioVentaPunto ?? '')
       setCategorySlug(draft.categorySlug)
       setStock(draft.stock)
       setImages(draft.images)
@@ -134,6 +136,7 @@ export default function ProductForm({ product, categories, draftKey, onCancel, o
       description,
       price,
       originalPrice,
+      precioVentaPunto,
       categorySlug,
       stock,
       images,
@@ -157,6 +160,7 @@ export default function ProductForm({ product, categories, draftKey, onCancel, o
     description,
     price,
     originalPrice,
+    precioVentaPunto,
     categorySlug,
     stock,
     images,
@@ -184,6 +188,7 @@ export default function ProductForm({ product, categories, draftKey, onCancel, o
       description,
       price,
       originalPrice,
+      precioVentaPunto,
       categorySlug,
       stock,
       images,
@@ -216,6 +221,7 @@ export default function ProductForm({ product, categories, draftKey, onCancel, o
     setDescription(product?.description ?? '')
     setPrice(product?.price?.toString() ?? '')
     setOriginalPrice(product?.originalPrice?.toString() ?? '')
+    setPrecioVentaPunto(product?.precio_venta_punto?.toString() ?? '')
     setCategorySlug(product?.category ?? categories[0]?.slug ?? '')
     setStock(product?.stock?.toString() ?? '')
     setImages(product?.images ?? [])
@@ -491,6 +497,7 @@ export default function ProductForm({ product, categories, draftKey, onCancel, o
       description,
       price: parseInt(price),
       original_price: originalPrice ? parseInt(originalPrice) : null,
+      precio_venta_punto: precioVentaPunto ? parseFloat(precioVentaPunto) : null,
       category_slug: categorySlug,
       stock: parseInt(stock),
       slug: product?.slug ?? generateSlug(name),
@@ -684,6 +691,20 @@ export default function ProductForm({ product, categories, draftKey, onCancel, o
                       type="number" 
                       value={originalPrice} 
                       onChange={(e) => setOriginalPrice(e.target.value)} 
+                      placeholder="0"
+                      className="w-full h-11 pl-8 pr-4 rounded-2xl border border-gray-200 text-xs font-bold text-gray-400 outline-none focus:border-[#1B2B5E] transition-all bg-white" 
+                    />
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Precio Venta en Punto</label>
+                  <div className="relative">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold">$</span>
+                    <input 
+                      type="number" 
+                      value={precioVentaPunto} 
+                      onChange={(e) => setPrecioVentaPunto(e.target.value)} 
                       placeholder="0"
                       className="w-full h-11 pl-8 pr-4 rounded-2xl border border-gray-200 text-xs font-bold text-gray-400 outline-none focus:border-[#1B2B5E] transition-all bg-white" 
                     />

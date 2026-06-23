@@ -61,6 +61,7 @@ export default function EditarProductoPage() {
       description: p.description,
       price: p.price,
       originalPrice: p.originalPrice,
+      precio_venta_punto: p.precio_venta_punto,
       images: p.images,
       category: p.category,
       stock: p.stock,

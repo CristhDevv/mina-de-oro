@@ -97,6 +97,7 @@ export const productSchema = z.object({
   })).optional(),
   landing_config: landingConfigSchema.default(() => ({})),
   product_type: z.enum(['landing', 'ecommerce']).default('landing'),
+  precio_venta_punto: z.number().optional().nullable(),
 })
 
 export const categorySchema = z.object({
@@ -155,6 +156,7 @@ export const ecommerceProductSchema = productSchema.pick({
   description: true,
   price: true,
   originalPrice: true,
+  precio_venta_punto: true,
   images: true,
   category: true,
   stock: true,
