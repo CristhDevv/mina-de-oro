@@ -16,6 +16,7 @@ export const mockProducts: Product[] = [
     originalPrice: 25000, images: [], category: 'ropa',
     stock: 50, rating: 4.5, reviewCount: 128, createdAt: new Date(),
     faq: [], options: [], featured: false, landing_config: {},
+    active: true, product_type: 'landing',
   },
   {
     id: '2', slug: 'set-bowls-colores', name: 'Set Bowls x6',
@@ -23,6 +24,7 @@ export const mockProducts: Product[] = [
     originalPrice: 38000, images: [], category: 'cocina',
     stock: 30, rating: 4.8, reviewCount: 95, createdAt: new Date(),
     faq: [], options: [], featured: false, landing_config: {},
+    active: true, product_type: 'landing',
   },
   {
     id: '3', slug: 'camiseta-polo', name: 'Camiseta Polo',
@@ -30,6 +32,7 @@ export const mockProducts: Product[] = [
     originalPrice: 45000, images: [], category: 'ropa',
     stock: 40, rating: 4.2, reviewCount: 67, createdAt: new Date(),
     faq: [], options: [], featured: false, landing_config: {},
+    active: true, product_type: 'landing',
   },
   {
     id: '4', slug: 'set-toallas-hogar', name: 'Set Toallas x3',
@@ -37,6 +40,7 @@ export const mockProducts: Product[] = [
     originalPrice: 32000, images: [], category: 'hogar',
     stock: 25, rating: 4.6, reviewCount: 43, createdAt: new Date(),
     faq: [], options: [], featured: false, landing_config: {},
+    active: true, product_type: 'landing',
   },
   {
     id: '5', slug: 'organizador-cocina', name: 'Organizador Cocina',
@@ -44,6 +48,7 @@ export const mockProducts: Product[] = [
     originalPrice: 22000, images: [], category: 'cocina',
     stock: 60, rating: 4.3, reviewCount: 89, createdAt: new Date(),
     faq: [], options: [], featured: false, landing_config: {},
+    active: true, product_type: 'landing',
   },
   {
     id: '6', slug: 'pantaloneta-deportiva', name: 'Pantaloneta Deportiva',
@@ -51,5 +56,6 @@ export const mockProducts: Product[] = [
     originalPrice: 35000, images: [], category: 'ropa',
     stock: 35, rating: 4.4, reviewCount: 56, createdAt: new Date(),
     faq: [], options: [], featured: false, landing_config: {},
+    active: true, product_type: 'landing',
   },
 ]

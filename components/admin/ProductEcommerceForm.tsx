@@ -47,7 +47,7 @@ export default function ProductEcommerceForm({ product, categories, draftKey, on
     const draft = loadDraft()
     if (draft) {
       setName(draft.name)
-      setSlug(draft.slug)
+      setSlug(draft.slug ?? '')
       setDescription(draft.description)
       setPrice(draft.price)
       setOriginalPrice(draft.originalPrice)

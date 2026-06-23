@@ -5,6 +5,7 @@ export interface DraftData {
   step: number
   savedAt: string
   name: string
+  slug?: string
   description: string
   price: string
   originalPrice: string
